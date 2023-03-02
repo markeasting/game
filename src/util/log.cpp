@@ -19,6 +19,17 @@ void Log(const std::string& msg, LogLevel&& logLevel, const std::string& origin)
     }
 }
 
+void Log(const glm::vec2& v, const std::string& name) {
+    std::cout 
+        << name 
+        << " " 
+        << v.x 
+        << " " 
+        << v.y 
+        << " " 
+        << std::endl;
+}
+
 void Log(const glm::vec3& v, const std::string& name) {
     std::cout 
         << name 
