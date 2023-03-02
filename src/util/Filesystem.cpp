@@ -24,7 +24,6 @@ std::string Filesystem::getBasePath() {
       
     #ifdef __linux__
         char c_path[1024];
-        uint32_t size = sizeof(c_path);
 
         readlink("/proc/self/exe", c_path, 1024);
         
@@ -40,7 +39,7 @@ std::string Filesystem::getBasePath() {
             printf("Could not get executable path, I need %u characters\n", size);
         
         std::string path(c_path);
-        std::string executable = "main.app";
+        // std::string executable = "main.app";
 
     #elif _WIN32
         // Copied from Boost library
@@ -48,7 +47,7 @@ std::string Filesystem::getBasePath() {
         typedef std::vector<char>::size_type size_type;
         char_vector buf(1024, 0);
         size_type size = buf.size();
-        bool havePath = false;
+        // bool havePath = false; // commented out at some point, untested
         bool shouldContinue = true;
         do {
             DWORD result = GetModuleFileNameA(nullptr, &buf[0], size);
@@ -57,7 +56,7 @@ std::string Filesystem::getBasePath() {
             {
                 shouldContinue = false;
             } else if (result < size) {
-                havePath = true;
+                // havePath = true;
                 shouldContinue = false;
             }
             else if (
