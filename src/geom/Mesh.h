@@ -11,17 +11,18 @@
 struct Mesh : public Object3D {
 public: 
 
-    VertexBuffer vertexBuffer;
-    IndexBuffer indexBuffer;
-    Material* material = nullptr;
+    Ref<VertexBuffer> m_vertexBuffer = nullptr;
+    Ref<IndexBuffer> m_indexBuffer = nullptr;
+    Ref<Material> m_material = nullptr;
     
     bool managedByRigidBody = false;
 
-    Mesh() = default;
+    Mesh();
     Mesh(const PrimitiveMesh& primitiveMesh);
+    Mesh(const PrimitiveMesh& primitiveMesh, const Material& material);
     virtual ~Mesh() = default;
 
-    void setMaterial(Material* material);
+    void setMaterial(const Material& material);
     virtual void bind() const;
     virtual void unbind() const;
 };

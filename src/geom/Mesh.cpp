@@ -1,19 +1,34 @@
 #include "geom/Mesh.h"
 
-Mesh::Mesh(const PrimitiveMesh& primitiveMesh) 
-    : vertexBuffer(primitiveMesh.vertices), indexBuffer(primitiveMesh.indices), material(nullptr) {}
+Mesh::Mesh() : 
+    m_vertexBuffer(std::make_shared<VertexBuffer>()), 
+    m_indexBuffer(std::make_shared<IndexBuffer>()), 
+    m_material(nullptr) 
+{}
+
+Mesh::Mesh(const PrimitiveMesh& primitiveMesh) : 
+    m_vertexBuffer(std::make_shared<VertexBuffer>(primitiveMesh.vertices)), 
+    m_indexBuffer(std::make_shared<IndexBuffer>(primitiveMesh.indices)), 
+    m_material(nullptr) 
+{}
+
+Mesh::Mesh(const PrimitiveMesh& primitiveMesh, const Material& material) : 
+    m_vertexBuffer(std::make_shared<VertexBuffer>(primitiveMesh.vertices)), 
+    m_indexBuffer(std::make_shared<IndexBuffer>(primitiveMesh.indices)), 
+    m_material(std::make_shared<Material>(material))
+{}
 
 void Mesh::bind() const {
-    this->vertexBuffer.bind();
-    this->indexBuffer.bind();
-    this->material->bind();
+    m_vertexBuffer->bind();
+    m_indexBuffer->bind();
+    m_material->bind();
 }
 
 void Mesh::unbind() const {
-    this->vertexBuffer.unbind();
-    this->indexBuffer.unbind();
+    m_vertexBuffer->unbind();
+    m_indexBuffer->unbind();
 }
 
-void Mesh::setMaterial(Material* material) {
-    this->material = material;
+void Mesh::setMaterial(const Material& material) {
+    m_material = std::make_shared<Material>(material);
 }

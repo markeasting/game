@@ -7,7 +7,7 @@ class Object3D {
 public:
     
     const char* name = "";
-    const char* type = "Object3D";
+    const char* type = "Object3D"; // @TODO make enum or use instanceof?
     bool isObject3D = true;
 
     Ref<Object3D> parent = nullptr;
@@ -47,4 +47,4 @@ private:
 
 };
 
-using Object3DRef = Ref<Object3D>;
+// using Object3DRef = Ref<Object3D>;

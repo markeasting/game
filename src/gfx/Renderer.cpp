@@ -95,11 +95,7 @@ void Renderer::setupFramebuffer(const int& width, const int& height) {
 
 // @TODO move to scene!
 void Renderer::add(Mesh* mesh) {
-    if(mesh->material != nullptr) {
-        m_meshes.push_back(mesh);
-    } else {
-        Log("No material assigned to mesh, skipped.", LogLevel::ERROR);
-    }
+    m_meshes.push_back(mesh);
 }
 
 void Renderer::draw(Camera* camera) {
@@ -118,22 +114,22 @@ void Renderer::draw(Camera* camera) {
         mesh->bind();
         
         glUniformMatrix4fv(
-            mesh->material->m_shader->getUniformLocation("u_modelViewMatrix"), 
+            mesh->m_material->m_shader->getUniformLocation("u_modelViewMatrix"), 
             1,
             GL_FALSE, 
             glm::value_ptr(camera->viewMatrix * mesh->getWorldPositionMatrix())
         );
         glUniformMatrix4fv(
-            mesh->material->m_shader->getUniformLocation("u_modelViewProjectionMatrix"),
+            mesh->m_material->m_shader->getUniformLocation("u_modelViewProjectionMatrix"),
             1, 
             GL_FALSE, 
             glm::value_ptr(camera->viewProjectionMatrix * mesh->getWorldPositionMatrix())
         );
 
-        if(mesh->indexBuffer.getCount() > 0) {
-            glDrawElements(GL_TRIANGLES, mesh->indexBuffer.getCount(), GL_UNSIGNED_INT, 0);
+        if(mesh->m_indexBuffer->getCount() > 0) {
+            glDrawElements(GL_TRIANGLES, mesh->m_indexBuffer->getCount(), GL_UNSIGNED_INT, 0);
         } else {
-            glDrawArrays(GL_TRIANGLES, 0, mesh->vertexBuffer.getCount());
+            glDrawArrays(GL_TRIANGLES, 0, mesh->m_vertexBuffer->getCount());
         }
 
         // @TODO add support for instanced meshes using glDrawArraysInstanced and glDrawElementsInstanced

@@ -14,9 +14,9 @@ int main() {
 
     auto lightDirection = new Uniform<glm::vec3>("u_lightDirection", glm::vec3(0.5f, 0.0f, 2.0f));
 
-    Material* colorMaterial = new Material("/shader/Color");
+    Material colorMaterial = Material("/shader/Color");
     
-    Material* phongMaterial = new Material("/shader/Phong", {
+    Material phongMaterial = Material("/shader/Phong", {
         new Uniform<glm::vec3>("ambient", glm::vec3(0.2f, 0.3f, 0.3f)),
         new Uniform<glm::vec3>("diffuseAlbedo", glm::vec3(0.2f, 0.3f, 0.3f)),
         new Uniform<glm::vec3>("specularAlbedo", glm::vec3(0.2f, 0.2f, 0.2f)),
@@ -27,7 +27,7 @@ int main() {
         lightDirection
     });
 
-    colorMaterial->setUniform("u_color", glm::vec4(0.0f, 0.0f, 0.8f, 1.0f));
+    colorMaterial.setUniform("u_color", glm::vec4(0.0f, 0.0f, 0.8f, 1.0f));
 
     Mesh* myMesh = new BoxMesh(1.0f, 2.0f, 1.0f);
     // myMesh->setPosition({ 3.0f, 7.0f, 0.0f });
@@ -44,7 +44,7 @@ int main() {
         game.update();
 
         float oscillator = sin(game.getTime() * 1.5) / 2.0f + 0.5f;
-        colorMaterial->setUniform("u_color", glm::vec4(0.0f, oscillator, 0.8f, 1.0f));
+        colorMaterial.setUniform("u_color", glm::vec4(0.0f, oscillator, 0.8f, 1.0f));
     }
 
     return 0;
