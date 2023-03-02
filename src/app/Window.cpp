@@ -1,6 +1,5 @@
 #include "app/Window.h"
 #include "event/EventEmitter.h"
-#include "util/log.h"
 
 Window::Window() {
 
@@ -26,7 +25,6 @@ Window::Window() {
         NULL
     );
 
-    glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwMakeContextCurrent(m_window);
 
     if (!m_window) {

@@ -1,7 +1,5 @@
 #pragma once
 
-// @TODO add util/log.h as standard
-
 /* C / C++ */
 #define _USE_MATH_DEFINES
 #include <cstdlib>
@@ -22,13 +20,13 @@
 
 /* Application */
 #define LOG_LEVEL DEBUG
+#include "util/log.h"
 
 /* Types */
 template<typename T>
 using Ref = std::shared_ptr<T>;
 
-// template<typename T, typename... _Args>
-// Ref<T> newRef(_Args&&... __args)
-// {
-//     std::make_shared<T>(__args);
-// }
+template<typename T, typename... _Args>
+Ref<T> newRef(_Args&&... obj) {
+    std::make_shared<T>(T(obj...));
+}

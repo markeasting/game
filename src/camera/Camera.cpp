@@ -1,7 +1,6 @@
 #include "common.h"
 #include "camera/Camera.h"
 #include "input/Mouse.h"
-#include "util/log.h"
 #include "event/EventEmitter.h"
 
 Camera::Camera() {

@@ -1,6 +1,5 @@
 #include "app/Game.h"
 #include "scene/MyScene.h"
-#include "util/log.h"
 #include "event/EventEmitter.h"
 
 /* Initialize static member */

@@ -3,13 +3,13 @@
 Mesh::Mesh(const PrimitiveMesh& primitiveMesh) 
     : vertexBuffer(primitiveMesh.vertices), indexBuffer(primitiveMesh.indices), material(nullptr) {}
 
-void Mesh::bind() {
+void Mesh::bind() const {
     this->vertexBuffer.bind();
     this->indexBuffer.bind();
     this->material->bind();
 }
 
-void Mesh::unbind() {
+void Mesh::unbind() const {
     this->vertexBuffer.unbind();
     this->indexBuffer.unbind();
 }

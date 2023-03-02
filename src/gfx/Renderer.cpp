@@ -2,7 +2,6 @@
 #include "gfx/Renderer.h"
 
 #include "camera/Camera.h"
-#include "util/log.h"
 
 Renderer::Renderer() {
 
@@ -119,13 +118,13 @@ void Renderer::draw(Camera* camera) {
         mesh->bind();
         
         glUniformMatrix4fv(
-            mesh->material->shader->getUniformLocation("u_modelViewMatrix"), 
+            mesh->material->m_shader->getUniformLocation("u_modelViewMatrix"), 
             1,
             GL_FALSE, 
             glm::value_ptr(camera->viewMatrix * mesh->getWorldPositionMatrix())
         );
         glUniformMatrix4fv(
-            mesh->material->shader->getUniformLocation("u_modelViewProjectionMatrix"),
+            mesh->material->m_shader->getUniformLocation("u_modelViewProjectionMatrix"),
             1, 
             GL_FALSE, 
             glm::value_ptr(camera->viewProjectionMatrix * mesh->getWorldPositionMatrix())

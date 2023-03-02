@@ -4,7 +4,6 @@
 #include "app/Game.h"
 #include "geom/Mesh.h"
 #include "geom/PrimitiveMeshes.h"
-#include "util/log.h"
 
 /* Initialize global events class */
 EventEmitter Events;
@@ -16,9 +15,8 @@ int main() {
     auto lightDirection = new Uniform<glm::vec3>("u_lightDirection", glm::vec3(0.5f, 0.0f, 2.0f));
 
     Material* colorMaterial = new Material("/shader/Color");
-    Material* phongMaterial = new Material("/shader/Phong");
     
-    Material* phongMaterial2 = new Material("/shader/Phong", {
+    Material* phongMaterial = new Material("/shader/Phong", {
         new Uniform<glm::vec3>("ambient", glm::vec3(0.2f, 0.3f, 0.3f)),
         new Uniform<glm::vec3>("diffuseAlbedo", glm::vec3(0.2f, 0.3f, 0.3f)),
         new Uniform<glm::vec3>("specularAlbedo", glm::vec3(0.2f, 0.2f, 0.2f)),
@@ -30,8 +28,6 @@ int main() {
     });
 
     colorMaterial->setUniform("u_color", glm::vec4(0.0f, 0.0f, 0.8f, 1.0f));
-    phongMaterial2->assignUniform(lightDirection);
-    phongMaterial->assignUniform(lightDirection);
 
     Mesh* myMesh = new BoxMesh(1.0f, 2.0f, 1.0f);
     // myMesh->setPosition({ 3.0f, 7.0f, 0.0f });
@@ -41,13 +37,8 @@ int main() {
     // Floor //////////////////////////////////////////////////////////////////////////////////////
     Mesh* floor = new PlaneMesh(10.0f);
     floor->setRotation({ -90.0f, 0.0f, 0.0f });
-    floor->setMaterial(phongMaterial2);
+    floor->setMaterial(phongMaterial);
     game.m_renderer.add(floor);
-
-    Game::events.on("loaded", [&](const char* str) {
-        Log("Game loaded!");
-        Log(str);
-    });
 
     while (game.isRunning()) {
         game.update();

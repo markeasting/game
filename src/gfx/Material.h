@@ -9,7 +9,7 @@
 
 class Material {
 public:
-    Shader* shader = nullptr;
+    Shader* m_shader = nullptr;
     
     std::unordered_map<std::string, IUniform*> uniforms = {};
 

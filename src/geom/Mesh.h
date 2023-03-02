@@ -22,6 +22,6 @@ public:
     virtual ~Mesh() = default;
 
     void setMaterial(Material* material);
-    virtual void bind();
-    virtual void unbind();
+    virtual void bind() const;
+    virtual void unbind() const;
 };
