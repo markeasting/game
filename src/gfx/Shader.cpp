@@ -45,7 +45,7 @@ GLuint Shader::compile(const std::string& shaderSource, unsigned int type) {
         int length;
         glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &length);
         
-        char* message = (char*) alloca(length * sizeof(char));
+        char* message = (char*) malloc(length * sizeof(char));
         glGetShaderInfoLog(shaderId, length, &length, message);
 
         printf("[ERROR] Could not compile shader: '%s'. \nOpenGL: %s", shaderSource.c_str(), message);
