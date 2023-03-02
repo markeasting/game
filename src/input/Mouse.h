@@ -5,10 +5,9 @@
 class Mouse {
 public:
 
-    glm::vec2 pos = glm::vec2(0.0f);
-    glm::vec2 absolutePos = glm::vec2(0.0f);
+    float m_sensitivity = 75.0f;
 
-    float sensitivity = 75.0f;
+    glm::vec2 m_pos = glm::vec2(0.0f);
 
 	static Mouse& instance();
 
@@ -17,17 +16,13 @@ public:
 
     glm::vec2 getDelta();
 
-    void update(GLFWwindow* window, double& dt);
+    void update(GLFWwindow* window);
 
 private:
 
     Mouse() = default;
 
-    int windowWidth;
-    int windowHeight;
-
-    glm::vec2 lastPos = { 0, 0 };
-
-    double deltaTime = 0;
+    glm::vec2 m_lastPos = { 0, 0 };
+    glm::vec2 m_absolutePos = glm::vec2(0.0f);
 
 };

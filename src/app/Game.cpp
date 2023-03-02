@@ -1,6 +1,7 @@
 #include "app/Game.h"
 #include "scene/MyScene.h"
 #include "event/EventEmitter.h"
+#include "input/Mouse.h"
 
 /* Initialize static member */
 EventEmitter Game::events;
@@ -42,7 +43,10 @@ void Game::registerScenes()
 void Game::update()
 {
 
+    // @TODO move to InputHandler
     glfwPollEvents();
+    Mouse &mouse = Mouse::instance();
+    mouse.update(m_window.m_window);
 
     m_prevTime = m_time;
     m_time = glfwGetTime();
@@ -54,7 +58,6 @@ void Game::update()
 
     /* Handle rendering */
     m_renderer.draw(&m_camera); // @TODO give (active) scene as argument
-
     m_window.swapBuffers();
 }
 
