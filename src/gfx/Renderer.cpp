@@ -51,15 +51,11 @@ Renderer::Renderer() {
     // camera = new Camera(m_window); // Requires the framebuffer to be set up.
     // setupFramebuffer(m_frameBufferWidth, m_frameBufferHeight);
 
-
-
-
-    // Breaks on MacOS?
-    glDebugMessageCallback(GlDebugMsg, nullptr);
-    glEnable(GL_DEBUG_OUTPUT);
-    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-
-
+    if (GLVersion.major > 4 && GLVersion.minor >= 3) {
+        glDebugMessageCallback(GlDebugMsg, nullptr);
+        glEnable(GL_DEBUG_OUTPUT);
+        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+    }
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f); // background color
 
