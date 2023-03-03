@@ -9,24 +9,18 @@ EventEmitter Game::events;
 Game::Game() {
     // this->registerScenes();
 
-    init();
-    initEvents();
-}
-
-void Game::init() {
-    m_renderer.setupFramebuffer(m_window.m_config.windowWidth, m_window.m_config.windowHeight);
-    m_camera.setProjection(m_window.m_config.windowWidth, m_window.m_config.windowHeight);
-
     m_camera.setPosition(glm::vec3(0.0f, 2.0f, 8.0f));
+
+    this->onResize(m_window.m_frameBufferWidth, m_window.m_frameBufferHeight);
+
+    Events.on("frameBufferResize", [&] (GLFWwindow* window, int width, int height) {
+        this->onResize(width, height);
+    });
 }
 
-void Game::initEvents() {
-    
-    Events.on("frameBufferResize", [&] (GLFWwindow* window, int width, int height) {
-        m_renderer.setupFramebuffer(width, height);
-        m_camera.setProjection(width, height);
-    });
-
+void Game::onResize(int width, int height) {
+    m_renderer.setupFramebuffer(width, height);
+    m_camera.setProjection(m_renderer.m_frameBufferWidth, m_renderer.m_frameBufferHeight);
 }
 
 void Game::registerScenes()

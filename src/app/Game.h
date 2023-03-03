@@ -37,8 +37,7 @@ public:
 
 private:
 
-    void init();
-    void initEvents();
+    void onResize(int width, int height);
     
     float m_time = 0;
     float m_prevTime = 0;

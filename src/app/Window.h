@@ -16,16 +16,16 @@ public:
     WindowConfig m_config;
 
     GLFWwindow* m_window;
+    Window* self = this;
+
+    int m_windowWidth = 0;
+    int m_windowHeight = 0;
+    int m_frameBufferWidth = 0;
+    int m_frameBufferHeight = 0;
 
     Window();
 
     void swapBuffers();     // @TODO inline these
     bool isActive() const;  // @TODO inline these
-
-    static void onWindowResize(GLFWwindow* window, int width, int height);
-    static void onFrameBufferResize(GLFWwindow* window, int width, int height);
-    // static void onMouseMove(GLFWwindow* window, double xpos, double ypos);
-    static void onMouseButtonClick(GLFWwindow* window, int button, int action, int mods);
-
 
 };
