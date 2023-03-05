@@ -1,5 +1,5 @@
 
-#include "common.h"
+#include "common_includes.h"
 #include "gfx/Vertex.h"
 #include "gfx/IndexBuffer.h"
 
@@ -11,23 +11,23 @@ IndexBuffer::IndexBuffer()
  * @param mode GL_STATIC_DRAW or GL_DYNAMIC_DRAW. See glBufferData() for more options.
  */
 IndexBuffer::IndexBuffer(std::vector<unsigned int> indices, int mode) {
-    this->setIndices(indices, mode);
+    setIndices(indices, mode);
 };
 
 void IndexBuffer::setIndices(std::vector<unsigned int> indices, int mode) {
     
-    this->indices = indices;
-    this->count = indices.size();
-    this->size = this->count * sizeof(unsigned int);
+    m_indices = indices;
+    m_count = indices.size();
+    m_size = m_count * sizeof(unsigned int);
 
-    glGenBuffers(1, &this->ibuffer);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ibuffer);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->getSize(), &indices[0], mode);
+    glGenBuffers(1, &m_buffer);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_buffer);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, getSize(), &indices[0], mode);
 
 }
 
 void IndexBuffer::bind() const {
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ibuffer);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_buffer);
 }
 
 void IndexBuffer::unbind() const {
@@ -35,13 +35,13 @@ void IndexBuffer::unbind() const {
 }
 
 unsigned int IndexBuffer::getCount() const {
-    return this->count;
+    return m_count;
 }
 
 unsigned int IndexBuffer::getSize() const {
-    return this->size;
+    return m_size;
 }
 
 IndexBuffer::~IndexBuffer() {
-    glDeleteBuffers(1, &this->ibuffer);
+    glDeleteBuffers(1, &m_buffer);
 }

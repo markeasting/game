@@ -1,96 +1,100 @@
 
 #include "core/Object3D.h"
+#include <type_traits>
 
 void Object3D::add(Ref<Object3D> object) {
 
-    // @TODO error if object == this
+    // static_assert(std::is_base_of_v<Object3D, T>);
+    assert(object.get() != this);
 
     if (object->isObject3D) {
-        if (object->parent) {
-            // @TODO remove from parent
-        }
+        // if (object->parent) {
+        //     // @TODO remove from parent
+        // }
 
-        // @TODO figure out which style looks the cleanest
-
-        // object->parent = std::make_shared<Object3D>(this);
-        // object->children.push_back(std::make_shared<Object3D>(object));
-
-        // object->parent = Object3DRef(this);
-        // object->children.push_back(Object3DRef(object));
-
-        // object->parent = Ref<Object3D>(this);
-        // object->children.push_back(Ref<Object3D>(object));
+        object->parent = this;
+        children.push_back(object);
     }
 }
 
 glm::vec3 Object3D::getPosition() {
-    return this->position;
+    return m_position;
 }
 
 glm::quat Object3D::getRotation() {
-    return this->rotation;
+    return m_rotation;
 }
 
 glm::vec3 Object3D::getScale() {
-    return this->scale;
+    return m_scale;
 }
 
 void Object3D::setPosition(glm::vec3 position) {
-    // if(!managedByRigidBody) {
-        this->worldPosMatrixNeedsUpdate = true;
-        this->position = position;
-    // }
+    m_position = position;
+    m_worldPosMatrixNeedsUpdate = true;
 }
 
 void Object3D::setRotation(const glm::quat& rotation) {
-    // if(!managedByRigidBody) {
-        this->worldPosMatrixNeedsUpdate = true;
-        this->rotation = glm::normalize(rotation);
-    // }
+    m_rotation = glm::normalize(rotation);
+    m_worldPosMatrixNeedsUpdate = true;
 }
 
-void Object3D::setRotation(const glm::vec3& eulerRotation) {
-    // if(!managedByRigidBody) {
-        this->worldPosMatrixNeedsUpdate = true;
+void Object3D::setRotation(const glm::vec3& euler) {
 
-        // There must be a faster way
-        this->rotation = glm::rotate(this->rotation, glm::radians(eulerRotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
-        this->rotation = glm::rotate(this->rotation, glm::radians(eulerRotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
-        this->rotation = glm::rotate(this->rotation, glm::radians(eulerRotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
-        
-        this->rotation = glm::normalize(this->rotation);
-    // }
+    m_rotation = glm::quat(glm::vec3(
+        glm::radians(euler.x), 
+        glm::radians(euler.y), 
+        glm::radians(euler.z)
+    ));
+    m_rotation = glm::normalize(m_rotation);
+    
+    m_worldPosMatrixNeedsUpdate = true;
+
 }
 
 void Object3D::setScale(const float& uniformScale) {
-    this->setScale(glm::vec3(uniformScale));
+    setScale(glm::vec3(uniformScale));
 }
 
 void Object3D::setScale(const glm::vec3& scale) {
-    this->scale = scale;
+    m_scale = scale;
+    m_worldPosMatrixNeedsUpdate = true;
 }
 
 void Object3D::translate(glm::vec3 translation) {
-    // if(!managedByRigidBody) {
-        this->worldPosMatrixNeedsUpdate = true;
-        this->position += translation;
-    // }
+    m_position += translation;
+    m_worldPosMatrixNeedsUpdate = true;
 }
 
 void Object3D::rotate(float angle, glm::vec3 direction) {
-    // if(!managedByRigidBody) {
-        this->worldPosMatrixNeedsUpdate = true;
-        this->rotation = glm::rotate(this->rotation, glm::radians(angle), direction);
-        this->rotation = glm::normalize(this->rotation);
-    // }
+    m_rotation = glm::rotate(m_rotation, glm::radians(angle), direction);
+    m_rotation = glm::normalize(m_rotation);
+    m_worldPosMatrixNeedsUpdate = true;
 }
 
 glm::mat4 Object3D::getWorldPositionMatrix() {
-    if(this->worldPosMatrixNeedsUpdate) {
-        this->worldPositionMatrix = glm::scale(glm::translate(glm::mat4(1), this->position) * glm::mat4_cast(this->rotation), this->scale);
-        this->worldPosMatrixNeedsUpdate = false;
+    if(m_worldPosMatrixNeedsUpdate) {
+
+        m_worldPositionMatrix = glm::scale(
+            glm::translate(
+                glm::mat4(1),
+                m_position
+            ) * glm::mat4_cast(
+                m_rotation
+            ), 
+            m_scale
+        );
+
+        if (parent)
+            m_worldPositionMatrix = parent->m_worldPositionMatrix * m_worldPositionMatrix;
+
+        for (auto&& child : children) {
+            child->m_worldPosMatrixNeedsUpdate = true;
+        }
+
+        m_worldPosMatrixNeedsUpdate = false;
     }
     
-    return this->worldPositionMatrix;
+    return m_worldPositionMatrix;
 }
 

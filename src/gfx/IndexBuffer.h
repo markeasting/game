@@ -1,17 +1,17 @@
 #pragma once
 
-#include "common.h"
+#include "common_includes.h"
 #include "gfx/Vertex.h"
 
 #include <vector>
 
 /**
+ * @TODO merge with VertexBuffer, extend base class
  * @TODO change `unsigned int` to a common type (also update in mesh / geometry)
  */
 class IndexBuffer {
 public:
-	GLuint ibuffer = 0;
-	std::vector<unsigned int> indices;
+	std::vector<unsigned int> m_indices;
 	
 	IndexBuffer();
 	IndexBuffer(std::vector<unsigned int> indices, int mode = GL_STATIC_DRAW);
@@ -24,6 +24,8 @@ public:
 	void unbind() const;
 
 private:
-	unsigned int count = 0;
-	unsigned int size = 0;
+	GLuint m_buffer = 0;
+	
+	unsigned int m_count = 0;
+	unsigned int m_size = 0;
 };

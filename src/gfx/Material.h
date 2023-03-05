@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common.h"
+#include "common_includes.h"
 #include "gfx/Shader.h"
 #include "gfx/Uniforms.h"
 
@@ -10,28 +10,31 @@
 class Material {
 public:
 
-    Ref<Shader> m_shader;
+    Ref<Shader> m_shader = nullptr;
     
-    std::unordered_map<std::string, IUniform*> uniforms = {};
+    std::unordered_map<std::string, Ref<IUniform>> uniforms = {};
 
-    Material(const std::string& shaderBasePath, std::vector<IUniform*> uniforms = {});
+    Material(const std::string& shaderBasePath, std::vector<Ref<IUniform>> uniforms = {});
     ~Material() = default;
 
     template <typename T = float>
     void setUniform(const std::string& name, T value) {
-        if (uniforms.find(name) == uniforms.end()) {
-            this->assignUniform(new Uniform<T>(name, value));
+
+        // @TODO cache find() indices
+        if (uniforms.find(name) != uniforms.end()) {
+            auto uni = std::dynamic_pointer_cast<Uniform<T>>(uniforms.at(name));
+            uni->set(value);
         } else {
-            static_cast<Uniform<T>*>(this->uniforms.at(name))->set(value);
+            assignUniform(ref<Uniform<T>>(name, value));
         }
     }
 
     template <typename T = float>
-    Uniform<T>* getUniform(const std::string& name) {
-        return static_cast<Uniform<T>*>(this->uniforms.at(name));
+    Ref<Uniform<T>> getUniform(const std::string& name) {
+        return uniforms.at(name);
     }
 
-    void assignUniform(IUniform* uniform);
+    void assignUniform(Ref<IUniform> uniform);
     
     void bind() const;
 

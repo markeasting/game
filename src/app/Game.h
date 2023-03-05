@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common.h"
+#include "common_includes.h"
 #include "app/Window.h"
 #include "core/SceneManager.h"
 #include "camera/Camera.h"
@@ -26,6 +26,7 @@ public:
     static EventEmitter events;
     
     Game();
+    ~Game();
 
     void update();
     bool isRunning() const;

@@ -1,33 +1,33 @@
 
-#include "common.h"
+#include "common_includes.h"
 #include "gfx/Vertex.h"
 #include "gfx/VertexBuffer.h"
 
 VertexBuffer::VertexBuffer() {}
 
 VertexBuffer::VertexBuffer(std::vector<Vertex> vertices, int mode) {
-    this->setVertices(vertices, mode);
+    setVertices(vertices, mode);
 };
 
 void VertexBuffer::setVertices(std::vector<Vertex> vertices, int mode) {
 
-    this->vertices = vertices;
-    this->count = vertices.size();
-    this->size = this->count * sizeof(Vertex);
+    m_vertices = vertices;
+    m_count = vertices.size();
+    m_size = m_count * sizeof(Vertex);
     
-    glGenVertexArrays(1, &this->vao);
-    glBindVertexArray(this->vao);
+    glGenVertexArrays(1, &m_vao);
+    glBindVertexArray(m_vao);
 
-    glGenBuffers(1, &this->vbuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, this->vbuffer);
-    glBufferData(GL_ARRAY_BUFFER, this->size, &vertices[0], mode);
+    glGenBuffers(1, &m_buffer);
+    glBindBuffer(GL_ARRAY_BUFFER, m_buffer);
+    glBufferData(GL_ARRAY_BUFFER, m_size, &vertices[0], mode);
 
     Vertex::setAttribPointers();
 }
 
 void VertexBuffer::bind() const {
-    glBindVertexArray(this->vao); 
-    // glBindBuffer(GL_ARRAY_BUFFER, this->vbuffer); ////// uhhhhhhm, not using this->vbuffer? 
+    glBindVertexArray(m_vao); 
+    // glBindBuffer(GL_ARRAY_BUFFER, m_buffer); // Not required?
 }
 
 void VertexBuffer::unbind() const {
@@ -36,14 +36,14 @@ void VertexBuffer::unbind() const {
 }
 
 unsigned int VertexBuffer::getCount() const {
-    return this->count;
+    return m_count;
 }
 
 unsigned int VertexBuffer::getSize() const {
-    return this->size;
+    return m_size;
 }
 
 VertexBuffer::~VertexBuffer() {
-    glDeleteBuffers(1, &this->vbuffer);
-    glDeleteBuffers(1, &this->vao);
+    glDeleteBuffers(1, &m_buffer);
+    glDeleteBuffers(1, &m_vao);
 }

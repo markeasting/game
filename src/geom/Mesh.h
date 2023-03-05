@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common.h"
+#include "common_includes.h"
 #include "gfx/Vertex.h"
 #include "gfx/VertexBuffer.h"
 #include "gfx/IndexBuffer.h"
@@ -15,8 +15,6 @@ public:
     Ref<IndexBuffer> m_indexBuffer = nullptr;
     Ref<Material> m_material = nullptr;
     
-    bool managedByRigidBody = false;
-
     Mesh();
     Mesh(const PrimitiveMesh& primitiveMesh);
     Mesh(const PrimitiveMesh& primitiveMesh, const Material& material);

@@ -11,11 +11,15 @@ Game::Game() {
 
     m_camera.setPosition(glm::vec3(0.0f, 2.0f, 8.0f));
 
-    this->onResize(m_window.m_frameBufferWidth, m_window.m_frameBufferHeight);
+    Game::onResize(m_window.m_frameBufferWidth, m_window.m_frameBufferHeight);
 
     Events.on("frameBufferResize", [&] (GLFWwindow* window, int width, int height) {
-        this->onResize(width, height);
+        Game::onResize(width, height);
     });
+}
+
+Game::~Game() {
+    glfwTerminate(); // Move to Window?
 }
 
 void Game::onResize(int width, int height) {

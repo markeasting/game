@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common.h"
+#include "common_includes.h"
 #include <vector>
 
 class Object3D {
@@ -10,8 +10,9 @@ public:
     const char* type = "Object3D"; // @TODO make enum or use instanceof?
     bool isObject3D = true;
 
-    Ref<Object3D> parent = nullptr;
-    std::vector<Ref<Object3D>> children;
+    // std::weak_ptr<Object3D> parent;
+    Object3D* parent = nullptr; // @TODO use weak_ptr?
+    std::vector<Ref<Object3D>> children = {};
 
     // @TODO convert these to chaining pattern
     // https://levelup.gitconnected.com/how-to-implement-method-chaining-in-c-3ec9f255972a
@@ -19,7 +20,7 @@ public:
     
     void setPosition(glm::vec3 position);
 
-    void setRotation(const glm::vec3& eulerRotation);
+    void setRotation(const glm::vec3& euler);
     void setRotation(const glm::quat& rotation);
     
     void setScale(const float& uniformScale);
@@ -35,15 +36,15 @@ public:
     glm::mat4 getWorldPositionMatrix();
 
 protected:
-    
-    glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
-    glm::quat rotation = glm::quat(1.0f, 0, 0, 0);
-    glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
+
+    glm::vec3 m_position = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::quat m_rotation = glm::quat(1.0f, 0, 0, 0);
+    glm::vec3 m_scale = glm::vec3(1.0f, 1.0f, 1.0f);
 
 private:
 
-    bool worldPosMatrixNeedsUpdate = true;
-    glm::mat4 worldPositionMatrix = glm::mat4(1.0f);
+    bool m_worldPosMatrixNeedsUpdate = true;
+    glm::mat4 m_worldPositionMatrix = glm::mat4(1.0f);
 
 };
 

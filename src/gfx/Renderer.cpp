@@ -90,7 +90,7 @@ void Renderer::setupFramebuffer(const int& width, const int& height) {
 }
 
 // @TODO move to scene!
-void Renderer::add(Mesh* mesh) {
+void Renderer::add(Ref<Mesh> mesh) {
     m_meshes.push_back(mesh);
 }
 
@@ -113,13 +113,13 @@ void Renderer::draw(Camera* camera) {
             mesh->m_material->m_shader->getUniformLocation("u_modelViewMatrix"), 
             1,
             GL_FALSE, 
-            glm::value_ptr(camera->viewMatrix * mesh->getWorldPositionMatrix())
+            glm::value_ptr(camera->m_viewMatrix * mesh->getWorldPositionMatrix())
         );
         glUniformMatrix4fv(
             mesh->m_material->m_shader->getUniformLocation("u_modelViewProjectionMatrix"),
             1, 
             GL_FALSE, 
-            glm::value_ptr(camera->viewProjectionMatrix * mesh->getWorldPositionMatrix())
+            glm::value_ptr(camera->m_viewProjectionMatrix * mesh->getWorldPositionMatrix())
         );
 
         if(mesh->m_indexBuffer->getCount() > 0) {
@@ -142,13 +142,7 @@ void Renderer::clear() {
 }
 
 Renderer::~Renderer() {
-    for (auto& mesh: m_meshes) {
-        delete mesh;
-    }
-
-    glfwTerminate();
-
-    Log("[RENDERER] MOIIIIIII\n", LogLevel::DEBUG);
+    
 }
 
 static void GlDebugMsg(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam) {

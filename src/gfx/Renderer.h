@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common.h"
+#include "common_includes.h"
 // #include "util/Filesystem.h"
 #include "gfx/Shader.h"
 #include "gfx/Uniforms.h"
@@ -21,13 +21,13 @@ public:
 	
 	void setupFramebuffer(const int& width, const int& height);
 	
-	void add(Mesh* mesh); // @TODO move to scene!
+	void add(Ref<Mesh> mesh); // @TODO move to scene!
 
 	void draw(Camera* camera);
 	void clear();
 
 private:
-	std::vector<Mesh*> m_meshes = {};
+	std::vector<Ref<Mesh>> m_meshes = {};
 	
 };
 

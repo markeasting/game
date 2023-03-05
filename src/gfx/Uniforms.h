@@ -1,24 +1,24 @@
 #pragma once
 
-#include "common.h"
+#include "common_includes.h"
 #include <string>
 
 class IUniform {
 public:
 
-    std::string name;
-    int location = -1;
-    int value;
+    std::string m_name;
+    int m_location = -1;
+    int m_value;
 
     IUniform(const std::string& name)
-        : name(name) {};
+        : m_name(name) {};
 
     virtual ~IUniform() = default;
 
     virtual void bind() {};
 
 protected:
-    bool _update = true;
+    bool m_needsUpdate = true;
 };
 
 template <typename T>
@@ -26,16 +26,16 @@ class Uniform : public IUniform {
 public:
 
     Uniform(const std::string& name, const T &value = {}) 
-        : IUniform(name), value(value) {}
+        : IUniform(name), m_value(value) {}
 
     virtual void bind();
 
     virtual void set(T value) { 
-        this->_update = true; 
-        this->value = value;
+        m_needsUpdate = true; 
+        m_value = value;
     }
 
 private:
-    T value;
+    T m_value;
 
 };
