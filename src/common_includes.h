@@ -29,15 +29,15 @@ using Ref = std::shared_ptr<T>;
 template<typename T>
 using Unique = std::unique_ptr<T>;
 
-// template<typename T, typename... _Args>
-// Ref<T> ref(_Args&&... obj) {
-//     return std::make_shared<T>(T(obj...));
-// }
-
-template<typename T>
-Ref<T> ref(T&& obj) {
-    return std::make_shared<T>(obj);
+template<typename T, typename... _Args>
+Ref<T> ref(_Args&&... obj) {
+    return std::make_shared<T>(obj...);
 }
+
+// template<typename T>
+// Ref<T> ref(T&& obj) {
+//     return std::make_shared<T>(obj);
+// }
 
 // template<typename T>
 // Ref<T> ref(const T& obj) {
