@@ -87,6 +87,7 @@ $(BUILD_DIR_DEBUG)/%.o : %.cpp
 	$(CCX) $(CPPFLAGS_DEBUG) -MMD -c $< -o $@
 
 .PHONY : clean
-# clean :
-# 	# This should remove all generated files.
-# 	-rm -r $(BUILD_DIR)
+clean :
+	# This should remove all generated files.
+	-rm -rf $(BUILD_DIR_RELEASE)/src
+	-rm -rf $(BUILD_DIR_DEBUG)/src
