@@ -1,0 +1,39 @@
+{
+    "env": {
+        "myDefaultIncludePath": [
+            "${workspaceFolder}/src/**",
+            "${workspaceFolder}/lib/glad/include"
+        ]
+    },
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [ "${myDefaultIncludePath}" ],
+            "defines": [],
+            "compilerPath": "/usr/bin/g++",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "linux-gcc-x64",
+            "browse": {
+                "path": ["${workspaceFolder}/src"],
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": ""
+            }
+        },
+        {
+            "name": "Mac",
+            "includePath": [ "${myDefaultIncludePath}" ],
+            "defines": [],
+            // "compilerPath": "/usr/bin/g++",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "linux-gcc-x64",
+            "browse": {
+                "path": ["${workspaceFolder}/src"],
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": ""
+            }
+        }
+    ],
+    "version": 4
+}

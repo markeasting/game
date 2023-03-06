@@ -1,22 +1,22 @@
 # Libraries
-(Also present in the `lib` directory)
+The libraries below are also present in the `lib` directory.
 
-GLFW 
+## MacOS
 
 `brew install glfw`
 
-`sudo apt install libglfw3 libglfw3-dev`
-
-GLM
-
 `brew install glm`
 
-`libglm-dev`
+## Linux
+
+`sudo apt install libglfw3 libglfw3-dev`
+
+`sudo apt install libglm-dev`
 
 @TODO: replace GLAD with GLEW (`libglew-dev`)? 
 
 # Build (Linux / MacOS)
 
-`make debug`
+`make -j 4` 
 
-`make release`
+Available targets: `debug` and `release`
