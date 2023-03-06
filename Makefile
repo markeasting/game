@@ -98,8 +98,9 @@ BUILDDIR := bin
 TARGET := game
 
 # Compiler and linker settings
+# The -MMD flag ensures dependency files (.d) are created
 CXX := g++
-CXXFLAGS := -std=c++17
+CXXFLAGS := -std=c++17 -MMD
 INCLUDES := -Ilib/glad/include -I${SRCDIR}
 LDFLAGS := -lglfw
 
@@ -132,6 +133,10 @@ RELEASE_OBJECTS := $(patsubst $(SRCDIR)/%, $(RELOBJ)/%, $(SOURCES:.$(SRCEXT)=.o)
 all: debug
 debug: $(DEBUG_TARGET) copy_shaders_debug
 release: $(RELEASE_TARGET) copy_shaders_release
+
+# Checks whether dependency files have changed, see -MMD flag
+-include $(RELEASE_OBJECTS:%.o=%.d)
+-include $(DEBUG_OBJECTS:%.o=%.d)
 
 $(DEBUG_TARGET): $(DEBUG_OBJECTS)
 	$(CXX) $(DEBUG) $^ $(LDFLAGS) -o $@
