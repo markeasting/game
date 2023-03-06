@@ -24,6 +24,7 @@ public:
     int m_frameBufferHeight = 0;
 
     Window();
+    ~Window();
 
     void swapBuffers();     // @TODO inline these
     bool isActive() const;  // @TODO inline these

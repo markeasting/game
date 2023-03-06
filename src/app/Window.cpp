@@ -90,3 +90,7 @@ void Window::swapBuffers() {
 bool Window::isActive() const {
     return !glfwWindowShouldClose(m_window);
 }
+
+Window::~Window() {
+    glfwTerminate();
+}

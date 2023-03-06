@@ -19,7 +19,7 @@ Game::Game() {
 }
 
 Game::~Game() {
-    glfwTerminate(); // Move to Window?
+    
 }
 
 void Game::onResize(int width, int height) {
