@@ -71,7 +71,7 @@ Renderer::Renderer() {
 	// glStencilFunc(GL_EQUAL, 1, 0xFF);
 	// glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP); // Default, see docs for custom behavior
 
-    m_defaultShader = new Material("/shader/Basic");
+    // m_defaultShader = Material("/shader/Basic");
     
     // WindowEventHandler::init(m_window, true);
     // WindowEventHandler::onFrame(m_window);
@@ -93,6 +93,10 @@ void Renderer::setupFramebuffer(const int& width, const int& height) {
 
 // @TODO move to scene!
 void Renderer::add(Ref<Mesh> mesh) {
+
+    if (mesh->m_material == nullptr)
+        mesh->setMaterial(m_defaultShader);
+
     m_meshes.push_back(mesh);
 }
 
@@ -110,19 +114,36 @@ void Renderer::draw(Camera* camera) {
     for (auto& mesh : m_meshes) {
 
         mesh->bind();
-        
-        glUniformMatrix4fv(
-            mesh->m_material->m_shader->getUniformLocation("u_modelViewMatrix"), 
-            1,
-            GL_FALSE, 
-            glm::value_ptr(camera->m_viewMatrix * mesh->getWorldPositionMatrix())
-        );
-        glUniformMatrix4fv(
-            mesh->m_material->m_shader->getUniformLocation("u_modelViewProjectionMatrix"),
-            1, 
-            GL_FALSE, 
-            glm::value_ptr(camera->m_viewProjectionMatrix * mesh->getWorldPositionMatrix())
-        );
+
+        auto matrix = mesh->getWorldPositionMatrix();
+
+        if (mesh->m_useProjectionMatrix) {
+            glUniformMatrix4fv(
+                mesh->m_material->m_shader->getUniformLocation("u_modelViewMatrix"), 
+                1,
+                GL_FALSE, 
+                glm::value_ptr(camera->m_viewMatrix * matrix)
+            );
+            glUniformMatrix4fv(
+                mesh->m_material->m_shader->getUniformLocation("u_modelViewProjectionMatrix"),
+                1, 
+                GL_FALSE, 
+                glm::value_ptr(camera->m_viewProjectionMatrix * matrix)
+            );
+        } else {
+            glUniformMatrix4fv(
+                mesh->m_material->m_shader->getUniformLocation("u_modelViewMatrix"), 
+                1,
+                GL_FALSE, 
+                glm::value_ptr(matrix)
+            );
+            glUniformMatrix4fv(
+                mesh->m_material->m_shader->getUniformLocation("u_modelViewProjectionMatrix"),
+                1, 
+                GL_FALSE, 
+                glm::value_ptr(matrix)
+            );
+        }
 
         if(mesh->m_indexBuffer->getCount() > 0) {
             glDrawElements(GL_TRIANGLES, mesh->m_indexBuffer->getCount(), GL_UNSIGNED_INT, 0);

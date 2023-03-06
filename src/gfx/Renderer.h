@@ -10,7 +10,7 @@
 
 class Renderer {
 public:
-    Material* m_defaultShader = nullptr;
+    Material m_defaultShader = { "/shader/Basic" };
 
 	uint16_t m_frameBufferWidth = 0;
 	uint16_t m_frameBufferHeight = 0;
