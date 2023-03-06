@@ -6,9 +6,10 @@
 class Object3D {
 public:
     
-    const char* name = "";
-    const char* type = "Object3D"; // @TODO make enum or use instanceof?
-    bool isObject3D = true;
+    // const char* name = "";
+    // const char* type = "Object3D"; // @TODO make enum or use instanceof?
+
+    bool m_useProjectionMatrix = true;
 
     // std::weak_ptr<Object3D> parent;
     Object3D* parent = nullptr; // @TODO use weak_ptr?

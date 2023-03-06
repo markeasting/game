@@ -7,14 +7,12 @@ void Object3D::add(Ref<Object3D> object) {
     // static_assert(std::is_base_of_v<Object3D, T>);
     assert(object.get() != this);
 
-    if (object->isObject3D) {
-        // if (object->parent) {
-        //     // @TODO remove from parent
-        // }
+    // if (object->parent) {
+    //     // @TODO remove from parent
+    // }
 
-        object->parent = this;
-        children.push_back(object);
-    }
+    object->parent = this;
+    children.push_back(object);
 }
 
 glm::vec3 Object3D::getPosition() {

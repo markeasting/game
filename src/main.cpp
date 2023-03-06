@@ -46,6 +46,12 @@ int main() {
 
     tetra->add(myMesh);
 
+    auto overlay = ref<PlaneMesh>(0.2f);
+    // overlay->setMaterial(colorMaterial);
+    overlay->setPosition({ -0.9f, -0.9f, 0.0f });
+    overlay->m_useProjectionMatrix = false;
+    game.m_renderer.add(overlay);
+
     while (game.isRunning()) {
         game.update();
 
