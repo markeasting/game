@@ -22,7 +22,11 @@ void VertexBuffer::setVertices(std::vector<Vertex> vertices, int mode) {
     glBindBuffer(GL_ARRAY_BUFFER, m_buffer);
     glBufferData(GL_ARRAY_BUFFER, m_size, &vertices[0], mode);
 
-    Vertex::setAttribPointers();
+    /**
+     * glVertexAttribPointer
+     * glEnableVertexAttribArray
+     */ 
+    Vertex::setAttribPointers(); 
 }
 
 void VertexBuffer::bind() const {

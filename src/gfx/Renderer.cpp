@@ -65,9 +65,11 @@ Renderer::Renderer() {
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 	
+    // https://learnopengl.com/Advanced-OpenGL/Stencil-testing
     // glEnable(GL_STENCIL_TEST);
-	// glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-	// glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+    // glStencilMask(0xFF); // Enable writing to the stencil buffer
+	// glStencilFunc(GL_EQUAL, 1, 0xFF);
+	// glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP); // Default, see docs for custom behavior
 
     m_defaultShader = new Material("/shader/Basic");
     
@@ -95,7 +97,7 @@ void Renderer::add(Ref<Mesh> mesh) {
 }
 
 void Renderer::draw(Camera* camera) {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     // if(g_settings.wireframe) {
     //     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -138,7 +140,7 @@ void Renderer::clear() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 
 Renderer::~Renderer() {
