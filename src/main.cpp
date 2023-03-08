@@ -46,16 +46,19 @@ int main() {
 
     tetra->add(myMesh);
 
-    auto overlay = ref<PlaneMesh>(0.2f);
-    // overlay->setMaterial(colorMaterial);
-    overlay->setPosition({ -0.9f, -0.9f, 0.0f });
+    auto overlay = ref<PlaneMesh>(2.0f);
+    Material textureMaterial = Material("/shader/Basic.vert", "/shader/BasicTextured.frag");
+    textureMaterial.assignTexture("");
+    overlay->setMaterial(textureMaterial);
+    overlay->setPosition({ 0, -0.5f, 0 });
+    overlay->setScale({ 0.3f, 0.3f, 0 });
     overlay->m_useProjectionMatrix = false;
     game.m_renderer.add(overlay);
 
     while (game.isRunning()) {
         game.update();
 
-        tetra->setRotation({ game.getTime() * 100.0f, 0.0f, 0.0f });
+        // tetra->setRotation({ game.getTime() * 100.0f, 0.0f, 0.0f });
 
         float oscillator = sin(game.getTime() * 1.5) / 2.0f + 0.5f;
         colorMaterial.setUniform("u_color", glm::vec4(0.0f, oscillator, 0.8f, 1.0f));

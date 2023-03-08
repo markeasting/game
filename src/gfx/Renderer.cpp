@@ -5,52 +5,6 @@
 
 Renderer::Renderer() {
 
-    // m_windowWidth = 1280; //g_settings.window_width;
-    // m_windowHeight = 720; //g_settings.window_height;
-    
-    // glfwInit();
-
-    // #ifdef __APPLE__
-    //     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    //     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-    //     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
-    //     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    // #endif
-    
-    // // glfwWindowHint(GLFW_DECORATED, GLFW_FALSE); // Disables border / close button etc. 
-    // // glfwWindowHint(GLFW_MAXIMIZED, GLFW_FALSE);
-    // // glfwWindowHint(GLFW_CENTER_CURSOR, GLFW_FALSE);
-    // glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
-
-    // m_window = glfwCreateWindow(m_windowWidth, m_windowHeight, "Hello World!", NULL, NULL);
-
-    // if (!m_window) {
-    //     Log("GLFW window could not be created.", LogLevel::ERROR);
-    //     glfwTerminate();
-    // }
-
-    // glfwMakeContextCurrent(m_window);
-
-    // // if(g_settings.vsync)
-	//     glfwSwapInterval(1);
-    // // else 
-	// //     glfwSwapInterval(0);
-    
-    // if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
-    //     Log("Failed to initialize OpenGL context.", LogLevel::ERROR);
-    //     glfwTerminate();
-    // }
-
-    // printf("Initialized with OpenGL %d.%d.\n", GLVersion.major, GLVersion.minor);
-    // printf("Supported GLSL version is %s.\n", (char*) glGetString(GL_SHADING_LANGUAGE_VERSION));
-
-
-
-
-
-    // camera = new Camera(m_window); // Requires the framebuffer to be set up.
-    // setupFramebuffer(m_frameBufferWidth, m_frameBufferHeight);
-
     if (GLVersion.major > 4 && GLVersion.minor >= 3) {
         glDebugMessageCallback(GlDebugMsg, nullptr);
         glEnable(GL_DEBUG_OUTPUT);
@@ -59,8 +13,8 @@ Renderer::Renderer() {
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f); // background color
 
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Wireframe ->> https://vitaliburkov.wordpress.com/2016/09/17/simple-and-fast-high-quality-antialiased-lines-with-opengl/
-	// glEnable(GL_CULL_FACE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Wireframe GL_LINE ->> https://vitaliburkov.wordpress.com/2016/09/17/simple-and-fast-high-quality-antialiased-lines-with-opengl/
+	glEnable(GL_CULL_FACE);
 
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
@@ -71,10 +25,20 @@ Renderer::Renderer() {
 	// glStencilFunc(GL_EQUAL, 1, 0xFF);
 	// glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP); // Default, see docs for custom behavior
 
-    // m_defaultShader = Material("/shader/Basic");
+    m_fullscreenQuad.m_vertexBuffer->setVertices({
+        Vertex(glm::vec3(  1, -1, 0 ), glm::vec3( 0, 0, 1 ), glm::vec2( 1, 0 )),
+        Vertex(glm::vec3(  1,  1, 0 ), glm::vec3( 0, 0, 1 ), glm::vec2( 1, 1 )),
+        Vertex(glm::vec3( -1, -1, 0 ), glm::vec3( 0, 0, 1 ), glm::vec2( 0, 0 )),
+        Vertex(glm::vec3( -1,  1, 0 ), glm::vec3( 0, 0, 1 ), glm::vec2( 0, 1 )),
+    });
     
-    // WindowEventHandler::init(m_window, true);
-    // WindowEventHandler::onFrame(m_window);
+    m_fullscreenQuad.m_indexBuffer->setIndices({
+        0, 1, 2,
+        2, 1, 3,
+    });
+
+    // @TODO move uniform settings to Shader? Then we don't need a material here
+    m_fullscreenQuad.setMaterial(m_screenShader);
 
 }
 
@@ -97,10 +61,16 @@ void Renderer::add(Ref<Mesh> mesh) {
     if (mesh->m_material == nullptr)
         mesh->setMaterial(m_defaultShader);
 
+    if (mesh->m_material->m_shader->m_program == 0) {
+        Log("Texture failed to compile, using default shader");
+        mesh->setMaterial(m_defaultShader);
+    }
+
     m_meshes.push_back(mesh);
 }
 
 void Renderer::draw(Camera* camera) {
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     // if(g_settings.wireframe) {
@@ -111,6 +81,12 @@ void Renderer::draw(Camera* camera) {
     //     glEnable(GL_CULL_FACE);
     // }
 
+    if (m_useRenderpass) {
+        camera->m_frameBuffer.bind();
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // we're not using the stencil buffer now
+        glEnable(GL_DEPTH_TEST);
+    }
+
     for (auto& mesh : m_meshes) {
 
         mesh->bind();
@@ -118,41 +94,33 @@ void Renderer::draw(Camera* camera) {
         auto matrix = mesh->getWorldPositionMatrix();
 
         if (mesh->m_useProjectionMatrix) {
-            glUniformMatrix4fv(
-                mesh->m_material->m_shader->getUniformLocation("u_modelViewMatrix"), 
-                1,
-                GL_FALSE, 
-                glm::value_ptr(camera->m_viewMatrix * matrix)
-            );
-            glUniformMatrix4fv(
-                mesh->m_material->m_shader->getUniformLocation("u_modelViewProjectionMatrix"),
-                1, 
-                GL_FALSE, 
-                glm::value_ptr(camera->m_viewProjectionMatrix * matrix)
-            );
+            glUniformMatrix4fv(mesh->m_material->m_shader->getUniformLocation("u_modelViewMatrix"), 1, GL_FALSE, glm::value_ptr(camera->m_viewMatrix * matrix));
+            glUniformMatrix4fv(mesh->m_material->m_shader->getUniformLocation("u_modelViewProjectionMatrix"), 1,  GL_FALSE,  glm::value_ptr(camera->m_viewProjectionMatrix * matrix));
         } else {
-            glUniformMatrix4fv(
-                mesh->m_material->m_shader->getUniformLocation("u_modelViewMatrix"), 
-                1,
-                GL_FALSE, 
-                glm::value_ptr(matrix)
-            );
-            glUniformMatrix4fv(
-                mesh->m_material->m_shader->getUniformLocation("u_modelViewProjectionMatrix"),
-                1, 
-                GL_FALSE, 
-                glm::value_ptr(matrix)
-            );
+            glUniformMatrix4fv(mesh->m_material->m_shader->getUniformLocation("u_modelViewMatrix"), 1, GL_FALSE,  glm::value_ptr(matrix));
+            glUniformMatrix4fv(mesh->m_material->m_shader->getUniformLocation("u_modelViewProjectionMatrix"), 1,  GL_FALSE,  glm::value_ptr(matrix));
         }
 
+        // @TODO add support for instanced meshes using glDrawArraysInstanced and glDrawElementsInstanced
         if(mesh->m_indexBuffer->getCount() > 0) {
             glDrawElements(GL_TRIANGLES, mesh->m_indexBuffer->getCount(), GL_UNSIGNED_INT, 0);
         } else {
             glDrawArrays(GL_TRIANGLES, 0, mesh->m_vertexBuffer->getCount());
         }
-
-        // @TODO add support for instanced meshes using glDrawArraysInstanced and glDrawElementsInstanced
     }
+
+    if (m_useRenderpass) {
+    
+        /* Final render pass */
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glClear(GL_COLOR_BUFFER_BIT);
+        glDisable(GL_DEPTH_TEST);
+
+        m_fullscreenQuad.bind();
+        glBindTexture(GL_TEXTURE_2D, camera->m_frameBuffer.getTexture());
+        glDrawElements(GL_TRIANGLES, m_fullscreenQuad.m_indexBuffer->getCount(), GL_UNSIGNED_INT, 0);
+    }
+
 }
 
 void Renderer::clear() {

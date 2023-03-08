@@ -10,7 +10,6 @@
 
 class Renderer {
 public:
-    Material m_defaultShader = { "/shader/Basic" };
 
 	uint16_t m_frameBufferWidth = 0;
 	uint16_t m_frameBufferHeight = 0;
@@ -28,6 +27,12 @@ public:
 
 private:
 	std::vector<Ref<Mesh>> m_meshes = {};
+
+	bool m_useRenderpass = true;
+	Mesh m_fullscreenQuad;
+
+    Material m_defaultShader = { "/shader/Basic" };
+    Material m_screenShader = { "/shader/Basic.vert", "/shader/Renderpass.frag" };
 	
 };
 
