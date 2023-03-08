@@ -1,25 +1,40 @@
 #include "GeometryGenerator.h"
 
+// @TODO use raw arrays instead of vectors
+
 PrimitiveMesh::PrimitiveMesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices)
     : vertices(vertices), indices(indices)
 {}
 
 PrimitiveMesh GeometryGenerator::Plane(const float &length, const float &width) {
     
-    float x_dist = length/2;
-    float y_dist = width/2;
+    float x = 0.5f * length;
+    float y = 0.5f * width;
     
     std::vector<Vertex> geometry {
-        Vertex(glm::vec3( -x_dist, -y_dist, 0), glm::vec3(0.0f, 0.0f, 1.0f)),
-        Vertex(glm::vec3(  x_dist, -y_dist, 0), glm::vec3(0.0f, 0.0f, 1.0f)),
-        Vertex(glm::vec3( -x_dist,  y_dist, 0), glm::vec3(0.0f, 0.0f, 1.0f)),
-        Vertex(glm::vec3(  x_dist,  y_dist, 0), glm::vec3(0.0f, 0.0f, 1.0f)),
-    }; 
+        Vertex(glm::vec3(  x, -y, 0 ), glm::vec3( 0, 0, 1 ), glm::vec2( 1, 0 )),
+        Vertex(glm::vec3(  x,  y, 0 ), glm::vec3( 0, 0, 1 ), glm::vec2( 1, 1 )),
+        Vertex(glm::vec3( -x, -y, 0 ), glm::vec3( 0, 0, 1 ), glm::vec2( 0, 0 )),
+        Vertex(glm::vec3( -x,  y, 0 ), glm::vec3( 0, 0, 1 ), glm::vec2( 0, 1 )),
+    };
 
     std::vector<unsigned int> indices = {
-        0, 1, 2,
-        1, 3, 2
+        0, 1, 2, // Correct!
+        2, 1, 3,
     };
+
+    /* Flipped vertically */
+    // std::vector<Vertex> geometry {
+    //     Vertex(glm::vec3(  x, -y, 0 ), glm::vec3( 0, 0, 1 ), glm::vec2( 1, 1 )),
+    //     Vertex(glm::vec3(  x,  y, 0 ), glm::vec3( 0, 0, 1 ), glm::vec2( 1, 0 )),
+    //     Vertex(glm::vec3( -x, -y, 0 ), glm::vec3( 0, 0, 1 ), glm::vec2( 0, 1 )),
+    //     Vertex(glm::vec3( -x,  y, 0 ), glm::vec3( 0, 0, 1 ), glm::vec2( 1, 0 )),
+    // };
+
+    // std::vector<unsigned int> indices = {
+    //     0, 1, 2,
+    //     1, 3, 2
+    // };
 
     return PrimitiveMesh(geometry, indices);
 }
