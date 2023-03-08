@@ -19,6 +19,10 @@ Camera::Camera() {
 
 Camera::~Camera() {}
 
+void Camera::bind() const {
+    m_frameBuffer.bind();
+}
+
 void Camera::update(const float& time) {
 
     Mouse &mouse = Mouse::instance();
@@ -70,8 +74,12 @@ void Camera::update(const float& time) {
     m_viewProjectionMatrix = m_projectionMatrix * m_viewMatrix;
 }
 
-void Camera::setProjection(float frameBufferWidth, float frameBufferHeight) {
+void Camera::setSize(const float& frameBufferWidth, const float& frameBufferHeight) {
     m_projectionMatrix = glm::perspective(glm::radians(m_fov), (float) frameBufferWidth / (float) frameBufferHeight, 0.01f, 50.0f);
+
+    m_frameBuffer.invalidate();
+    m_frameBuffer.create(frameBufferWidth, frameBufferHeight);
+
 }
 
 void Camera::_autoRotate(const float& time) {

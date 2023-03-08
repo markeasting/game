@@ -24,7 +24,7 @@ Game::~Game() {
 
 void Game::onResize(int width, int height) {
     m_renderer.setupFramebuffer(width, height);
-    m_camera.setProjection(m_renderer.m_frameBufferWidth, m_renderer.m_frameBufferHeight);
+    m_camera.setSize(m_renderer.m_frameBufferWidth, m_renderer.m_frameBufferHeight);
 }
 
 void Game::registerScenes()

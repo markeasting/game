@@ -3,6 +3,7 @@
 #include "common_includes.h"
 
 #include "core/Object3D.h"
+#include "gfx/FrameBuffer.h"
 
 class Camera : public Object3D {
 public:
@@ -20,11 +21,15 @@ public:
     glm::mat4 m_projectionMatrix = glm::mat4(1.0f);
     glm::mat4 m_viewProjectionMatrix = glm::mat4(1.0f);
 
+    FrameBuffer m_frameBuffer; // @TODO use unique_ptr here?
+
     Camera();
     ~Camera();
 
+    void bind() const;
+
     void update(const float& time);
-    void setProjection(float frameBufferWidth, float frameBufferHeight);
+    void setSize(const float& frameBufferWidth, const float& frameBufferHeight);
 
 private:
 	GLFWwindow* window; // @TODO remove, this should not be here!
