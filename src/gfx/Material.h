@@ -3,6 +3,7 @@
 #include "common_includes.h"
 #include "gfx/Shader.h"
 #include "gfx/Uniforms.h"
+#include "gfx/Texture.h"
 
 #include <unordered_map>
 #include <vector>
@@ -14,7 +15,10 @@ public:
     
     std::unordered_map<std::string, Ref<IUniform>> uniforms = {};
 
+    std::vector<Ref<Texture>> textures = {};
+
     Material(const std::string& shaderBasePath, std::vector<Ref<IUniform>> uniforms = {});
+    Material(const std::string& vert, const std::string& frag, std::vector<Ref<IUniform>> uniforms = {});
     ~Material() = default;
 
     template <typename T = float>
@@ -35,6 +39,9 @@ public:
     }
 
     void assignUniform(Ref<IUniform> uniform);
+    
+    void assignTexture(Ref<Texture> texture);
+    void assignTexture(const char* source);
     
     void bind() const;
 

@@ -11,7 +11,7 @@ Shader::Shader(const std::string& vertexShaderPath, const std::string& fragmentS
     : m_vertexShaderPath(vertexShaderPath), m_fragmentShaderPath(fragmentShaderPath)
 {
     if(autoCompile) {
-        createProgram();
+        m_program = createProgram();
     }
 }
 
@@ -20,7 +20,7 @@ Shader::Shader(const std::string& vertexShaderBasePath, bool autoCompile) {
     m_fragmentShaderPath = vertexShaderBasePath + ".frag";
 
     if(autoCompile) {
-        createProgram();
+        m_program = createProgram();
     }
 }
 
@@ -66,27 +66,27 @@ GLuint Shader::createProgram() {
         return 0;
     }
 
-    m_program = glCreateProgram();
-    glAttachShader(m_program, vert);
-    glAttachShader(m_program, frag);
-    glLinkProgram(m_program);
-    glValidateProgram(m_program);
+    GLuint program_id = glCreateProgram();
+    glAttachShader(program_id, vert);
+    glAttachShader(program_id, frag);
+    glLinkProgram(program_id);
+    glValidateProgram(program_id);
     glDeleteShader(vert);
     glDeleteShader(frag);
 
     int program_linked = 0;
-    glGetProgramiv(m_program, GL_LINK_STATUS, &program_linked);
+    glGetProgramiv(program_id, GL_LINK_STATUS, &program_linked);
     if (program_linked == GL_FALSE) {
         GLsizei log_length = 0;
         GLchar message[1024];
-        glGetProgramInfoLog(m_program, 1024, &log_length, message);
+        glGetProgramInfoLog(program_id, 1024, &log_length, message);
         printf("[ERROR] Shader linking error: %s\n", message);
         return 0;
     }
 
-    // printf("[SUCCESS] Shader ID %u compiled.\n", m_program);
+    // printf("[SUCCESS] Shader ID %u compiled.\n", program_id);
 
-    return m_program;
+    return program_id;
 }
 
 int Shader::getUniformLocation(const std::string& name) {
