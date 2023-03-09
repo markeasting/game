@@ -23,8 +23,8 @@ Game::~Game() {
 }
 
 void Game::onResize(int width, int height) {
-    m_renderer.setupFramebuffer(width, height);
-    m_camera.setSize(m_renderer.m_frameBufferWidth, m_renderer.m_frameBufferHeight);
+    m_renderer.setSize(width, height);
+    m_camera.setSize(width, height);
 }
 
 void Game::registerScenes()

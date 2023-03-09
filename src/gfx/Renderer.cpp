@@ -25,33 +25,28 @@ Renderer::Renderer() {
 	// glStencilFunc(GL_EQUAL, 1, 0xFF);
 	// glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP); // Default, see docs for custom behavior
 
-    m_fullscreenQuad.m_vertexBuffer->setVertices({
+    std::vector<Vertex> geometry {
         Vertex(glm::vec3(  1, -1, 0 ), glm::vec3( 0, 0, 1 ), glm::vec2( 1, 0 )),
         Vertex(glm::vec3(  1,  1, 0 ), glm::vec3( 0, 0, 1 ), glm::vec2( 1, 1 )),
         Vertex(glm::vec3( -1, -1, 0 ), glm::vec3( 0, 0, 1 ), glm::vec2( 0, 0 )),
         Vertex(glm::vec3( -1,  1, 0 ), glm::vec3( 0, 0, 1 ), glm::vec2( 0, 1 )),
-    });
-    
-    m_fullscreenQuad.m_indexBuffer->setIndices({
+    };
+
+    std::vector<unsigned int> indices = {
         0, 1, 2,
         2, 1, 3,
-    });
+    };
+
+    m_fullscreenQuad.m_geometry = ref<Geometry>(geometry, indices);
 
     // @TODO move uniform settings to Shader? Then we don't need a material here
     m_fullscreenQuad.setMaterial(m_screenShader);
 
 }
 
-void Renderer::setupFramebuffer(const int& width, const int& height) {
-
-    m_frameBufferWidth = width;
-    m_frameBufferHeight = height;
-
-    // if (width == 0 || height == 0) {
-    //     glfwGetFramebufferSize(m_window, &m_frameBufferWidth, &m_frameBufferHeight);
-    // }
+void Renderer::setSize(const int& width, const int& height) {
     
-    glViewport(0, 0, m_frameBufferWidth, m_frameBufferHeight);
+    glViewport(0, 0, width, height);
 
 }
 
@@ -102,11 +97,13 @@ void Renderer::draw(Camera* camera) {
         }
 
         // @TODO add support for instanced meshes using glDrawArraysInstanced and glDrawElementsInstanced
-        if(mesh->m_indexBuffer->getCount() > 0) {
-            glDrawElements(GL_TRIANGLES, mesh->m_indexBuffer->getCount(), GL_UNSIGNED_INT, 0);
+        if(mesh->m_geometry->hasIndices()) {
+            glDrawElements(GL_TRIANGLES, mesh->m_geometry->m_indexBuffer->getCount(), GL_UNSIGNED_INT, 0);
         } else {
-            glDrawArrays(GL_TRIANGLES, 0, mesh->m_vertexBuffer->getCount());
+            glDrawArrays(GL_TRIANGLES, 0, mesh->m_geometry->m_vertexBuffer->getCount());
         }
+
+        mesh->unbind();
     }
 
     if (m_useRenderpass) {
@@ -118,7 +115,8 @@ void Renderer::draw(Camera* camera) {
 
         m_fullscreenQuad.bind();
         glBindTexture(GL_TEXTURE_2D, camera->m_frameBuffer.getTexture());
-        glDrawElements(GL_TRIANGLES, m_fullscreenQuad.m_indexBuffer->getCount(), GL_UNSIGNED_INT, 0);
+
+        glDrawElements(GL_TRIANGLES, m_fullscreenQuad.m_geometry->m_indexBuffer->getCount(), GL_UNSIGNED_INT, 0);
     }
 
 }

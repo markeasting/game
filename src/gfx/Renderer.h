@@ -11,14 +11,11 @@
 class Renderer {
 public:
 
-	uint16_t m_frameBufferWidth = 0;
-	uint16_t m_frameBufferHeight = 0;
-
 	Renderer();
 	Renderer(const Renderer&) = delete;
 	~Renderer();
 	
-	void setupFramebuffer(const int& width, const int& height);
+	void setSize(const int& width, const int& height);
 	
 	void add(Ref<Mesh> mesh); // @TODO move to scene!
 
