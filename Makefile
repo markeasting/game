@@ -122,11 +122,11 @@ DEBUG_TARGET := $(DBGDIR)/$(TARGET)
 DEBUG := -O0 -g
 DEBUG_OBJECTS := $(patsubst $(SRCDIR)/%, $(DBGOBJ)/%, $(SOURCES:.$(SRCEXT)=.o))
 
-# Release build settings
+# Release build settings -- DNDEBUG will strip out all assert() calls
 RELDIR := $(BUILDDIR)/release
 RELOBJ := $(RELDIR)/obj
 RELEASE_TARGET := $(RELDIR)/$(TARGET)
-RELEASE := -O2 -ffast-math
+RELEASE := -O2 -ffast-math -DNDEBUG
 RELEASE_OBJECTS := $(patsubst $(SRCDIR)/%, $(RELOBJ)/%, $(SOURCES:.$(SRCEXT)=.o))
 
 # Targets
