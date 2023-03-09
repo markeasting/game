@@ -30,8 +30,8 @@ template<typename T>
 using Unique = std::unique_ptr<T>;
 
 template<typename T, typename... _Args>
-Ref<T> ref(_Args&&... obj) {
-    return std::make_shared<T>(obj...);
+Ref<T> ref(_Args&&... args) {
+    return std::make_shared<T>(args...);
 }
 
 // template<typename T>
