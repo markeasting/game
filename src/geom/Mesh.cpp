@@ -1,32 +1,31 @@
 #include "geom/Mesh.h"
 
 Mesh::Mesh() : 
-    m_vertexBuffer(std::make_shared<VertexBuffer>()), 
-    m_indexBuffer(std::make_shared<IndexBuffer>()), 
+    m_geometry(nullptr),
     m_material(nullptr) 
 {}
 
-Mesh::Mesh(const PrimitiveMesh& primitiveMesh) : 
-    m_vertexBuffer(std::make_shared<VertexBuffer>(primitiveMesh.vertices)), 
-    m_indexBuffer(std::make_shared<IndexBuffer>(primitiveMesh.indices)), 
-    m_material(nullptr) 
+Mesh::Mesh(const PrimitiveMesh& primitiveMesh) :
+    m_geometry(ref<Geometry>(primitiveMesh))
 {}
 
-Mesh::Mesh(const PrimitiveMesh& primitiveMesh, const Material& material) : 
-    m_vertexBuffer(std::make_shared<VertexBuffer>(primitiveMesh.vertices)), 
-    m_indexBuffer(std::make_shared<IndexBuffer>(primitiveMesh.indices)), 
-    m_material(std::make_shared<Material>(material))
+Mesh::Mesh(const PrimitiveMesh& primitiveMesh, const Material& material) :
+    m_geometry(ref<Geometry>(primitiveMesh)),
+    m_material(ref<Material>(material))
 {}
 
 void Mesh::bind() const {
-    m_vertexBuffer->bind();
-    m_indexBuffer->bind();
+    assert(m_geometry != nullptr);
+    assert(m_material != nullptr);
+
+    m_geometry->bind();
     m_material->bind();
 }
 
 void Mesh::unbind() const {
-    m_vertexBuffer->unbind();
-    m_indexBuffer->unbind();
+    assert(m_geometry != nullptr);
+    
+    m_geometry->unbind();
 }
 
 void Mesh::setMaterial(const Material& material) {

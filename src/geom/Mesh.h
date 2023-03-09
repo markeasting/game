@@ -2,17 +2,20 @@
 
 #include "common_includes.h"
 #include "gfx/Vertex.h"
-#include "gfx/VertexBuffer.h"
-#include "gfx/IndexBuffer.h"
+// #include "gfx/VertexBuffer.h"
+// #include "gfx/IndexBuffer.h"
 #include "gfx/Material.h"
 #include "geom/PrimitiveMesh.h"
+#include "geom/Geometry.h"
 #include "core/Object3D.h"
 
 struct Mesh : public Object3D {
 public: 
 
-    Ref<VertexBuffer> m_vertexBuffer = nullptr;
-    Ref<IndexBuffer> m_indexBuffer = nullptr;
+    Ref<Geometry> m_geometry = nullptr;
+
+    // Ref<VertexBuffer> m_vertexBuffer = nullptr;
+    // Ref<IndexBuffer> m_indexBuffer = nullptr;
     Ref<Material> m_material = nullptr;
     
     Mesh();
