@@ -35,7 +35,7 @@ int main() {
     game.m_renderer.add(floor);
 
     auto myMesh = ref<BoxMesh>(0.5f);
-    myMesh->setPosition({ 3.0f, 2.0f, 0.0f });
+    myMesh->setPosition({ 2.0f, 0.5f, 0.0f });
     myMesh->setMaterial(colorMaterial);
     game.m_renderer.add(myMesh);
 
@@ -58,7 +58,7 @@ int main() {
     while (game.isRunning()) {
         game.update();
 
-        // tetra->setRotation({ game.getTime() * 100.0f, 0.0f, 0.0f });
+        tetra->setRotation({ game.getTime() * 100.0f, 0.0f, 0.0f });
 
         float oscillator = sin(game.getTime() * 1.5) / 2.0f + 0.5f;
         colorMaterial.setUniform("u_color", glm::vec4(0.0f, oscillator, 0.8f, 1.0f));
