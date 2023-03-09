@@ -15,6 +15,7 @@
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
+            "preLaunchTask": "make:debug"
             // "miDebuggerPath": "lldb",
             // "setupCommands": [
             //     {
