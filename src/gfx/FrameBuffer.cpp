@@ -7,22 +7,19 @@ FrameBuffer::FrameBuffer() {
 
 }
 
-
 void FrameBuffer::create(const float& width, const float& height) {
+
+    this->invalidate();
 
     glGenFramebuffers(1, &m_fbo);
     glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
 
-    // GLuint framebufferTexture;
-    // glGenTextures(1, &framebufferTexture);
-    // glBindTexture(GL_TEXTURE_2D, framebufferTexture);
-    
     /* Generate texture */
     glGenTextures(1, &m_textureColorbuffer);
     glBindTexture(GL_TEXTURE_2D, m_textureColorbuffer);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
     // float borderColor[] = { 1.0f, 0.0f, 0.0f, 1.0f };
@@ -42,18 +39,20 @@ void FrameBuffer::create(const float& width, const float& height) {
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_rbo);
 
     if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        Log("ERROR::FRAMEBUFFER:: Framebuffer is not complete!", LogLevel::ERROR);
+        Log("Framebuffer is not complete!", LogLevel::ERROR);
 
     /* Unbind the created framebuffer (rebind default 0) to make sure we're not using the wrong framebuffer */
-    /* If this results in a blank screen, it could be that the default framebuffer has a diffent ID */
-    /* In that case, use glGetIntegerv(GL_FRAMEBUFFER_BINDING, &oldFBO); */
+    /* If this results in a blank screen, it could be that the default framebuffer has a diffent ID! */
+    /* In that case, get the default ID by calling glGetIntegerv(GL_FRAMEBUFFER_BINDING, &oldFBO); */
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     
 }
 
 void FrameBuffer::invalidate() {
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);   
-    // glDeleteFramebuffers(1, &m_fbo);
+    if (m_fbo != 0) {
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);   
+        glDeleteFramebuffers(1, &m_fbo);
+    }
 }
 
 void FrameBuffer::bind() const {

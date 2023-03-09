@@ -77,7 +77,6 @@ void Camera::update(const float& time) {
 void Camera::setSize(const float& frameBufferWidth, const float& frameBufferHeight) {
     m_projectionMatrix = glm::perspective(glm::radians(m_fov), (float) frameBufferWidth / (float) frameBufferHeight, 0.01f, 50.0f);
 
-    m_frameBuffer.invalidate();
     m_frameBuffer.create(frameBufferWidth, frameBufferHeight);
 
 }
