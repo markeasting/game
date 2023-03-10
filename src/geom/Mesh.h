@@ -21,6 +21,7 @@ public:
     Mesh();
     Mesh(const PrimitiveMesh& primitiveMesh);
     Mesh(const PrimitiveMesh& primitiveMesh, const Material& material);
+    Mesh(const Geometry& geometry, const Material& material);
     virtual ~Mesh() = default;
 
     void setMaterial(const Material& material);

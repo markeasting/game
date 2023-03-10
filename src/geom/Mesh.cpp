@@ -14,6 +14,11 @@ Mesh::Mesh(const PrimitiveMesh& primitiveMesh, const Material& material) :
     m_material(ref<Material>(material))
 {}
 
+Mesh::Mesh(const Geometry& m_geometry, const Material& material) :
+    m_geometry(ref<Geometry>(m_geometry)),
+    m_material(ref<Material>(material))
+{}
+
 void Mesh::bind() const {
     assert(m_geometry != nullptr);
     assert(m_material != nullptr);
