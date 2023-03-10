@@ -20,17 +20,21 @@ public:
     //     buffer->set(value);
     // };
 
+    void setData(Ref<VertexBuffer> vbo, Ref<IndexBuffer> ibo = nullptr);
+
     void bind() const;
     void unbind() const;
 
     bool hasIndices() const { return m_indexBuffer != nullptr; }
 
+protected:
+    Ref<IndexBuffer> m_indexBuffer = nullptr;
+    Ref<VertexBuffer> m_vertexBuffer = nullptr;
+
 private:
     friend Renderer;
 
     GLuint m_vao = 0;
-
-    Ref<IndexBuffer> m_indexBuffer = nullptr;
-    Ref<VertexBuffer> m_vertexBuffer = nullptr;
+    // bool m_attribPointerSet = false;
 
 };
