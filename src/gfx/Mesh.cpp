@@ -1,23 +1,20 @@
-#include "geom/Mesh.h"
+
+#include "gfx/Mesh.h"
 
 Mesh::Mesh() : 
     m_geometry(nullptr),
     m_material(nullptr) 
 {}
 
-Mesh::Mesh(const PrimitiveMesh& primitiveMesh) :
-    m_geometry(ref<Geometry>(primitiveMesh))
-{}
-
-Mesh::Mesh(const PrimitiveMesh& primitiveMesh, const Material& material) :
-    m_geometry(ref<Geometry>(primitiveMesh)),
-    m_material(ref<Material>(material))
-{}
-
 Mesh::Mesh(const Geometry& m_geometry, const Material& material) :
     m_geometry(ref<Geometry>(m_geometry)),
     m_material(ref<Material>(material))
 {}
+
+Mesh::Mesh(const Geometry& m_geometry) :
+    m_geometry(ref<Geometry>(m_geometry))
+{}
+
 
 void Mesh::bind() const {
     assert(m_geometry != nullptr);
