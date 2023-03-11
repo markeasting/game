@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common_includes.h"
+#include "common.h"
 #include "app/Window.h"
 #include "core/SceneManager.h"
 #include "camera/Camera.h"

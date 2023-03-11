@@ -1,5 +1,5 @@
 
-#include "common_includes.h"
+#include "common.h"
 #include "gfx/Uniforms.h"
 
 template<> void Uniform<int>       ::bind() { if(m_needsUpdate) { m_needsUpdate = false; glUniform1i(m_location, m_value); }}

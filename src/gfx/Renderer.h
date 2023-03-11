@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common_includes.h"
+#include "common.h"
 #include "gfx/Shader.h"
 #include "gfx/Uniforms.h"
 #include "gfx/Mesh.h"

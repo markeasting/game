@@ -1,5 +1,5 @@
 
-#include "common_includes.h"
+#include "common.h"
 #include "gfx/Material.h"
 
 Material::Material(const std::string& shaderBasePath, std::vector<Ref<IUniform>> uniforms) {

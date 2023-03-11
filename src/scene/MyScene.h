@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common_includes.h"
+#include "common.h"
 #include "scene/Scene.h"
 
 class MyScene final : public Scene
