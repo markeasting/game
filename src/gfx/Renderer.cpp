@@ -57,7 +57,7 @@ void Renderer::add(Ref<Mesh> mesh) {
         mesh->setMaterial(m_defaultShader);
 
     if (mesh->m_material->m_shader->m_program == 0) {
-        Log("Texture failed to compile, using default shader");
+        Log("Shader failed to compile, using default shader");
         mesh->setMaterial(m_defaultShader);
     }
 
