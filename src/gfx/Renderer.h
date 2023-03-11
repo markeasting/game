@@ -1,12 +1,10 @@
 #pragma once
 
 #include "common_includes.h"
-// #include "util/Filesystem.h"
 #include "gfx/Shader.h"
 #include "gfx/Uniforms.h"
-#include "geom/Mesh.h"
+#include "gfx/Mesh.h"
 #include "camera/Camera.h"
-// #include "window/WindowEventHandler.h"
 
 class Renderer {
 public:
@@ -28,8 +26,8 @@ private:
 	bool m_useRenderpass = true;
 	Mesh m_fullscreenQuad;
 
-    Material m_defaultShader = { "/shader/Basic" };
-    Material m_screenShader = { "/shader/Basic.vert", "/shader/Renderpass.frag" };
+    Material m_defaultShader = { "Basic" };
+    Material m_screenShader = { "Basic.vert", "Renderpass.frag" };
 	
 };
 
