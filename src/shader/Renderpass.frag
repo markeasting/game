@@ -1,4 +1,5 @@
 #version 330 core
+out vec4 FragColor;
 
 in vec2 uv;
 
@@ -10,6 +11,6 @@ void main() {
 
 	// color.g = 0.0;
 
-	gl_FragColor = color;
+	FragColor = color;
 
 }
