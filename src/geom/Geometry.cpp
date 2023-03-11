@@ -20,15 +20,6 @@ Geometry::Geometry(Ref<VertexBuffer> vbo, Ref<IndexBuffer> ibo)
     this->setData(vbo, ibo);
 }
 
-Geometry::Geometry(const PrimitiveMesh& primitiveMesh) 
-: Geometry() /* Delegate VAO creation to base constructor */
-{
-    this->setData(
-        ref<VertexBuffer>(primitiveMesh.vertices), 
-        ref<IndexBuffer>(primitiveMesh.indices)
-    );
-}
-
 Geometry::Geometry(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices) 
 : Geometry() /* Delegate VAO creation to base constructor */
 {

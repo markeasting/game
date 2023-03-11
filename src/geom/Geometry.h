@@ -1,7 +1,6 @@
 #pragma once
 
 #include "gfx/BufferObject.h"
-#include "geom/PrimitiveMesh.h"
 
 class Renderer;
 
@@ -12,7 +11,6 @@ public:
     Geometry();
     Geometry(Ref<VertexBuffer> vbo, Ref<IndexBuffer> ibo = nullptr);
     Geometry(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices = {});
-    Geometry(const PrimitiveMesh& primitiveMesh);
 
     // template<typename T>
     // void setAttribute(BufferObject<T> attribute) {
