@@ -8,13 +8,11 @@
 
 class Shader {
 public:
-    std::string m_vertexShaderPath;
-    std::string m_fragmentShaderPath;
     GLuint m_program = 0;
 
     Shader(); 
-    Shader(const std::string& vertexShaderPath, const std::string& fragmentShaderPath, bool autoCompile = true);
-    Shader(const std::string& vertexShaderBasePath, bool autoCompile = true);
+    Shader(const std::string& vertexShader, const std::string& fragmentShader, bool autoCompile = true);
+    Shader(const std::string& shaderName, bool autoCompile = true);
     ~Shader();
 
     int getUniformLocation(const std::string& name);
@@ -23,8 +21,14 @@ public:
     const void unBind() const;
 
 private:
+
+    static constexpr const char* shaderBasePath = "/shader/";
+
+    std::string m_vertexShaderPath;
+    std::string m_fragmentShaderPath;
+
     std::unordered_map<std::string, int> uniformLocationCache = {};
 
-    GLuint compile(const std::string& shaderSource, unsigned int type);
     GLuint createProgram();
+    GLuint compile(const std::string& shaderSource, unsigned int type);
 };
