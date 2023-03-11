@@ -22,7 +22,7 @@ public:
 
 private:
 
-    static constexpr const char* shaderBasePath = "/shader/";
+    static constexpr const char* shaderBasePath = "/assets/shader/";
 
     std::string m_vertexShaderPath;
     std::string m_fragmentShaderPath;

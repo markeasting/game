@@ -157,8 +157,8 @@ clean:
 	rm -rf $(DBGOBJ)
 
 copy_shaders_debug:
-	rsync -rup src/shader $(DBGDIR)
+	rsync -rup assets $(DBGDIR)
 copy_shaders_release:
-	rsync -rup src/shader $(RELDIR)
+	rsync -rup assets $(RELDIR)
 
 .PHONY: all debug release clean copy_shaders
