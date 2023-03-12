@@ -15,6 +15,7 @@ public:
 
     virtual ~IUniform() = default;
 
+    virtual void set() {};
     virtual void bind() {};
 
 protected:
@@ -25,17 +26,16 @@ template <typename T>
 class Uniform : public IUniform {
 public:
 
+    T m_value;
+
     Uniform(const std::string& name, const T &value = {}) 
         : IUniform(name), m_value(value) {}
-
-    virtual void bind();
 
     virtual void set(T value) { 
         m_needsUpdate = true; 
         m_value = value;
     }
-
-private:
-    T m_value;
+    
+    virtual void bind() {};
 
 };
