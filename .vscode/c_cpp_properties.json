@@ -2,7 +2,8 @@
     "env": {
         "myDefaultIncludePath": [
             "${workspaceFolder}/src/**",
-            "${workspaceFolder}/lib/glad/include"
+            "${workspaceFolder}/lib/glad/include",
+            "${workspaceFolder}/lib/stb_image"
         ]
     },
     "configurations": [
