@@ -15,6 +15,13 @@ Game game;
 int main() {
     irrklang::ISoundEngine* engine = irrklang::createIrrKlangDevice();
 
+    // engine->play2D("assets/audio/2019.wav");
+    engine->play3D(
+        "assets/audio/LoopDeLoop_21.wav", 
+        irrklang::vec3df(0.0f, 0.5f, 3.0f),
+        true
+    );
+
     auto lightDirection = ref<Uniform<glm::vec3>>("u_lightDirection", glm::vec3(0.5f, 0.0f, 2.0f));
 
     Material colorMaterial = Material("Color");
@@ -67,6 +74,20 @@ int main() {
 
         float oscillator = sin(game.getTime() * 1.5) / 2.0f + 0.5f;
         colorMaterial.setUniform("u_color", glm::vec4(0.0f, oscillator, 0.8f, 1.0f));
+
+        /* Update audio listener position */
+        /* Somehow it sounds better when lookAt is negated? (But then channels are flipped)*/
+        auto camPos = game.m_camera.getPosition();
+        auto lookAt = glm::normalize(game.m_camera.m_lookAtPos - camPos);
+
+        Log(camPos, "pos");
+        Log(lookAt, "lookAt");
+        Log(" ");
+
+        engine->setListenerPosition(
+            irrklang::vec3df(camPos.x, camPos.y, camPos.z),
+            irrklang::vec3df(lookAt.x, lookAt.y, lookAt.z)
+        );
     }
 
     return 0;

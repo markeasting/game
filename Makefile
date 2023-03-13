@@ -11,13 +11,15 @@ TARGET := game
 CXX := g++
 CXXFLAGS := -std=c++17 -MMD
 INCLUDES := -I${SRCDIR} -Ilib/glad/include -Ilib/stb_image -Ilib/irrKlang-1.6.0/include
-LDFLAGS := -lglfw -lIrrKlang -Wl,-rpath='$$ORIGIN'
+LDFLAGS := -lglfw -lIrrKlang
 
 # Platform specific settings
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S), Darwin)
+	# LDFLAGS += -rpath @executable_path
 	LDFLAGS += -framework OpenGL -Llib/irrKlang-1.6.0/bin/macosx-gcc
 else
+	LDFLAGS += -Wl,-rpath='$$ORIGIN'
 	LDFLAGS += -Llib/irrKlang-1.6.0/bin/linux-gcc-64
 endif
 

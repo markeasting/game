@@ -20,3 +20,6 @@ The libraries below are also present in the `lib` directory.
 `make -j 4` 
 
 Available targets: `debug` and `release`
+
+## Notes
+- on MacOS, irrKlang is loaded by placing the .dylib files in /usr/local/lib, but they should be included in an App structure, see `-rpath`. 
