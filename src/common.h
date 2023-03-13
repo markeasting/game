@@ -7,9 +7,9 @@
 #include <iostream>
 #include <memory>
 
-/* Includes */
+/* Libraries / includes */
+#include <SDL.h>
 #include <glad/glad.h>
-#include <GLFW/glfw3.h>
 
 #define GLM_FORCE_INTRINSICS
 #include <glm/glm.hpp>

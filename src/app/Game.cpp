@@ -1,7 +1,6 @@
 #include "app/Game.h"
 #include "scene/MyScene.h"
 #include "event/EventEmitter.h"
-#include "input/Mouse.h"
 
 /* Initialize static member */
 EventEmitter Game::events;
@@ -13,9 +12,9 @@ Game::Game() {
 
     Game::onResize(m_window.m_frameBufferWidth, m_window.m_frameBufferHeight);
 
-    Events.on("frameBufferResize", [&] (GLFWwindow* window, int width, int height) {
-        Game::onResize(width, height);
-    });
+    // Events.on("frameBufferResize", [&] (GLFWwindow* window, int width, int height) {
+    //     Game::onResize(width, height);
+    // });
 }
 
 Game::~Game() {
@@ -41,13 +40,23 @@ void Game::registerScenes()
 void Game::update()
 {
 
-    // @TODO move to InputHandler
-    glfwPollEvents();
-    Mouse &mouse = Mouse::instance();
-    mouse.update(m_window.m_window);
+    while (SDL_PollEvent(&m_event)) {
+        switch (m_event.type) {
+        case SDL_QUIT:
+            m_isRunning = false;
+            break;
+        case SDL_KEYDOWN:
+            switch (m_event.key.keysym.sym) {
+            case SDLK_ESCAPE:
+                m_isRunning = false;
+                break;
+            }
+            break;
+        }
+    }
 
     m_prevTime = m_time;
-    m_time = glfwGetTime();
+    m_time = SDL_GetTicks() / 1000.0f;
     m_deltaTime = m_time - m_prevTime;
     
     /* Handle scenes */
@@ -59,12 +68,14 @@ void Game::update()
     m_window.swapBuffers();
 }
 
-SceneManager Game::getSceneManager() const
-{
+SceneManager Game::getSceneManager() const {
     return m_sceneManager;
 }
 
-bool Game::isRunning() const
-{
-    return m_window.isActive();
+bool Game::isRunning() const {
+    return m_isRunning;
+}
+
+void Game::quit() const {
+    SDL_Quit();
 }

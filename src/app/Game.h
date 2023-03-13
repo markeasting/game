@@ -4,7 +4,6 @@
 #include "app/Window.h"
 #include "core/SceneManager.h"
 #include "camera/Camera.h"
-#include "input/Mouse.h"
 #include "gfx/Renderer.h"
 #include "event/EventEmitter.h"
 
@@ -22,7 +21,6 @@ public:
     Renderer m_renderer;
     Camera m_camera;
 
-    static Mouse mouse;
     static EventEmitter events;
     
     Game();
@@ -30,6 +28,7 @@ public:
 
     void update();
     bool isRunning() const;
+    void quit() const;
 
     SceneManager getSceneManager() const;
     void registerScenes();
@@ -43,6 +42,9 @@ private:
     float m_time = 0;
     float m_prevTime = 0;
     float m_deltaTime = 0;
+
+    SDL_Event m_event;
+    bool m_isRunning = true;
 
     SceneManager m_sceneManager;
 };

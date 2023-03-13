@@ -32,7 +32,7 @@ public:
     void setSize(float frameBufferWidth, float frameBufferHeight);
 
 private:
-	GLFWwindow* window; // @TODO remove, this should not be here!
+	// GLFWwindow* window; // @TODO remove, this should not be here!
 
     glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
     glm::vec3 front = glm::vec3(0.0f, 0.0f, -1.0f);

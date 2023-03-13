@@ -2,6 +2,7 @@
     "env": {
         "myDefaultIncludePath": [
             "${workspaceFolder}/src/**",
+            "${workspaceFolder}/lib/SDL2/include",
             "${workspaceFolder}/lib/glad/include",
             "${workspaceFolder}/lib/stb_image"
         ]

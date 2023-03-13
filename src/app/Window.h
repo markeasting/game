@@ -1,7 +1,6 @@
 #pragma once
 
 #include "common.h"
-#include "input/Mouse.h"
 
 struct WindowConfig {
     const char* windowTitle = "MOI";
@@ -15,7 +14,7 @@ public:
 
     WindowConfig m_config;
 
-    GLFWwindow* m_window;
+    SDL_Window* m_window;
     Window* self = this;
 
     int m_windowWidth = 0;
@@ -27,6 +26,5 @@ public:
     ~Window();
 
     void swapBuffers();     // @TODO inline these
-    bool isActive() const;  // @TODO inline these
 
 };

@@ -58,6 +58,7 @@ int main() {
     game.m_renderer.add(overlay);
 
     while (game.isRunning()) {
+
         game.update();
 
         tetra->setRotation({ game.getTime() * 100.0f, 0.0f, 0.0f });
@@ -65,6 +66,8 @@ int main() {
         float oscillator = sin(game.getTime() * 1.5) / 2.0f + 0.5f;
         colorMaterial.setUniform("u_color", glm::vec4(0.0f, oscillator, 0.8f, 1.0f));
     }
+
+    game.quit();
 
     return 0;
 }
