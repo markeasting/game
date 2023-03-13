@@ -7,7 +7,7 @@ FrameBuffer::FrameBuffer() {
 
 }
 
-void FrameBuffer::create(const float& width, const float& height) {
+void FrameBuffer::create(float width, float height) {
 
     this->invalidate();
 

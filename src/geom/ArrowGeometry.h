@@ -5,12 +5,12 @@
 class ArrowGeometry : public Geometry {
 public:
 
-    ArrowGeometry(const float& size = 1.0f) {
+    ArrowGeometry(float size = 1.0f) {
         this->generate(size);
     };
 
 private:
-    void generate(const float& size) {
+    void generate(float size) {
 
         std::vector<Vertex> vertices = { 
             Vertex(glm::vec3(0, 0, 0)), Vertex(glm::vec3(0, size, 0)),

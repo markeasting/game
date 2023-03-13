@@ -5,17 +5,17 @@
 class BoxGeometry : public Geometry {
 public:
 
-    BoxGeometry(const float& size = 1.0f) {
+    BoxGeometry(float size = 1.0f) {
         this->generate(size, size, size);
     }
     
-    BoxGeometry(const float& width, const float& height, const float& depth) {
+    BoxGeometry(float width, float height, float depth) {
         this->generate(width, height, depth);
     }
     
 
 private:
-    void generate(const float& width, const float& height, const float& depth) {
+    void generate(float width, float height, float depth) {
         
         const float x_dist = 0.5f * width;
         const float y_dist = 0.5f * height;

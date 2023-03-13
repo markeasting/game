@@ -5,15 +5,15 @@
 class PlaneGeometry : public Geometry {
 public:
 
-    PlaneGeometry(const float& size = 1.0f) {
+    PlaneGeometry(float size = 1.0f) {
         this->generate(size, size);
     };
-    PlaneGeometry(const float& width, const float& height) {
+    PlaneGeometry(float width, float height) {
         this->generate(width, height);
     };
 
 private:
-    void generate(const float& width, const float& height) {
+    void generate(float width, float height) {
 
         float x = 0.5f * width;
         float y = 0.5f * height;

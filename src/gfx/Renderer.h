@@ -13,7 +13,7 @@ public:
 	Renderer(const Renderer&) = delete;
 	~Renderer();
 	
-	void setSize(const int& width, const int& height);
+	void setSize(int width, int height);
 	
 	void add(Ref<Mesh> mesh); // @TODO move to scene!
 

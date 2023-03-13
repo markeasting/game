@@ -19,16 +19,16 @@ public:
     // https://levelup.gitconnected.com/how-to-implement-method-chaining-in-c-3ec9f255972a
     void add(Ref<Object3D> object);
     
-    void setPosition(glm::vec3 position);
+    void setPosition(const glm::vec3& position);
 
     void setRotation(const glm::vec3& euler);
     void setRotation(const glm::quat& rotation);
     
-    void setScale(const float& uniformScale);
+    void setScale(float uniformScale);
     void setScale(const glm::vec3& scale);
     
     void translate(glm::vec3 translation);
-    void rotate(float angle, glm::vec3 direction);
+    void rotate(float angle, const glm::vec3& direction);
 
     glm::vec3 getPosition();
     glm::quat getRotation();

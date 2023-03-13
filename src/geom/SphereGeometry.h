@@ -5,12 +5,12 @@
 class SphereGeometry : public Geometry {
 public:
 
-    SphereGeometry(const float &size = 1.0f, const unsigned int& segments = 20) {
+    SphereGeometry(float size = 1.0f, unsigned int segments = 20) {
         this->generate(size, segments);
     };
 
 private:
-    void generate(const float &size = 1.0f, const unsigned int& segments = 20) {
+    void generate(float size = 1.0f, unsigned int segments = 20) {
 
         // http://www.songho.ca/opengl/gl_sphere.html
         float radius = size/2;

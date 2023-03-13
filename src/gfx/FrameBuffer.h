@@ -7,7 +7,7 @@ public:
 
     FrameBuffer();
 
-    void create(const float& width, const float& height);
+    void create(float width, float height);
     void invalidate();
 
     void bind() const;

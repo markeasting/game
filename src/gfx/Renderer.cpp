@@ -44,7 +44,7 @@ Renderer::Renderer() {
 
 }
 
-void Renderer::setSize(const int& width, const int& height) {
+void Renderer::setSize(int width, int height) {
     
     glViewport(0, 0, width, height);
 

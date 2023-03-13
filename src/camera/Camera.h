@@ -28,8 +28,8 @@ public:
 
     void bind() const;
 
-    void update(const float& time);
-    void setSize(const float& frameBufferWidth, const float& frameBufferHeight);
+    void update(float time);
+    void setSize(float frameBufferWidth, float frameBufferHeight);
 
 private:
 	GLFWwindow* window; // @TODO remove, this should not be here!
@@ -38,6 +38,6 @@ private:
     glm::vec3 front = glm::vec3(0.0f, 0.0f, -1.0f);
     glm::vec3 right = glm::vec3(1.0f, 0.0f, 0.0f);
     
-    void _autoRotate(const float& time);
+    void _autoRotate(float time);
 
 };

@@ -27,7 +27,7 @@ glm::vec3 Object3D::getScale() {
     return m_scale;
 }
 
-void Object3D::setPosition(glm::vec3 position) {
+void Object3D::setPosition(const glm::vec3& position) {
     m_position = position;
     m_worldPosMatrixNeedsUpdate = true;
 }
@@ -50,7 +50,7 @@ void Object3D::setRotation(const glm::vec3& euler) {
 
 }
 
-void Object3D::setScale(const float& uniformScale) {
+void Object3D::setScale(float uniformScale) {
     setScale(glm::vec3(uniformScale));
 }
 
@@ -64,7 +64,7 @@ void Object3D::translate(glm::vec3 translation) {
     m_worldPosMatrixNeedsUpdate = true;
 }
 
-void Object3D::rotate(float angle, glm::vec3 direction) {
+void Object3D::rotate(float angle, const glm::vec3& direction) {
     m_rotation = glm::rotate(m_rotation, glm::radians(angle), direction);
     m_rotation = glm::normalize(m_rotation);
     m_worldPosMatrixNeedsUpdate = true;

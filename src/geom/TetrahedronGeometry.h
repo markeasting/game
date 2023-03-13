@@ -5,12 +5,12 @@
 class TetrahedronGeometry : public Geometry {
 public:
 
-    TetrahedronGeometry(const float& size = 1.0f) {
+    TetrahedronGeometry(float size = 1.0f) {
         this->generate(size);
     };
 
 private:
-    void generate(const float& size) {
+    void generate(float size) {
 
         float sqrt8over9 = 0.9428090415820633658 * size;
         float sqrt2over9 = 0.4714045207910316829 * size;
