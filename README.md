@@ -3,13 +3,13 @@ The libraries below are also present in the `lib` directory.
 
 ## MacOS
 
-`brew install glfw`
+`brew install sdl2`
 
 `brew install glm`
 
 ## Linux
 
-`sudo apt install libglfw3 libglfw3-dev`
+`sudo apt-get install libsdl2-2.0-0 apt-get install libsdl2-dev`
 
 `sudo apt install libglm-dev`
 
