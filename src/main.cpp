@@ -1,4 +1,6 @@
 
+#include <irrKlang.h>
+
 #include "common.h"
 
 #include "app/Game.h"
@@ -11,6 +13,7 @@ EventEmitter Events;
 Game game;
 
 int main() {
+    irrklang::ISoundEngine* engine = irrklang::createIrrKlangDevice();
 
     auto lightDirection = ref<Uniform<glm::vec3>>("u_lightDirection", glm::vec3(0.5f, 0.0f, 2.0f));
 

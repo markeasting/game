@@ -3,7 +3,8 @@
         "myDefaultIncludePath": [
             "${workspaceFolder}/src/**",
             "${workspaceFolder}/lib/glad/include",
-            "${workspaceFolder}/lib/stb_image"
+            "${workspaceFolder}/lib/stb_image",
+            "${workspaceFolder}/lib/irrKlang-1.6.0/include"
         ]
     },
     "configurations": [
