@@ -101,7 +101,7 @@ TARGET := game
 # The -MMD flag ensures dependency files (.d) are created
 CXX := g++
 CXXFLAGS := -std=c++17 -MMD
-INCLUDES := -Ilib/glad/include -I${SRCDIR}
+INCLUDES := -I${SRCDIR} -Ilib/glad/include -Ilib/stb_image 
 LDFLAGS := -lglfw
 
 # Platform specific settings
@@ -161,4 +161,4 @@ copy_shaders_debug:
 copy_shaders_release:
 	rsync -rup assets $(RELDIR)
 
-.PHONY: all debug release clean copy_shaders
+.PHONY: all debug release clean copy_shaders_debug copy_shaders_release

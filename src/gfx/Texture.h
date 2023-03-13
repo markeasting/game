@@ -2,7 +2,7 @@
 
 #define STB_IMAGE_STATIC
 #define STB_IMAGE_IMPLEMENTATION
-#include "util/stb_image.h"
+#include "stb_image.h"
 
 #include "common.h"
 
