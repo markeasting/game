@@ -4,6 +4,7 @@
 
 #include "core/Object3D.h"
 #include "gfx/FrameBuffer.h"
+#include "input/KeyboardHandler.h"
 
 class Camera : public Object3D {
 public:
@@ -26,18 +27,15 @@ public:
     Camera();
     ~Camera();
 
+    void setSize(float frameBufferWidth, float frameBufferHeight);
     void bind() const;
 
-    void update(float time);
-    void setSize(float frameBufferWidth, float frameBufferHeight);
+    void update(float time, const KeyboardHandler& keyboard);
 
 private:
-	// GLFWwindow* window; // @TODO remove, this should not be here!
 
     glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
     glm::vec3 front = glm::vec3(0.0f, 0.0f, -1.0f);
     glm::vec3 right = glm::vec3(1.0f, 0.0f, 0.0f);
-    
-    void _autoRotate(float time);
 
 };
