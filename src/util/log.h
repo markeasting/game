@@ -3,7 +3,7 @@
 
 /* @TODO use printf */
 
-enum LogLevel { DEBUG, ERROR };
+enum LogLevel { NONE, ERROR, DEBUG };
 
 void Log(const std::string& msg, LogLevel&& logLevel = LogLevel::DEBUG, const std::string& origin = "");
 

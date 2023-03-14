@@ -1,5 +1,11 @@
 #pragma once
 
+#ifdef NDEBUG
+    #define LOG_LEVEL 0
+#else
+    #define LOG_LEVEL 2
+#endif
+
 /* C / C++ */
 #define _USE_MATH_DEFINES
 #include <cstdlib>
@@ -19,7 +25,6 @@
 #include <glm/gtx/norm.hpp>
 
 /* Application */
-#define LOG_LEVEL DEBUG
 #include "util/log.h"
 
 /* Types */

@@ -31,7 +31,7 @@ Window::Window() {
 
     int context_flags = SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG;
     
-    #ifndef DNDEBUG
+    #ifndef NDEBUG
         context_flags |= SDL_GL_CONTEXT_DEBUG_FLAG;
     #endif
 
