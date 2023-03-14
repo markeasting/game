@@ -41,18 +41,20 @@ void Game::update()
 {
 
     while (SDL_PollEvent(&m_event)) {
-        switch (m_event.type) {
-        case SDL_QUIT:
+
+        const auto e = m_event.type;
+
+        if (e == SDL_QUIT)
             m_isRunning = false;
-            break;
-        case SDL_KEYDOWN:
-            switch (m_event.key.keysym.sym) {
-            case SDLK_ESCAPE:
-                m_isRunning = false;
-                break;
-            }
-            break;
+
+        if (e == SDL_KEYDOWN || e == SDL_KEYUP) 
+            m_keyboard.handle(m_event);
+
+        if (e == SDL_MOUSEBUTTONUP) {
+            m_camera.m_autoRotate = !m_camera.m_autoRotate;
+            SDL_SetRelativeMouseMode(m_camera.m_autoRotate ? SDL_FALSE : SDL_TRUE);
         }
+            
     }
 
     m_prevTime = m_time;
@@ -61,7 +63,7 @@ void Game::update()
     
     /* Handle scenes */
     m_sceneManager.update(m_time, m_deltaTime);
-    m_camera.update(m_time);
+    m_camera.update(m_time, m_keyboard);
 
     /* Handle rendering */
     m_renderer.draw(&m_camera); // @TODO give (active) scene as argument

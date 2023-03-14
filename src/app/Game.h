@@ -5,6 +5,7 @@
 #include "core/SceneManager.h"
 #include "camera/Camera.h"
 #include "gfx/Renderer.h"
+#include "input/KeyboardHandler.h"
 #include "event/EventEmitter.h"
 
 struct GameConfig {
@@ -20,6 +21,8 @@ public:
 
     Renderer m_renderer;
     Camera m_camera;
+
+    KeyboardHandler m_keyboard;
 
     static EventEmitter events;
     
