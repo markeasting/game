@@ -103,7 +103,7 @@ void Renderer::draw(Camera* camera) {
             glDrawArrays(GL_TRIANGLES, 0, mesh->m_geometry->m_vertexBuffer->getCount());
         }
 
-        mesh->unbind();
+        // mesh->unbind(); // @TODO check if unbinding VAO / shader / texture is required
     }
 
     if (m_useRenderpass) {
