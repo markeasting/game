@@ -11,18 +11,8 @@ Window::Window() {
         );
     }
 
-// #if defined linux && SDL_VERSION_ATLEAST(2, 0, 8)
-//     // Disable compositor bypass
-//     if(!SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, "0"))
-//     {
-//         printf("SDL can not disable compositor bypass!\n");
-//         return 0;
-//     }
-// #endif
-
-    // Create window
     m_window = SDL_CreateWindow(
-        "Basic C SDL project",
+        "MOI",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
         m_config.windowWidth,
@@ -41,19 +31,14 @@ Window::Window() {
 
     int context_flags = SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG;
     
-    // #ifdef _DEBUG
+    #ifndef DNDEBUG
         context_flags |= SDL_GL_CONTEXT_DEBUG_FLAG;
-    // #endif
+    #endif
 
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, context_flags);
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
     #ifdef __APPLE__
-        // glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-        // glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-        // glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
-        // glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        // glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GLFW_TRUE);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
@@ -84,35 +69,6 @@ Window::Window() {
     printf("[OpenGL] Device:  %s\n", glGetString(GL_RENDERER));
     printf("[OpenGL] Version: %s\n", glGetString(GL_VERSION));
     printf("[OpenGL] Window:  %d x %d\n", m_frameBufferWidth, m_frameBufferHeight);
-
-    // glfwSetWindowSizeCallback(m_window, [](GLFWwindow* window, int width, int height) {
-    //     auto self = static_cast<Window*>(glfwGetWindowUserPointer(window));
-
-    //     assert(self != nullptr);
-
-    //     self->m_windowWidth = width;
-    //     self->m_windowHeight = height;
-    
-    //     Events.emit("windowResize", window, width, height);
-
-    // });
-
-    // glfwSetFramebufferSizeCallback(m_window, [](GLFWwindow* window, int width, int height) {
-    //     auto self = static_cast<Window*>(glfwGetWindowUserPointer(window));
-
-    //     assert(self != nullptr);
-
-    //     self->m_frameBufferWidth= width;
-    //     self->m_frameBufferHeight = height;
-    
-    //     Events.emit("frameBufferResize", window, width, height);
-
-    // });
-    
-    // // @TODO move to InputHandler
-    // glfwSetMouseButtonCallback(m_window, [](GLFWwindow* window, int button, int action, int mods) {
-    //     Events.emit("click", window, button, action, mods);
-    // });
 
 }
 
