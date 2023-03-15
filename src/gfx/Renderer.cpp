@@ -42,6 +42,12 @@ Renderer::Renderer() {
     // @TODO move uniform settings to Shader? Then we don't need a material here
     m_fullscreenQuad.setMaterial(m_screenShader);
 
+
+    /* Testing purposes: gltext */
+    gltInit();
+    m_debugtext = gltCreateText();
+    gltSetText(m_debugtext, "Hello World!");
+
 }
 
 void Renderer::setSize(int width, int height) {
@@ -111,6 +117,13 @@ void Renderer::draw(Camera* camera) {
         // mesh->unbind(); // @TODO check if unbinding VAO / shader / texture is required
     }
 
+    gltBeginDraw();
+
+        gltColor(1.0f, 1.0f, 1.0f, 1.0f);
+        gltDrawText2D(m_debugtext, 0.0f, 0.0f, 2.0f);
+
+    gltEndDraw();
+
     if (m_useRenderpass) {
     
         /* Final render pass */
@@ -136,7 +149,8 @@ void Renderer::clear() {
 }
 
 Renderer::~Renderer() {
-    
+    gltDeleteText(m_debugtext);
+    gltTerminate();
 }
 
 static void GlDebugMsg(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam) {

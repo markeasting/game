@@ -6,6 +6,9 @@
 #include "gfx/Mesh.h"
 #include "camera/Camera.h"
 
+#define GLT_IMPLEMENTATION
+#include "gltext.h"
+
 class Renderer {
 public:
 
@@ -23,11 +26,13 @@ public:
 private:
 	std::vector<Ref<Mesh>> m_meshes = {};
 
-	bool m_useRenderpass = true;
+	bool m_useRenderpass = false;
 	Mesh m_fullscreenQuad;
 
     Material m_defaultShader = { "Basic" };
     Material m_screenShader = { "Basic.vert", "Renderpass.frag" };
+
+	GLTtext* m_debugtext; // For testing purposes
 	
 };
 
