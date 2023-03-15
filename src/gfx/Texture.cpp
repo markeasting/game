@@ -15,7 +15,7 @@ void Texture::load(const char* source) {
 
     if (!data) {
         // @TODO set default texture using glBindTexture(GL_TEXTURE_2D, 0) ?
-        data = stbi_load("assets/texture/uv.jpg", &width, &height, &nrChannels, 0); 
+        data = stbi_load(Texture::defaultTexture, &width, &height, &nrChannels, 0); 
         Log("Failed to load texture, using default texture");
     }
 

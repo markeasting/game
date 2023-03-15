@@ -18,4 +18,6 @@ private:
 
     GLuint m_texture = 0;
 
+    static constexpr const char* defaultTexture = "assets/texture/default.jpg";
+
 };
