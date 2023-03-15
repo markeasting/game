@@ -7,7 +7,7 @@ layout (location = 2) in vec3 v_uv;
 // layout (location = 3) in vec4 v_color;
 
 uniform mat4 u_modelViewMatrix = mat4(1.0f);
-uniform mat4 u_projectionMatrix = mat4(1.0f);
+// uniform mat4 u_projectionMatrix = mat4(1.0f);
 uniform mat4 u_modelViewProjectionMatrix = mat4(1.0f);
 
 uniform vec3 u_lightDirection;

@@ -88,13 +88,18 @@ void Renderer::draw(Camera* camera) {
 
         auto matrix = mesh->getWorldPositionMatrix();
 
-        if (mesh->m_useProjectionMatrix) {
-            glUniformMatrix4fv(mesh->m_material->m_shader->getUniformLocation("u_modelViewMatrix"), 1, GL_FALSE, glm::value_ptr(camera->m_viewMatrix * matrix));
-            glUniformMatrix4fv(mesh->m_material->m_shader->getUniformLocation("u_modelViewProjectionMatrix"), 1,  GL_FALSE,  glm::value_ptr(camera->m_viewProjectionMatrix * matrix));
-        } else {
-            glUniformMatrix4fv(mesh->m_material->m_shader->getUniformLocation("u_modelViewMatrix"), 1, GL_FALSE,  glm::value_ptr(matrix));
-            glUniformMatrix4fv(mesh->m_material->m_shader->getUniformLocation("u_modelViewProjectionMatrix"), 1,  GL_FALSE,  glm::value_ptr(matrix));
-        }
+        mesh->m_material->setUniform(
+            "u_modelViewMatrix", 
+            mesh->m_useProjectionMatrix 
+                ? camera->m_viewMatrix * matrix
+                : matrix
+        );
+        mesh->m_material->setUniform(
+            "u_modelViewProjectionMatrix", 
+            mesh->m_useProjectionMatrix 
+                ? camera->m_viewProjectionMatrix * matrix
+                : matrix
+        );
 
         // @TODO add support for instanced meshes using glDrawArraysInstanced and glDrawElementsInstanced
         if(mesh->m_geometry->hasIndices()) {
