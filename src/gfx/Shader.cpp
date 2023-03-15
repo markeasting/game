@@ -10,18 +10,16 @@ Shader::Shader() {}
 Shader::Shader(const std::string& vertexShader, const std::string& fragmentShader, bool autoCompile) 
     : m_vertexShaderPath(vertexShader), m_fragmentShaderPath(fragmentShader)
 {
-    if(autoCompile) {
+    if(autoCompile)
         m_program = createProgram();
-    }
 }
 
 Shader::Shader(const std::string& shaderName, bool autoCompile) {
     m_vertexShaderPath = shaderName + ".vert";
     m_fragmentShaderPath = shaderName + ".frag";
 
-    if(autoCompile) {
+    if(autoCompile)
         m_program = createProgram();
-    }
 }
 
 Shader::~Shader() {
@@ -47,15 +45,27 @@ GLuint Shader::createProgram() {
 
     int program_linked = 0;
     glGetProgramiv(program_id, GL_LINK_STATUS, &program_linked);
+
     if (program_linked == GL_FALSE) {
+
         GLsizei log_length = 0;
         GLchar message[1024];
+        
         glGetProgramInfoLog(program_id, 1024, &log_length, message);
+
         printf("[ERROR] Shader linking error: %s\n", message);
+
+        glDeleteProgram(program_id);
+        glDeleteShader(vert);
+        glDeleteShader(frag);
+
         return 0;
     }
 
     // printf("[SUCCESS] Shader ID %u compiled.\n", program_id);
+
+    glDetachShader(program_id, vert);
+    glDetachShader(program_id, frag);
 
     return program_id;
 }
@@ -83,6 +93,7 @@ GLuint Shader::compile(const std::string& shaderSource, unsigned int type) {
         printf("[ERROR] Could not compile shader: '%s'. \nOpenGL: %s", shaderSource.c_str(), message);
         
         glDeleteShader(shaderId);
+        
         return 0;
     }
 
