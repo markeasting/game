@@ -2,6 +2,9 @@
 
 #include "common.h"
 #include "camera/Camera.h"
+// #include "gfx/Object3D.h" // Causes circular dependency?
+#include "gfx/Mesh.h"
+#include "gfx/Material.h"
 
 class Scene {
 public:
@@ -9,37 +12,28 @@ public:
     Scene();
     // virtual ~Scene() = 0;
 
-    // EntityManager m_entityManager = EntityManager();
+    // Object3D* parent = nullptr; // @TODO use weak_ptr?
+    std::vector<Ref<Object3D>> m_children = {};
+    std::vector<Ref<Mesh>> m_meshes = {};
 
-    void activate()   { m_isActive = true;  }
-    void deactivate() { m_isActive = false; }
-    bool isActive()   { return m_isActive;  }
+    void add(Ref<Object3D> object);
+    void add(Ref<Mesh> mesh);
 
-    // Called when scene initially created. Called once.
     virtual void create() = 0;
-
-    // Called when scene destroyed. Called at most once (if a scene
-    // is not removed from the game, this will never be called).
     virtual void destroy() = 0;
 
-    // Called whenever a scene is transitioned into. Can be
-    // called many times in a typical game cycle.
     virtual void onActivate(){};
-
-    // Called whenever a transition out of a scene occurs.
-    // Can be called many times in a typical game cycle.
     virtual void onDeactivate(){};
 
-    // The below functions can be overridden as necessary in our scenes.
-    virtual void processInput(){};
     virtual void update(float time, float deltaTime){};
-    virtual void draw(){};
 
-    Camera getCamera() { return m_camera; }
+    Ref<Camera> getCamera() { return m_camera; }
 
 protected:
     bool m_isActive = false;
 
-    Camera m_camera;
+    Material m_defaultMaterial = { "Basic" };
+
+    Ref<Camera> m_camera = ref<Camera>();
 
 };

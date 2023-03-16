@@ -1,14 +1,12 @@
 #include "app/Game.h"
-#include "scene/MyScene.h"
+#include "scenes/MyScene.h"
 #include "event/EventEmitter.h"
 
 /* Initialize static member */
 EventEmitter Game::events;
 
 Game::Game() {
-    // this->registerScenes();
-
-    m_camera.setPosition(glm::vec3(0.0f, 2.0f, 8.0f));
+    this->registerScenes();
 
     Game::onResize(m_window.m_frameBufferWidth, m_window.m_frameBufferHeight);
 
@@ -23,7 +21,9 @@ Game::~Game() {
 
 void Game::onResize(int width, int height) {
     m_renderer.setSize(width, height);
-    m_camera.setSize(width, height);
+    // m_camera.setSize(width, height);
+
+    m_sceneManager.getCurrentScene()->getCamera()->setSize(width, height);
 }
 
 void Game::registerScenes()
@@ -40,6 +40,9 @@ void Game::registerScenes()
 void Game::update()
 {
 
+    auto scene = m_sceneManager.getCurrentScene();
+    auto cam = scene->getCamera();
+
     while (SDL_PollEvent(&m_event)) {
 
         const auto e = m_event.type;
@@ -51,8 +54,9 @@ void Game::update()
             m_keyboard.handle(m_event);
 
         if (e == SDL_MOUSEBUTTONUP) {
-            m_camera.m_autoRotate = !m_camera.m_autoRotate;
-            SDL_SetRelativeMouseMode(m_camera.m_autoRotate ? SDL_FALSE : SDL_TRUE);
+            // @TODO handle these events in the scene
+            cam->m_autoRotate = !cam->m_autoRotate;
+            SDL_SetRelativeMouseMode(cam->m_autoRotate ? SDL_FALSE : SDL_TRUE);
         }
             
     }
@@ -63,10 +67,10 @@ void Game::update()
     
     /* Handle scenes */
     m_sceneManager.update(m_time, m_deltaTime);
-    m_camera.update(m_time, m_keyboard);
+    cam->update(m_time, m_keyboard); // @TODO move to scene
 
     /* Handle rendering */
-    m_renderer.draw(&m_camera); // @TODO give (active) scene as argument
+    m_renderer.draw(scene, cam); // @TODO give (active) scene as argument
     m_window.swapBuffers();
 }
 

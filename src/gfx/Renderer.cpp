@@ -51,20 +51,20 @@ void Renderer::setSize(int width, int height) {
 }
 
 // @TODO move to scene!
-void Renderer::add(Ref<Mesh> mesh) {
+// void Renderer::add(Ref<Mesh> mesh) {
 
-    if (mesh->m_material == nullptr)
-        mesh->setMaterial(m_defaultShader);
+//     if (mesh->m_material == nullptr)
+//         mesh->setMaterial(m_defaultShader);
 
-    if (mesh->m_material->m_shader->m_program == 0) {
-        Log("Shader failed to compile, using default shader");
-        mesh->setMaterial(m_defaultShader);
-    }
+//     if (mesh->m_material->m_shader->m_program == 0) {
+//         Log("Shader failed to compile, using default shader");
+//         mesh->setMaterial(m_defaultShader);
+//     }
 
-    m_meshes.push_back(mesh);
-}
+//     m_meshes.push_back(mesh);
+// }
 
-void Renderer::draw(Camera* camera) {
+void Renderer::draw(Ref<Scene> scene, Ref<Camera> camera) {
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
@@ -82,7 +82,7 @@ void Renderer::draw(Camera* camera) {
         glEnable(GL_DEPTH_TEST);
     }
 
-    for (auto& mesh : m_meshes) {
+    for (auto& mesh : scene->m_meshes) {
 
         mesh->bind();
 

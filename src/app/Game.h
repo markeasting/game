@@ -20,7 +20,6 @@ public:
 	Window m_window;
 
     Renderer m_renderer;
-    Camera m_camera;
 
     KeyboardHandler m_keyboard;
 

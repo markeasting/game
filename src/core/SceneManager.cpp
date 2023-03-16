@@ -2,13 +2,12 @@
 #include "core/SceneManager.h"
 #include "scene/Scene.h"
 
-// SceneManager::SceneManager() : m_scenes(0), m_curScene(0) { }
-SceneManager::SceneManager() : m_scenes(0) { }
+SceneManager::SceneManager() : m_scenes(0), m_currentScene(0) { }
+// SceneManager::SceneManager() : m_scenes(0) { }
 
 void SceneManager::update(float time, float deltaTime) {
-    // if(m_curScene)
-    //     m_curScene->update(deltaTime);
-    //     // m_curScene->lateUpdate(deltaTime);
+    if(m_currentScene)
+        m_currentScene->update(time, deltaTime);
 
     // for (auto scene : m_scenes) {
     //     if (scene.second->isActive())
@@ -16,19 +15,7 @@ void SceneManager::update(float time, float deltaTime) {
     // }
 }
 
-void SceneManager::draw(float time, float deltaTime) {
-    for (auto scene : m_scenes) {
-        if (scene.second->isActive()) {
-            scene.second->processInput();
-            scene.second->update(time, deltaTime);
-            scene.second->draw();
-        }
-    }
-}
-
-// template <typename T>
-// unsigned int SceneManager::add(std::shared_ptr<T> scene) {
-unsigned int SceneManager::add(std::shared_ptr<Scene> scene) {
+unsigned int SceneManager::add(Ref<Scene> scene) {
 
     auto inserted = m_scenes.insert(std::make_pair(m_insertedSceneIdx, scene));
 
@@ -41,44 +28,43 @@ void SceneManager::remove(unsigned int id) {
     auto it = m_scenes.find(id);
 
     if(it != m_scenes.end()) {
-        // if(m_curScene == it->second)
-        //     m_curScene = nullptr;
-
         it->second->destroy();
-
         m_scenes.erase(it);
     }
 }
 
-void SceneManager::activate(unsigned int id) {
-    auto it = m_scenes.find(id);
+// void SceneManager::activate(unsigned int id) {
+//     auto it = m_scenes.find(id);
 
-    if(it != m_scenes.end()) {
-        it->second->activate();
-        it->second->onActivate();
-    }
-}
+//     // if(it != m_scenes.end()) {
+//     //     // if(m_curScene == it->second)
+//     //     //     m_curScene = nullptr;
 
-void SceneManager::deActivate(unsigned int id) {
-    auto it = m_scenes.find(id);
+//     //     it->second->destroy();
+//     //     m_scenes.erase(it);
+//     // }
 
-    if(it != m_scenes.end()) {
-        it->second->deactivate();
-        it->second->onDeactivate();
-    }
-}
+//     if(it != m_scenes.end()) {
+//         it->second->onActivate();
+//     }
+// }
+
+// void SceneManager::deActivate(unsigned int id) {
+//     auto it = m_scenes.find(id);
+
+//     if(it != m_scenes.end()) {
+//         it->second->onDeactivate();
+//     }
+// }
 
 void SceneManager::switchTo(unsigned int id) {
     auto it = m_scenes.find(id);
 
     if(it != m_scenes.end()) {
-        // @TODO deactivate all other scenes
+        if(m_currentScene)
+            m_currentScene->onDeactivate();
 
-        // if(m_curScene)
-        //     m_curScene->onDeactivate();
-        // m_curScene = it->second;
-
-        it->second->activate();
-        it->second->onActivate();
+        m_currentScene = it->second;
+        m_currentScene->onActivate();
     }
 }

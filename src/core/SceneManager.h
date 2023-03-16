@@ -12,22 +12,18 @@ public:
 
     void update(float time, float deltaTime);
 
-    void draw(float time, float deltaTime);
-
-    unsigned int add(std::shared_ptr<Scene> scene);
-    // template <typename T>
-    // unsigned int add(std::shared_ptr<T> scene);
+    unsigned int add(Ref<Scene> scene);
 
     void remove(unsigned int id);
 
-    void activate(unsigned int id);
-    void deActivate(unsigned int id);
     void switchTo(unsigned int id);
 
+    Ref<Scene> getCurrentScene() const { return m_currentScene; };
+
 private:
-    std::unordered_map<unsigned int, std::shared_ptr<Scene>> m_scenes;
-
-    // std::shared_ptr<Scene> m_curScene; // Render all 'active' scenes instead
-
+    std::unordered_map<unsigned int, Ref<Scene>> m_scenes;
     unsigned int m_insertedSceneIdx = 0;
+
+    Ref<Scene> m_currentScene;
+
 };

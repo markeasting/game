@@ -4,6 +4,7 @@
 #include "gfx/Shader.h"
 #include "gfx/Uniforms.h"
 #include "gfx/Mesh.h"
+#include "scene/Scene.h"
 #include "camera/Camera.h"
 
 class Renderer {
@@ -14,19 +15,20 @@ public:
 	~Renderer();
 	
 	void setSize(int width, int height);
-	
-	void add(Ref<Mesh> mesh); // @TODO move to scene!
+		
+	// @TODO should be a weak ptr?
+	// void add(Ref<Mesh> mesh);
 
-	void draw(Camera* camera);
+	void draw(Ref<Scene> scene, Ref<Camera> camera);
 	void clear();
 
 private:
-	std::vector<Ref<Mesh>> m_meshes = {};
 
 	bool m_useRenderpass = true;
 	Mesh m_fullscreenQuad;
 
-    Material m_defaultShader = { "Basic" };
+	// std::vector<Ref<Mesh>> m_meshes = {};
+    // Material m_defaultShader = { "Basic" };
     Material m_screenShader = { "Basic.vert", "Renderpass.frag" };
 	
 };
