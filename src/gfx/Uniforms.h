@@ -8,7 +8,7 @@ public:
 
     std::string m_name;
     int m_location = -1;
-    int m_value;
+    int m_value = -1;
 
     IUniform(const std::string& name)
         : m_name(name) {};

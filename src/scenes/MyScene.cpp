@@ -46,7 +46,8 @@ void MyScene::create() {
 
     auto overlay = ref<Mesh>(PlaneGeometry(2.0f));
     Material textureMaterial = Material("Basic.vert", "BasicTextured.frag");
-    textureMaterial.assignTexture("");
+    textureMaterial.assignTexture("assets/texture/uv_test.jpg", "texture1");
+    textureMaterial.assignTexture("assets/texture/checker_purple.png", "texture2");
     overlay->setMaterial(textureMaterial);
     overlay->setPosition({ 0, -0.5f, 0 });
     overlay->setScale({ 0.3f, 0.3f, 0 });

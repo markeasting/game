@@ -2,6 +2,7 @@
 #include "common.h"
 #include "gfx/Uniforms.h"
 
+/* @TODO check if the branching of m_needsUpdate actually decreases performance. */
 template<> void Uniform<int>       ::bind() { if(m_needsUpdate) { m_needsUpdate = false; glUniform1i(m_location, m_value); }}
 template<> void Uniform<float>     ::bind() { if(m_needsUpdate) { m_needsUpdate = false; glUniform1f(m_location, m_value); }}
 template<> void Uniform<glm::vec3> ::bind() { if(m_needsUpdate) { m_needsUpdate = false; glUniform3f(m_location, m_value.x, m_value.y, m_value.z); }}

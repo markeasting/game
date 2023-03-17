@@ -14,7 +14,7 @@ public:
     void load(const char* source);
     void bind() const;
 
-private:
+// private:
 
     GLuint m_texture = 0;
 

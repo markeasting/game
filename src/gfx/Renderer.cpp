@@ -119,6 +119,7 @@ void Renderer::draw(Ref<Scene> scene, Ref<Camera> camera) {
         glDisable(GL_DEPTH_TEST);
 
         m_fullscreenQuad.bind();
+        glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, camera->m_frameBuffer.getTexture());
 
         glDrawElements(GL_TRIANGLES, m_fullscreenQuad.m_geometry->m_indexBuffer->getCount(), GL_UNSIGNED_INT, 0);

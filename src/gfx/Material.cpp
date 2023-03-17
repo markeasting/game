@@ -29,26 +29,43 @@ void Material::assignUniform(Ref<IUniform> uniform) {
     }
 }
 
-void Material::assignTexture(Ref<Texture> texture) {
+void Material::assignTexture(Ref<Texture> texture, const std::string& uniform) {
+    this->setUniform(uniform, (int) textures.size());
+
     textures.push_back(texture);
 }
 
-void Material::assignTexture(const char* source) {
+void Material::assignTexture(const char* source, const std::string& uniform) {
 
     Ref<Texture> texture = ref<Texture>();
     texture->load(source);
 
-    textures.push_back(texture);
+    this->assignTexture(texture, uniform);
 }
 
 void Material::bind() const {
-    m_shader->bind();
 
-    for (auto texture : textures) {
-        texture->bind();
+    glUseProgram(m_shader->m_program);
+
+    for (int i = 0; i < textures.size(); i++) {
+        glActiveTexture(GL_TEXTURE0 + i);
+        glBindTexture(GL_TEXTURE_2D, textures[i]->m_texture); // textures[i]->bind();
     }
 
     for (const auto &nameUniformPair : uniforms) {
         nameUniformPair.second->bind();
     }
 }
+
+// void Material::bind() const {
+//     m_shader->bind();
+
+//     for (int i = 0; i < textures.size(); i++) {
+//         glActiveTexture(GL_TEXTURE0 + i);
+//         textures[i]->bind();
+//     }
+
+//     for (const auto &nameUniformPair : uniforms) {
+//         nameUniformPair.second->bind();
+//     }
+// }

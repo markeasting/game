@@ -40,8 +40,8 @@ public:
 
     void assignUniform(Ref<IUniform> uniform);
     
-    void assignTexture(Ref<Texture> texture);
-    void assignTexture(const char* source);
+    void assignTexture(Ref<Texture> texture, const std::string& uniform = "texture");
+    void assignTexture(const char* source, const std::string& uniform = "texture");
     
     void bind() const;
 
