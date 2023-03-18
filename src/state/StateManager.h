@@ -59,6 +59,12 @@ public:
         return m_state->getName() == name;
     }
 
+    bool inGroup(const char* group) {
+        assert(m_state != nullptr);
+
+        return m_state->getGroup() == group;
+    }
+
 private:
     Ref<State> m_state = nullptr;
 

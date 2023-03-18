@@ -2,14 +2,11 @@
 
 struct State {
 
-    State(const char* name, float duration = 0)
-        : m_name(name), m_duration(duration)
+    State(const char* name, float duration = 0, const char* group = "")
+        : m_name(name), m_duration(duration), m_group(group)
     {}
 
     ~State() = default;
-
-    const char* getName() { return m_name; }
-    void setName(const char* name) { m_name = name; }
 
     Ref<State> next() {
         assert(m_next != nullptr);
@@ -31,6 +28,12 @@ struct State {
 
         return *this;
     }
+    
+    State setName(const char* name) { m_name = name; return *this; }
+    State setGroup(const char* name) { m_group = name; return *this; }
+
+    const char* getName() { return m_name; }
+    const char* getGroup() { return m_group; }
 
     void complete() {
         m_startTime = -1.0f;
@@ -53,6 +56,7 @@ struct State {
 protected:
 
     const char* m_name = "BaseState";
+    const char* m_group = "";
     
     Ref<State> m_next = nullptr;
 
