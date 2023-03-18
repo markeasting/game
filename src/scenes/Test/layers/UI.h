@@ -3,7 +3,7 @@
 #include "scene/Layer.h"
 #include "geom/index.h"
 
-class MainUI : public Layer {
+class UI : public Layer {
 public:
 
     void init() override;

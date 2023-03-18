@@ -2,7 +2,8 @@
 
 #include "common.h"
 #include "scene/Scene.h"
-#include "scenes/Test/MainUI.h"
+#include "scenes/Test/layers/UI.h"
+#include "scenes/Test/layers/World.h"
 
 #include "geom/index.h"
 #include "gfx/Mesh.h"
@@ -20,8 +21,8 @@ public:
     void update(float time, float dt) override;
 
 private:
-    Ref<Layer> m_world = ref<Layer>();
-    Ref<MainUI> m_overlay = ref<MainUI>();
+    Ref<World> m_world = ref<World>();
+    Ref<UI> m_overlay = ref<UI>();
 
     Ref<Mesh> m_tetra = nullptr;
 
