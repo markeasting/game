@@ -5,6 +5,9 @@
 
 class Object3D {
 public:
+
+    Object3D() = default;
+    virtual ~Object3D() {};
     
     // const char* name = "";
     // const char* type = "Object3D"; // @TODO make enum or use instanceof?
