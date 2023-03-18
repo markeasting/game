@@ -7,7 +7,6 @@
 #include "geom/index.h"
 #include "gfx/Mesh.h"
 
-
 class MyScene final : public Scene
 {
 public:

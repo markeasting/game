@@ -52,7 +52,7 @@ class EventEmitter
     int _listeners = 0;
 
 public:
-    int maxListeners = 10;
+    int maxListeners = 32;
 
     int listeners()
     {
@@ -143,6 +143,6 @@ public:
     }
 };
 
-extern EventEmitter Events;
+extern EventEmitter _EventEmitter;
 
 #endif

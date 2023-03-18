@@ -3,9 +3,16 @@
 
 #include "app/Game.h"
 
-/* Initialize globals */
-EventEmitter Events;
-KeyboardHandler Keyboard;
+/**
+ * What’s the "static initialization order 'fiasco' (problem)"?
+ * 
+ * https://isocpp.org/wiki/faq/ctors#static-init-order
+ * 
+ * Fix:
+ * https://isocpp.org/wiki/faq/ctors#static-init-order-on-first-use-members
+ * 
+ */
+EventEmitter Events::_emitter;
 
 Game game;
 

@@ -19,7 +19,7 @@ public:
 
     Renderer m_renderer;
 
-    static EventEmitter events;
+    // static EventEmitter events;
     
     Game();
     ~Game();
@@ -35,7 +35,7 @@ public:
 
 private:
 
-    void onResize(int width, int height);
+    void setSize(int width, int height);
     
     float m_time = 0;
     float m_prevTime = 0;

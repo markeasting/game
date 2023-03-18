@@ -10,6 +10,7 @@
 #define _USE_MATH_DEFINES
 #include <cstdlib>
 #include <cmath>
+#include <algorithm>
 #include <iostream>
 #include <memory>
 
@@ -26,33 +27,26 @@
 
 /* Application */
 #include "util/log.h"
-#include "event/Event.h"
-#include "event/EventEmitter.h"
+#include "event/Events.h"
+// #include "event/EventEmitter.h"
 #include "input/KeyboardHandler.h"
 
 /* Types */
+// template<typename T>
+// using Ref = std::shared_ptr<T>;
+
+// template<typename T, typename... _Args>
+// Ref<T> ref(_Args&&... args) {
+//     return std::make_shared<T>(args...);
+// }
+
 template<typename T>
 using Ref = std::shared_ptr<T>;
-
-template<typename T>
-using Unique = std::unique_ptr<T>;
-
-template<typename T, typename... _Args>
-Ref<T> ref(_Args&&... args) {
-    return std::make_shared<T>(args...);
+template<typename T, typename ... Args>
+constexpr Ref<T> ref(Args&& ... args)
+{
+    return std::make_shared<T>(std::forward<Args>(args)...);
 }
 
 // template<typename T>
-// Ref<T> ref(T&& obj) {
-//     return std::make_shared<T>(obj);
-// }
-
-// template<typename T>
-// Ref<T> ref(const T& obj) {
-//     return std::make_shared<T>(obj);
-// }
-
-// template<typename T>
-// Unique<T> unique(T&& obj) {
-//     return std::make_unique<T>(obj);
-// }
+// using Unique = std::unique_ptr<T>;

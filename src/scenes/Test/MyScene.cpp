@@ -1,12 +1,6 @@
 
 #include "scenes/Test/MyScene.h"
 
-// struct MySceneInitState: public State {
-//     // Ref<State> next() override { 
-//     //     return ref<TimedState>();
-//     // }
-// };
-
 MyScene::MyScene() {
 
     this->addLayer("world", m_world);
@@ -82,9 +76,14 @@ void MyScene::init() {
 
 }
 
+/**
+ * @TODO look into bindEvents()
+ * These listeners are currently bound for the entire lifetime of the game
+ * Maybe make the event listeners specific per scene / unbind everything on changing scenes
+ */
 void MyScene::bindEvents() {
 
-    Events.on(Event::KEYUP, [&](SDL_KeyCode key) {
+    Events::on(Events::KEYUP, [&](SDL_KeyCode key) {
         switch (key) {
             case SDLK_SPACE:
                 m_state.next();
@@ -92,7 +91,7 @@ void MyScene::bindEvents() {
         }
     });
 
-    Events.on(Event::MOUSEUP, [&]() {
+    Events::on(Events::MOUSEUP, [&]() {
         m_camera->m_autoRotate = !m_camera->m_autoRotate;
         SDL_SetRelativeMouseMode(m_camera->m_autoRotate ? SDL_FALSE : SDL_TRUE);
     });

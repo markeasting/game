@@ -1,33 +1,30 @@
 #include "app/Game.h"
 #include "scenes/Test/MyScene.h"
 
+#include "input/KeyboardHandler.h"
+
 /* Initialize static member */
-EventEmitter Game::events;
+// EventEmitter Game::events;
 
 Game::Game() {
     this->registerScenes();
 
-    Game::onResize(m_window.m_frameBufferWidth, m_window.m_frameBufferHeight);
+    Game::setSize(m_window.m_frameBufferWidth, m_window.m_frameBufferHeight);
 
-    // Events.on("frameBufferResize", [&] (GLFWwindow* window, int width, int height) {
-    //     Game::onResize(width, height);
-    // });
 }
 
 Game::~Game() {
     
 }
 
-void Game::onResize(int width, int height) {
+void Game::setSize(int width, int height) {
     m_renderer.setSize(width, height);
-    // m_camera.setSize(width, height);
-
     m_sceneManager.getCurrentScene()->getCamera()->setSize(width, height);
 }
 
 void Game::registerScenes()
 {
-    std::shared_ptr<MyScene> gameScene = std::make_shared<MyScene>();
+    Ref<MyScene> gameScene = ref<MyScene>();
 
     unsigned int gameSceneID = m_sceneManager.add(gameScene);
 
@@ -46,13 +43,13 @@ void Game::update()
             m_isRunning = false;
 
         if (e == SDL_KEYDOWN || e == SDL_KEYUP) 
-            Keyboard.handle(m_event);
+            Keyboard::handle(m_event);
 
         if (e == SDL_MOUSEBUTTONDOWN)
-            Events.emit(Event::MOUSEDOWN);
+            Events::emit(Events::MOUSEDOWN);
 
         if (e == SDL_MOUSEBUTTONUP)
-            Events.emit(Event::MOUSEUP);
+            Events::emit(Events::MOUSEUP);
     }
 
     m_prevTime = m_time;

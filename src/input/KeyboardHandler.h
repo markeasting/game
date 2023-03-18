@@ -1,28 +1,20 @@
 #pragma once
 
-// #include "common.h"
+#include <SDL.h>
 
-#include "util/log.h"
-#include "event/Event.h"
-#include "event/EventEmitter.h"
-
-class KeyboardHandler {
+class Keyboard {
 public:
 
-    bool w = false;
-    bool a = false;
-    bool s = false;
-    bool d = false;
+    static bool w;
+    static bool a;
+    static bool s;
+    static bool d;
 
-    bool ctrl = false;
-    bool shift = false;
+    static bool ctrl;
+    static bool shift;
 
-    bool space = false;
+    static bool space;
 
-    void handle(SDL_Event e);
-    
-private:
+    static void handle(SDL_Event e);
 
 };
-
-extern KeyboardHandler Keyboard;
