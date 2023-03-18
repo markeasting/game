@@ -1,5 +1,4 @@
 #include "app/Window.h"
-#include "event/EventEmitter.h"
 
 Window::Window() {
 

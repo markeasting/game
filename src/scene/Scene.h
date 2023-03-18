@@ -2,38 +2,49 @@
 
 #include "common.h"
 #include "camera/Camera.h"
-// #include "gfx/Object3D.h" // Causes circular dependency?
-#include "gfx/Mesh.h"
-#include "gfx/Material.h"
+#include "scene/Layer.h"
+#include "state/StateManager.h"
 
 class Scene {
 public:
 
+    std::unordered_map<const char*, Ref<Layer>> m_layers = {};
+
+    StateManager m_state;
+
     Scene();
-    // virtual ~Scene() = 0;
+    virtual ~Scene() {};
 
-    // Object3D* parent = nullptr; // @TODO use weak_ptr?
-    std::vector<Ref<Object3D>> m_children = {};
-    std::vector<Ref<Mesh>> m_meshes = {};
+    virtual void init() = 0;
+    virtual void destroy() = 0; // @TODO handle with destructor?
 
-    void add(Ref<Object3D> object);
-    void add(Ref<Mesh> mesh);
+    virtual void onActivate() {};
+    virtual void onDeactivate() {};
 
-    virtual void create() = 0;
-    virtual void destroy() = 0;
+    virtual void bindEvents() {};
 
-    virtual void onActivate(){};
-    virtual void onDeactivate(){};
-
-    virtual void update(float time, float deltaTime){};
+    virtual void update(float time, float dt){};
 
     Ref<Camera> getCamera() { return m_camera; }
 
 protected:
+
     bool m_isActive = false;
 
-    Material m_defaultMaterial = { "Basic" };
-
     Ref<Camera> m_camera = ref<Camera>();
+    
+    SDL_Event m_event;
+
+    Ref<Layer> addLayer(const char* name, Ref<Layer> layer) {
+        assert(layer != nullptr);
+        m_layers[name] = layer;
+
+        return layer;
+    }
+
+    Ref<Layer> getLayer(const char* name) {
+        assert(m_layers[name] != nullptr);
+        return m_layers[name];
+    }
 
 };

@@ -3,8 +3,9 @@
 
 #include "app/Game.h"
 
-/* Initialize global events class */
+/* Initialize globals */
 EventEmitter Events;
+KeyboardHandler Keyboard;
 
 Game game;
 

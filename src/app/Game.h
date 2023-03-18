@@ -5,8 +5,6 @@
 #include "core/SceneManager.h"
 #include "camera/Camera.h"
 #include "gfx/Renderer.h"
-#include "input/KeyboardHandler.h"
-#include "event/EventEmitter.h"
 
 struct GameConfig {
     
@@ -20,8 +18,6 @@ public:
 	Window m_window;
 
     Renderer m_renderer;
-
-    KeyboardHandler m_keyboard;
 
     static EventEmitter events;
     

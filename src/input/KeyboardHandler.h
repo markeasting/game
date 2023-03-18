@@ -1,11 +1,13 @@
 #pragma once
 
-#include "common.h"
+// #include "common.h"
+
+#include "util/log.h"
+#include "event/Event.h"
+#include "event/EventEmitter.h"
 
 class KeyboardHandler {
 public:
-
-    // KeyboardHandler();
 
     bool w = false;
     bool a = false;
@@ -15,20 +17,12 @@ public:
     bool ctrl = false;
     bool shift = false;
 
-    void handle(SDL_Event e) {
+    bool space = false;
 
-        const auto isDown = e.type == SDL_KEYDOWN;
-
-        switch (e.key.keysym.sym) {
-            case SDLK_w:        w = isDown; break;
-            case SDLK_a:        a = isDown; break;
-            case SDLK_s:        s = isDown; break;
-            case SDLK_d:        d = isDown; break;
-            case SDLK_LCTRL:    ctrl = isDown; break;
-            case SDLK_LSHIFT:   shift = isDown; break;
-        }
-    }
+    void handle(SDL_Event e);
     
 private:
 
 };
+
+extern KeyboardHandler Keyboard;

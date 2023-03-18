@@ -81,34 +81,42 @@ void Renderer::draw(Ref<Scene> scene, Ref<Camera> camera) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // we're not using the stencil buffer now
         glEnable(GL_DEPTH_TEST);
     }
+    
+    for (auto& it : scene->m_layers) {
+        
+        auto& layer = it.second;
 
-    for (auto& mesh : scene->m_meshes) {
+        if (!layer->m_active)
+            continue;
 
-        mesh->bind();
+        for (auto& mesh : layer->m_meshes) {
 
-        auto matrix = mesh->getWorldPositionMatrix();
+            mesh->bind();
 
-        mesh->m_material->setUniform(
-            "u_modelViewMatrix", 
-            mesh->m_useProjectionMatrix 
-                ? camera->m_viewMatrix * matrix
-                : matrix
-        );
-        mesh->m_material->setUniform(
-            "u_modelViewProjectionMatrix", 
-            mesh->m_useProjectionMatrix 
-                ? camera->m_viewProjectionMatrix * matrix
-                : matrix
-        );
+            auto matrix = mesh->getWorldPositionMatrix();
 
-        // @TODO add support for instanced meshes using glDrawArraysInstanced and glDrawElementsInstanced
-        if(mesh->m_geometry->hasIndices()) {
-            glDrawElements(GL_TRIANGLES, mesh->m_geometry->m_indexBuffer->getCount(), GL_UNSIGNED_INT, 0);
-        } else {
-            glDrawArrays(GL_TRIANGLES, 0, mesh->m_geometry->m_vertexBuffer->getCount());
+            mesh->m_material->setUniform(
+                "u_modelViewMatrix", 
+                mesh->m_useProjectionMatrix 
+                    ? camera->m_viewMatrix * matrix
+                    : matrix
+            );
+            mesh->m_material->setUniform(
+                "u_modelViewProjectionMatrix", 
+                mesh->m_useProjectionMatrix 
+                    ? camera->m_viewProjectionMatrix * matrix
+                    : matrix
+            );
+
+            // @TODO add support for instanced meshes using glDrawArraysInstanced and glDrawElementsInstanced
+            if(mesh->m_geometry->hasIndices()) {
+                glDrawElements(GL_TRIANGLES, mesh->m_geometry->m_indexBuffer->getCount(), GL_UNSIGNED_INT, 0);
+            } else {
+                glDrawArrays(GL_TRIANGLES, 0, mesh->m_geometry->m_vertexBuffer->getCount());
+            }
+
+            // mesh->unbind(); // @TODO check if unbinding VAO / shader / texture is required
         }
-
-        // mesh->unbind(); // @TODO check if unbinding VAO / shader / texture is required
     }
 
     if (m_useRenderpass) {

@@ -26,6 +26,9 @@
 
 /* Application */
 #include "util/log.h"
+#include "event/Event.h"
+#include "event/EventEmitter.h"
+#include "input/KeyboardHandler.h"
 
 /* Types */
 template<typename T>

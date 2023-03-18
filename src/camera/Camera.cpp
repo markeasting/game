@@ -1,6 +1,5 @@
 #include "common.h"
 #include "camera/Camera.h"
-#include "event/EventEmitter.h"
 
 Camera::Camera() {}
 
@@ -23,7 +22,7 @@ void Camera::bind() const {
     m_frameBuffer.bind();
 }
 
-void Camera::update(float time, const KeyboardHandler& keyboard) {
+void Camera::update(float time) {
 
     if(m_autoRotate) {
         
@@ -41,19 +40,19 @@ void Camera::update(float time, const KeyboardHandler& keyboard) {
 
         float posDelta = m_speed; // * time.dt;
 
-        if (keyboard.shift)
+        if (Keyboard.shift)
             posDelta *= 3.0f;
 
-        if (keyboard.ctrl)
+        if (Keyboard.ctrl)
             posDelta *= 0.333f;
 
-        if (keyboard.w)
+        if (Keyboard.w)
             m_position += front * posDelta;
-        if (keyboard.s)
+        if (Keyboard.s)
             m_position -= front * posDelta;
-        if (keyboard.a)
+        if (Keyboard.a)
             m_position -= right * posDelta;
-        if (keyboard.d)
+        if (Keyboard.d)
             m_position += right * posDelta;
 
         int x, y;

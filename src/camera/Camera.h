@@ -4,7 +4,6 @@
 
 #include "core/Object3D.h"
 #include "gfx/FrameBuffer.h"
-#include "input/KeyboardHandler.h"
 
 class Camera : public Object3D {
 public:
@@ -30,7 +29,7 @@ public:
     void setSize(float frameBufferWidth, float frameBufferHeight);
     void bind() const;
 
-    void update(float time, const KeyboardHandler& keyboard);
+    void update(float time);
 
 private:
 

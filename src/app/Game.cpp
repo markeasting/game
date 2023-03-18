@@ -1,6 +1,5 @@
 #include "app/Game.h"
-#include "scenes/MyScene.h"
-#include "event/EventEmitter.h"
+#include "scenes/Test/MyScene.h"
 
 /* Initialize static member */
 EventEmitter Game::events;
@@ -34,14 +33,10 @@ void Game::registerScenes()
 
     m_sceneManager.switchTo(gameSceneID);
 
-    Game::events.emit("scene_registered");
 }
 
 void Game::update()
 {
-
-    auto scene = m_sceneManager.getCurrentScene();
-    auto cam = scene->getCamera();
 
     while (SDL_PollEvent(&m_event)) {
 
@@ -51,26 +46,25 @@ void Game::update()
             m_isRunning = false;
 
         if (e == SDL_KEYDOWN || e == SDL_KEYUP) 
-            m_keyboard.handle(m_event);
+            Keyboard.handle(m_event);
 
-        if (e == SDL_MOUSEBUTTONUP) {
-            // @TODO handle these events in the scene
-            cam->m_autoRotate = !cam->m_autoRotate;
-            SDL_SetRelativeMouseMode(cam->m_autoRotate ? SDL_FALSE : SDL_TRUE);
-        }
-            
+        if (e == SDL_MOUSEBUTTONDOWN)
+            Events.emit(Event::MOUSEDOWN);
+
+        if (e == SDL_MOUSEBUTTONUP)
+            Events.emit(Event::MOUSEUP);
     }
 
     m_prevTime = m_time;
     m_time = SDL_GetTicks() / 1000.0f;
     m_deltaTime = m_time - m_prevTime;
     
-    /* Handle scenes */
     m_sceneManager.update(m_time, m_deltaTime);
-    cam->update(m_time, m_keyboard); // @TODO move to scene
 
-    /* Handle rendering */
-    m_renderer.draw(scene, cam); // @TODO give (active) scene as argument
+    auto scene = m_sceneManager.getCurrentScene();
+    auto cam = scene->getCamera();
+
+    m_renderer.draw(scene, cam);
     m_window.swapBuffers();
 }
 
