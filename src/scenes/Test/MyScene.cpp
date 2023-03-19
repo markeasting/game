@@ -1,7 +1,6 @@
 
 #include "scenes/Test/MyScene.h"
-
-#include <algorithm>
+#include "util/Anim.h"
 
 MyScene::MyScene() {
 
@@ -79,7 +78,7 @@ void MyScene::bindEvents() {
         Log(state->getName());
 
         if (state->inGroup("countdown")) {
-            m_audio->stop("intro_music");
+            m_audio->get("intro_music").fadeOutToStop(0.0f, std::chrono::milliseconds(1000));
             m_audio->play(state->getName());
         }
 
@@ -93,7 +92,8 @@ void MyScene::bindEvents() {
         }
 
         if (state->is("Finish")) {
-            m_audio->stop("race_music");
+            // m_audio->stop("race_music");
+            m_audio->get("race_music").fadeOutToStop(0.0f, std::chrono::milliseconds(1000));
             m_audio->play("YouWin");
             m_audio->play("end_music");
         }
@@ -121,12 +121,13 @@ void MyScene::update(float time, float dt) {
         m_tetra->setRotation({ 0.0f, beatMatch * 180.0f/M_PI, 0.0f });
 
         m_camera->m_lookAtPos = glm::vec3(0, 1.0f, 0);
-        m_camera->m_camRadius = std::max(m_camera->m_camRadius * 0.96f, 5.0f);
+        Anim::lerp(m_camera->m_camRadius, 5.0f, 0.1f);
+
     }
 
     if (m_state.is("Finish")) {
         m_layers["overlay"]->m_active = (int) time % 2 == 0;
-        m_camera->m_camRadius = std::max(m_camera->m_camRadius * 0.98f, 3.0f);
+        Anim::lerp(m_camera->m_camRadius, 2.5f, 0.05f);
     }
 }
 
