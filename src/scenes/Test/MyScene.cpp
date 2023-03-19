@@ -68,7 +68,7 @@ void MyScene::update(float time, float dt) {
     m_camera->update(time);
     m_state.update(time, dt); // @TODO move to base update
     
-    Log(m_state.getCurrentStateName());
+    // Log(m_state.getCurrentStateName());
     
     float oscillator = sin(time * 1.5f) / 2.0f + 0.5f;
     m_tetra->m_material->setUniform("u_color", glm::vec4(0.0f, oscillator, 0.8f, 1.0f));
