@@ -21,6 +21,10 @@ MyScene::MyScene() {
 
 void MyScene::init() {
 
+    // @TODO add Scene::preload() method
+    // m_audio.createSource("intro_music", "test.wav");
+    // m_audio.play("intro_music");
+
     m_camera->setPosition(glm::vec3(0.0f, 2.0f, 8.0f));
 
     auto lightDirection = ref<Uniform<glm::vec3>>("u_lightDirection", glm::vec3(0.5f, 0.0f, 2.0f));

@@ -16,42 +16,34 @@
  */
 EventEmitter Events::_emitter;
 
-Game game;
-
 int main() {
 
+    // @TODO move this to Audio class
     alure::DeviceManager devMgr = alure::DeviceManager::getInstance();
-
     alure::Device dev;
 
     if(!dev) dev = devMgr.openPlayback();
-
     alure::Context ctx = dev.createContext();
     alure::Context::MakeCurrent(ctx);
 
-    const char* audioFile = "test.wav";
-    alure::Buffer buffer = ctx.getBuffer(audioFile);
-    alure::Source source = ctx.createSource();
-    source.play(buffer);
-    std::cout<< "Playing "<< audioFile <<" ("
-        << alure::GetSampleTypeName(buffer.getSampleType())<<", "
-        << alure::GetChannelConfigName(buffer.getChannelConfig())<<", "
-        << buffer.getFrequency()<<"hz)" <<std::endl;
+    Audio audio(ctx);
 
+    audio.createSource("moi", "test.wav");
+    audio.play("moi");
+
+    Game game;
+    
     while (game.isRunning()) {
         game.update();
-
-        if (source.isPlaying()) {
-            std::cout<< "\r "<<source.getSampleOffset()<<" / "<<buffer.getLength() <<std::flush;
-        }
 
         ctx.update();
     }
 
-    source.destroy();
-    ctx.removeBuffer(buffer);
+    audio.destroy();
 
-    std::cout<<std::endl;
+    // source.destroy();
+    // ctx.removeBuffer(buffer);
+
     alure::Context::MakeCurrent(nullptr);
     ctx.destroy();
     dev.close();
