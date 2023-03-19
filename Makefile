@@ -7,8 +7,12 @@ TARGET := game
 # The -MMD flag ensures dependency files (.d) are created
 CXX := g++
 CXXFLAGS := -std=c++17 -MMD
-INCLUDES := -I${SRCDIR} -Ilib/SDL2/include -Ilib/glad/include -Ilib/stb_image 
-LDFLAGS := -lSDL2
+INCLUDES := -I${SRCDIR} \
+	-Ilib/SDL2/include \
+	-Ilib/glad/include \
+	-Ilib/stb_image \
+	-Ilib/alure/include 
+LDFLAGS := -lSDL2 -lalure2
 
 # Platform specific settings
 UNAME_S := $(shell uname -s)
