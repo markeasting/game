@@ -32,7 +32,7 @@ public:
         m_state->update(time, dt);
 
         if (m_state->isComplete())
-            m_state = m_state->next();
+            this->next();
     }
     
     void next() {
@@ -40,29 +40,32 @@ public:
 
         m_state->complete();
         m_state = m_state->next();
+
+        Log(m_state->getName());
+
+        Events::emit(Events::STATE_CHANGE, m_state);
     }
 
     Ref<State> current() {
         return m_state;
     }
 
-    const char* getCurrentStateName() {
+    const char* getName() {
         assert(m_state != nullptr);
 
-        // return typeid(*m_state).name();
         return m_state->getName();
     }
 
     bool is(const char* name) {
         assert(m_state != nullptr);
 
-        return m_state->getName() == name;
+        return m_state->is(name);
     }
 
     bool inGroup(const char* group) {
         assert(m_state != nullptr);
 
-        return m_state->getGroup() == group;
+        return m_state->inGroup(group);
     }
 
 private:

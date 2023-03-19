@@ -34,6 +34,9 @@ struct State {
 
     const char* getName() { return m_name; }
     const char* getGroup() { return m_group; }
+    
+    bool is(const char* name) { return m_name == name; }
+    bool inGroup(const char* group) { return m_group == group; }
 
     void complete() {
         m_startTime = -1.0f;
