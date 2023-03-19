@@ -25,16 +25,14 @@ void Camera::bind() const {
 void Camera::update(float time) {
 
     if(m_autoRotate) {
-        
-        m_lookAtPos = glm::vec3(0.0f, 1.0f, 0.0f);
 
-        const float camRadius = glm::distance(m_position, m_lookAtPos);
+        // m_camRadius = glm::distance(m_position, m_lookAtPos);
 
-        m_position.x = sin(time) * camRadius;
-        m_position.z = cos(time) * camRadius;
+        m_position.x = sin(time) * m_camRadius;
+        m_position.z = cos(time) * m_camRadius;
         m_position.y = 1.0f;
 
-        m_viewMatrix = glm::lookAt(m_position, glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+        m_viewMatrix = glm::lookAt(m_position, m_lookAtPos, glm::vec3(0.0, 1.0, 0.0));
 
     } else {
 

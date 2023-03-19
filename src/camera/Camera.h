@@ -13,8 +13,9 @@ public:
     // float zoomspeed = 0.05f;
 
     bool m_autoRotate = true;
+    float m_camRadius = 10.0f;
 
-    glm::vec3 m_lookAtPos = glm::vec3(0.0f);
+    glm::vec3 m_lookAtPos = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 m_eulerRotation = glm::vec3(-90.0f, 0.0f, 0.0f);
 
     glm::mat4 m_viewMatrix = glm::mat4(1.0f);
