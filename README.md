@@ -1,6 +1,8 @@
 # Libraries
 The libraries below are also present in the `lib` directory.
 
+See `lib/alure/README.md` how to build and install Alure (OpenAL). 
+
 ## MacOS
 
 `brew install sdl2`
@@ -12,8 +14,6 @@ The libraries below are also present in the `lib` directory.
 `sudo apt-get install libsdl2-2.0-0 apt-get install libsdl2-dev`
 
 `sudo apt install libglm-dev`
-
-@TODO: replace GLAD with GLEW (`libglew-dev`)? 
 
 # Build (Linux / MacOS)
 
