@@ -15,7 +15,7 @@ void Log(const std::string& msg, LogLevel&& logLevel, const std::string& origin)
     }
 
     if(logLevel > 0 && logLevel >= LOG_LEVEL) {
-        std::printf("[%s] %s %s\n", logLevelString.c_str(), msg.c_str(), origin.c_str());
+        std::printf("%s %s\n", msg.c_str(), origin.c_str());
     }
 }
 

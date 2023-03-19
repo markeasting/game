@@ -23,6 +23,8 @@ void Audio::load(const char* handle, const char* filename) {
         return;
     }
 
+    Log("Loading", filename);
+
     alure::Buffer buffer = m_ctx.getBuffer(filename);
     m_buffers[handle] = buffer;
 }
@@ -39,6 +41,7 @@ alure::Source Audio::createSource(const char* handle, const char* filename) {
     }
 
     alure::Source source = m_ctx.createSource();
+    // source.set3DSpatialize(alure::Spatialize::On);
 
     m_sources[handle] = source;
 
