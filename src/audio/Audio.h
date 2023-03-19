@@ -19,6 +19,7 @@ public:
     alure::Source createSource(const char* handle, const char* filename = "");
     // alure::Source createSource3D(const char* handle, const char* filename = "");
 
+    alure::Source get(const char* handle);
     void play(const char* handle);
     void stop(const char* handle);
 

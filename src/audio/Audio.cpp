@@ -48,6 +48,12 @@ alure::Source Audio::createSource(const char* handle, const char* filename) {
     return source;
 }
 
+alure::Source Audio::get(const char* handle) {
+    assert(m_sources.find(handle) != m_sources.end()); // Handle not found
+
+    return m_sources[handle];
+}
+
 void Audio::play(const char* handle) {
 
     assert(m_sources.find(handle) != m_sources.end()); // Handle not found
