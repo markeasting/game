@@ -2,9 +2,6 @@
 #include "common.h"
 
 #include "app/Game.h"
-#include "audio/Audio.h"
-
-#include "AL/alure2.h"
 
 /**
  * What’s the "static initialization order 'fiasco' (problem)"?
@@ -29,3 +26,4 @@ int main() {
 
     return 0;
 }
+
