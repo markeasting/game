@@ -1,10 +1,10 @@
 #pragma once
 
-#include "scene/Scene.h"
-
 #include <memory>
 #include <unordered_map>
-// #include "input/KeyboardHandler.h"
+
+#include "scene/Scene.h"
+#include "audio/Audio.h"
 
 class SceneManager
 {
@@ -21,10 +21,14 @@ public:
 
     Ref<Scene> getCurrentScene() const { return m_currentScene; };
 
+    void destroy();
+    
 private:
     std::unordered_map<unsigned int, Ref<Scene>> m_scenes = {};
     unsigned int m_insertedSceneIdx = 0;
 
     Ref<Scene> m_currentScene = nullptr;
+
+    Ref<Audio> m_audio = ref<Audio>();
 
 };

@@ -26,9 +26,8 @@ public:
 
     void update();
     bool isRunning() const;
-    void quit() const;
+    void quit();
 
-    SceneManager getSceneManager() const;
     void registerScenes();
 
     float getTime() const { return m_time; }

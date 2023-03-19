@@ -8,6 +8,7 @@ void SceneManager::update(float time, float dt) {
     if(m_currentScene == nullptr)
         return;
 
+    m_audio->update();
     m_currentScene->update(time, dt);
 }
 
@@ -15,6 +16,7 @@ unsigned int SceneManager::add(Ref<Scene> scene) {
 
     auto inserted = m_scenes.insert(std::make_pair(m_insertedSceneIdx, scene));
 
+    scene->m_audio = m_audio; /* Inject audio manager / could also do singleton? */
     scene->init();
     scene->bindEvents();
 
@@ -44,4 +46,10 @@ void SceneManager::switchTo(unsigned int id) {
         m_currentScene = it->second;
         m_currentScene->onActivate();
     }
+}
+
+void SceneManager::destroy() {
+    m_audio->destroy();
+
+    // @TODO more cleanup
 }

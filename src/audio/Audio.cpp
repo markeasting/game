@@ -1,13 +1,20 @@
 
 #include "audio/Audio.h"
 
-// std::unordered_map<const char*, alure::Source> Audio::m_sources;
-// std::unordered_map<const char*, alure::Buffer> Audio::m_buffers;
+// Audio& Audio::Instance() {
+//     static Audio instance;
+//     return instance;
+// }
 
-// alure::Device Audio::m_device;
-// alure::Context Audio::m_ctx;
+Audio::Audio() {
+    m_devMgr = alure::DeviceManager::getInstance();
 
-Audio::Audio(alure::Context ctx) : m_ctx(ctx) {}
+    if(!m_device) m_device = m_devMgr.openPlayback();
+    
+    m_ctx = m_device.createContext();
+    alure::Context::MakeCurrent(m_ctx);
+
+}
 
 void Audio::load(const char* handle, const char* filename) {
     
@@ -15,9 +22,6 @@ void Audio::load(const char* handle, const char* filename) {
         Log("Audio buffer already exists!", handle);
         return;
     }
-
-    Log(handle);
-    Log(filename);
 
     alure::Buffer buffer = m_ctx.getBuffer(filename);
     m_buffers[handle] = buffer;
@@ -43,8 +47,8 @@ alure::Source Audio::createSource(const char* handle, const char* filename) {
 
 void Audio::play(const char* handle) {
 
-    assert(m_sources.find(handle) != m_sources.end());
-    assert(m_buffers.find(handle) != m_buffers.end());
+    assert(m_sources.find(handle) != m_sources.end()); // Handle not found
+    assert(m_buffers.find(handle) != m_buffers.end()); // Handle not found
 
     auto buff = m_buffers[handle];
 
@@ -59,8 +63,8 @@ void Audio::play(const char* handle) {
 
 void Audio::stop(const char* handle) {
 
-    assert(m_sources.find(handle) != m_sources.end());
-    assert(m_buffers.find(handle) != m_buffers.end());
+    assert(m_sources.find(handle) != m_sources.end()); // Handle not found
+    assert(m_buffers.find(handle) != m_buffers.end()); // Handle not found
 
     m_sources[handle].stop();
 
@@ -69,20 +73,20 @@ void Audio::stop(const char* handle) {
 // @TODO this is currently never called
 void Audio::destroy() {
 
-    // for (auto source : m_sources) {
-    //     source.second.destroy();
-    // }
+    for (auto source : m_sources) {
+        source.second.destroy();
+    }
 
-    // for (auto buff : m_buffers) {
-    //     m_ctx.removeBuffer(buff.second);
-    // }
+    for (auto buff : m_buffers) {
+        m_ctx.removeBuffer(buff.second);
+    }
 
-    // alure::Context::MakeCurrent(nullptr);
+    alure::Context::MakeCurrent(nullptr);
 
-    // auto dev = m_ctx.getDevice();
+    auto dev = m_ctx.getDevice();
     
-    // m_ctx.destroy();
+    m_ctx.destroy();
 
-    // dev.close();
+    dev.close();
 
 }

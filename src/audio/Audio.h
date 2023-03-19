@@ -9,10 +9,11 @@
 class Audio {
 public:
 
-    // Audio();
-    Audio(alure::Context ctx);
+	// static Audio& Instance();
 
-    // static void init(); // Doesn't work :(
+    Audio();
+	// Audio(const Audio&) = delete;
+    // ~Audio() = default;
 
     void load(const char* handle, const char* filename);
     alure::Source createSource(const char* handle, const char* filename = "");
@@ -26,10 +27,10 @@ public:
     inline void update() { m_ctx.update(); };
 
 private:
-
     std::unordered_map<const char*, alure::Source> m_sources;
     std::unordered_map<const char*, alure::Buffer> m_buffers;
 
+    alure::DeviceManager m_devMgr;
     alure::Device m_device;
     alure::Context m_ctx;
 

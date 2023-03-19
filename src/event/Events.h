@@ -10,6 +10,7 @@ public:
     static constexpr const char* KEYUP = "KEYUP";
     static constexpr const char* MOUSEDOWN = "MOUSEDOWN";
     static constexpr const char* MOUSEUP = "MOUSEUP";
+    static constexpr const char* STATE_CHANGE = "STATE_CHANGE";
 
     template <typename Callback>
     static void on(const std::string &name, Callback cb) {

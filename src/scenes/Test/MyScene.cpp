@@ -10,7 +10,7 @@ MyScene::MyScene() {
 
     m_state.sequence({
         ref<State>("WaitState"),
-        ref<State>(State("Countdown_3", 1.0f).setGroup("countdown")),
+        ref<State>(State("Countdown_3", 1.2f).setGroup("countdown")),
         ref<State>(State("Countdown_2", 1.0f).setGroup("countdown")),
         ref<State>(State("Countdown_1", 1.0f).setGroup("countdown")),
         ref<State>("PLAYING"),
@@ -22,8 +22,15 @@ MyScene::MyScene() {
 void MyScene::init() {
 
     // @TODO add Scene::preload() method
-    // m_audio.createSource("intro_music", "test.wav");
-    // m_audio.play("intro_music");
+    m_audio->createSource("intro_music", "assets/music/MOM$ - Spacial (pop off).mp3");
+    m_audio->createSource("end_music", "assets/music/Qteku - Energy Star (trim).mp3");
+    m_audio->createSource("race_music", "assets/music/Glidelas - Angel File [WIP] (trim).mp3");
+    m_audio->createSource("YouWin", "assets/audio/voice/you_win.ogg");
+    m_audio->createSource("Countdown_3", "assets/audio/voice/3.ogg");
+    m_audio->createSource("Countdown_2", "assets/audio/voice/2.ogg");
+    m_audio->createSource("Countdown_1", "assets/audio/voice/1.ogg");
+    m_audio->createSource("Countdown_GO", "assets/audio/voice/go.ogg");
+    m_audio->play("intro_music");
 
     m_camera->setPosition(glm::vec3(0.0f, 2.0f, 8.0f));
 
@@ -65,6 +72,29 @@ void MyScene::bindEvents() {
         SDL_SetRelativeMouseMode(m_camera->m_autoRotate ? SDL_FALSE : SDL_TRUE);
     });
 
+    Events::on(Events::STATE_CHANGE, [&](Ref<State> state) {
+        Log(state->getName());
+
+        if (state->inGroup("countdown")) {
+            m_audio->stop("intro_music");
+            m_audio->play(state->getName());
+        }
+
+        if (state->is("Countdown_3")) {
+            m_audio->play("race_music");
+        }
+
+        if (state->is("PLAYING")) {
+            m_audio->play("Countdown_GO");
+            // m_audio->play("race_music");
+        }
+
+        if (state->is("Finish")) {
+            m_audio->stop("race_music");
+            m_audio->play("YouWin");
+            m_audio->play("end_music");
+        }
+    });
 }
 
 void MyScene::update(float time, float dt) {
@@ -72,7 +102,7 @@ void MyScene::update(float time, float dt) {
     m_camera->update(time);
     m_state.update(time, dt); // @TODO move to base update
     
-    // Log(m_state.getCurrentStateName());
+    // Log(m_state.getName());
     
     float oscillator = sin(time * 1.5f) / 2.0f + 0.5f;
     m_tetra->m_material->setUniform("u_color", glm::vec4(0.0f, oscillator, 0.8f, 1.0f));
@@ -83,7 +113,6 @@ void MyScene::update(float time, float dt) {
     }
 
     if (m_state.is("PLAYING")) {
-
         m_tetra->setScale(sin(time * 30.0f) * 0.3f + 0.8f);
 
         // m_layers["overlay"]->m_active = (int) time % 2 == 0;

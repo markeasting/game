@@ -65,14 +65,13 @@ void Game::update()
     m_window.swapBuffers();
 }
 
-SceneManager Game::getSceneManager() const {
-    return m_sceneManager;
-}
-
 bool Game::isRunning() const {
     return m_isRunning;
 }
 
-void Game::quit() const {
+void Game::quit() {
+
+    m_sceneManager.destroy();
+
     SDL_Quit();
 }

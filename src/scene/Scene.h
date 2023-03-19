@@ -4,6 +4,7 @@
 #include "camera/Camera.h"
 #include "scene/Layer.h"
 #include "state/StateManager.h"
+#include "audio/Audio.h"
 
 class Scene {
 public:
@@ -11,6 +12,8 @@ public:
     std::unordered_map<const char*, Ref<Layer>> m_layers = {};
 
     StateManager m_state;
+
+    Ref<Audio> m_audio; /* Injected by SceneManager */
 
     Scene();
     virtual ~Scene() {};
