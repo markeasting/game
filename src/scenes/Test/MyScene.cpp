@@ -1,6 +1,8 @@
 
 #include "scenes/Test/MyScene.h"
 
+#include <algorithm>
+
 MyScene::MyScene() {
 
     this->addLayer("world", m_world);
@@ -25,14 +27,15 @@ void MyScene::init() {
     m_audio->createSource("intro_music", "assets/music/MOM$ - Spacial (pop off).mp3");
     m_audio->createSource("end_music", "assets/music/Qteku - Energy Star (trim).mp3");
     m_audio->createSource("race_music", "assets/music/Glidelas - Angel File [WIP] (trim).mp3");
-    m_audio->createSource("YouWin", "assets/audio/voice/you_win.ogg");
-    m_audio->createSource("Countdown_3", "assets/audio/voice/3.ogg");
-    m_audio->createSource("Countdown_2", "assets/audio/voice/2.ogg");
-    m_audio->createSource("Countdown_1", "assets/audio/voice/1.ogg");
-    m_audio->createSource("Countdown_GO", "assets/audio/voice/go.ogg");
+    m_audio->createSource("YouWin", "assets/audio/voice/you_win.mp3");
+    m_audio->createSource("Countdown_3", "assets/audio/voice/3.mp3");
+    m_audio->createSource("Countdown_2", "assets/audio/voice/2.mp3");
+    m_audio->createSource("Countdown_1", "assets/audio/voice/1.mp3");
+    m_audio->createSource("Countdown_GO", "assets/audio/voice/go.mp3");
     m_audio->play("intro_music");
 
     m_camera->setPosition(glm::vec3(0.0f, 2.0f, 8.0f));
+    m_camera->m_camRadius = 8.0f;
 
     auto lightDirection = ref<Uniform<glm::vec3>>("u_lightDirection", glm::vec3(0.5f, 0.0f, 2.0f));
 
@@ -106,21 +109,24 @@ void MyScene::update(float time, float dt) {
     
     float oscillator = sin(time * 1.5f) / 2.0f + 0.5f;
     m_tetra->m_material->setUniform("u_color", glm::vec4(0.0f, oscillator, 0.8f, 1.0f));
+    m_tetra->setRotation({ time * 100.0f, 0.0f, 0.0f });
 
     if (m_state.inGroup("countdown")) {
-        m_tetra->setRotation({ time * 100.0f, 0.0f, 0.0f });
         m_tetra->m_material->setUniform("u_color", glm::vec4(oscillator, 0.0f, 0.3f, 1.0f));
     }
 
     if (m_state.is("PLAYING")) {
-        m_tetra->setScale(sin(time * 30.0f) * 0.3f + 0.8f);
+        const float beatMatch = (145.0f / 60.0f) * time * 2.0f * M_PI; 
+        m_tetra->setScale(sin(beatMatch) * 0.3f + 0.8f);
+        m_tetra->setRotation({ 0.0f, beatMatch * 180.0f/M_PI, 0.0f });
 
-        // m_layers["overlay"]->m_active = (int) time % 2 == 0;
+        m_camera->m_lookAtPos = glm::vec3(0, 1.0f, 0);
+        m_camera->m_camRadius = std::max(m_camera->m_camRadius * 0.96f, 5.0f);
     }
 
     if (m_state.is("Finish")) {
-        m_layers["world"]->m_active = false;
-        m_layers["overlay"]->m_active = true;
+        m_layers["overlay"]->m_active = (int) time % 2 == 0;
+        m_camera->m_camRadius = std::max(m_camera->m_camRadius * 0.98f, 3.0f);
     }
 }
 
