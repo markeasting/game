@@ -5,7 +5,9 @@
             "${workspaceFolder}/lib/SDL2/include",
             "${workspaceFolder}/lib/glad/include",
             "${workspaceFolder}/lib/stb_image",
-            "${workspaceFolder}/lib/alure/include"
+            "${workspaceFolder}/lib/alure/include",
+            "${workspaceFolder}/lib/objload",
+            "${workspaceFolder}/lib/tinygltf"
         ]
     },
     "configurations": [

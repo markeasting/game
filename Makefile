@@ -11,7 +11,8 @@ INCLUDES := -I${SRCDIR} \
 	-Ilib/SDL2/include \
 	-Ilib/glad/include \
 	-Ilib/stb_image \
-	-Ilib/alure/include 
+	-Ilib/alure/include \
+	-Ilib/objload 
 LDFLAGS := -lSDL2 -lalure2
 
 # Platform specific settings
