@@ -8,15 +8,6 @@ class LayerManager {
 public:
     LayerManager() = default;
 
-    /**
-     * Called by ScenManager before Scene.init()
-     */
-    void initLayers() {
-        for (auto& pair : m_layers) {
-            pair.second->init();
-        }
-    }
-
     Ref<Layer> add(const char* name, Ref<Layer> layer) {
         assert(layer != nullptr);
         m_layers[name] = layer;

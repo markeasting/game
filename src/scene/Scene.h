@@ -21,15 +21,24 @@ public:
     Scene();
     virtual ~Scene() {};
 
+    /* Called by SceneManager */
+    inline void _init() {
+        for (auto& pair : m_layers.all()) {
+            pair.second->init();
+        }
+    }
+
+    /* Overridable methods */
+    virtual void preload() = 0;
     virtual void init() = 0;
     virtual void destroy() = 0; // @TODO handle with destructor?
-
-    virtual void onActivate() {};
-    virtual void onDeactivate() {};
 
     virtual void bindEvents() {};
 
     virtual void update(float time, float dt){};
+
+    virtual void onActivate() {};
+    virtual void onDeactivate() {};
 
     Ref<Camera> getCamera() { return m_camera; }
 

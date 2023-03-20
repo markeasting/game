@@ -21,9 +21,7 @@ MyScene::MyScene() {
 
 }
 
-void MyScene::init() {
-
-    // @TODO add Scene::preload() method
+void MyScene::preload() {
     m_audio->createSource("intro_music", "assets/music/MOM$ - Spacial (pop off).mp3");
     m_audio->createSource("end_music", "assets/music/Qteku - Energy Star (trim).mp3");
     m_audio->createSource("race_music", "assets/music/Glidelas - Angel File [WIP] (trim).mp3");
@@ -32,6 +30,10 @@ void MyScene::init() {
     m_audio->createSource("Countdown_2", "assets/audio/voice/2.mp3");
     m_audio->createSource("Countdown_1", "assets/audio/voice/1.mp3");
     m_audio->createSource("Countdown_GO", "assets/audio/voice/go.mp3");
+}
+
+void MyScene::init() {
+
     m_audio->play("intro_music");
 
     m_camera->setPosition(glm::vec3(0.0f, 2.0f, 8.0f));

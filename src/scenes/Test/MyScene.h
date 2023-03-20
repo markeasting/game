@@ -13,6 +13,7 @@ class MyScene final : public Scene
 public:
     MyScene();
 
+    void preload() override;
     void init() override;
     void destroy() override;
 

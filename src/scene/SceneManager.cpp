@@ -18,7 +18,9 @@ unsigned int SceneManager::add(Ref<Scene> scene) {
 
     scene->m_audio = m_audio; /* Inject audio manager / could also do singleton? */
     // scene->m_sceneManager = ref<SceneManager>(*this); /* Inject SceneManager / could also do singleton? */
-    scene->m_layers.initLayers();
+    
+    scene->preload();
+    scene->_init();
     scene->init();
     scene->bindEvents();
 
