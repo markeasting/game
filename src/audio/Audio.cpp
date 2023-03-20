@@ -16,86 +16,94 @@ Audio::Audio() {
 
 }
 
-void Audio::load(const char* handle, const char* filename) {
-    
-    if(m_buffers.find(handle) != m_buffers.end()) {
-        Log("Audio buffer already exists!", handle);
-        return;
-    }
+Ref<BufferAudioSource> Audio::add(const char* handle, const char* filename) {
 
-    Log("Loading", filename);
+    Log(filename, "Loading audio buffer: ");
 
     alure::Buffer buffer = m_ctx.getBuffer(filename);
+    alure::Source source = m_ctx.createSource();
+    // source.set3DSpatialize(alure::Spatialize::On);
+
+    auto newSource = ref<BufferAudioSource>(source);
+    newSource->buffer = buffer;
+
+    m_sources[handle] = newSource;
     m_buffers[handle] = buffer;
+
+    return newSource;
 }
 
-alure::Source Audio::createSource(const char* handle, const char* filename) {
+Ref<StreamAudioSource> Audio::stream(const char* handle, const char* filename) {
 
-    if(m_buffers.find(handle) != m_buffers.end()) {
-        Log("Audio source already exists!", handle);
-        return m_sources[handle];
-    }
-
-    if (filename) {
-        this->load(handle, filename);
-    }
+    Log(filename, "Streaming audio: ");
 
     alure::Source source = m_ctx.createSource();
     // source.set3DSpatialize(alure::Spatialize::On);
 
-    m_sources[handle] = source;
+    auto newSource = ref<StreamAudioSource>(source, m_ctx.createDecoder(filename));
 
-    return source;
+    m_sources[handle] = newSource;
+
+    return newSource;
 }
 
 alure::Source Audio::get(const char* handle) {
-    assert(m_sources.find(handle) != m_sources.end()); // Handle not found
+    assert(m_sources.find(handle) != m_sources.end());
 
-    return m_sources[handle];
+    return m_sources[handle]->source;
 }
 
 void Audio::play(const char* handle) {
 
-    assert(m_sources.find(handle) != m_sources.end()); // Handle not found
-    assert(m_buffers.find(handle) != m_buffers.end()); // Handle not found
+    assert(m_sources.find(handle) != m_sources.end());
 
-    auto buff = m_buffers[handle];
+    // auto buff = m_buffers[handle];
+    // std::cout<< "Playing "<< handle <<" ("
+    //     << alure::GetSampleTypeName(buff.getSampleType())<<", "
+    //     << alure::GetChannelConfigName(buff.getChannelConfig())<<", "
+    //     << buff.getFrequency()<<"hz)" <<std::endl;
 
-    std::cout<< "Playing "<< handle <<" ("
-        << alure::GetSampleTypeName(buff.getSampleType())<<", "
-        << alure::GetChannelConfigName(buff.getChannelConfig())<<", "
-        << buff.getFrequency()<<"hz)" <<std::endl;
-
-    m_sources[handle].play(buff);
+    m_sources[handle]->play();
 
 }
 
 void Audio::stop(const char* handle) {
-
-    assert(m_sources.find(handle) != m_sources.end()); // Handle not found
-    assert(m_buffers.find(handle) != m_buffers.end()); // Handle not found
-
-    m_sources[handle].stop();
-
+    assert(m_sources.find(handle) != m_sources.end());
+    m_sources[handle]->stop();
 }
+
+void Audio::fadeOut(const char* handle, int time_ms) {
+    assert(m_sources.find(handle) != m_sources.end());
+    m_sources[handle]->source.fadeOutToStop(0.0f, std::chrono::milliseconds(time_ms));
+}
+
+void Audio::update() {
+    m_ctx.update();
+}
+
+void Audio::updateListener(glm::vec3 pos, glm::vec3 dir, glm::vec3 up) {
+    auto listener = m_ctx.getListener();
+
+    listener.setPosition(glm::value_ptr(pos));
+    listener.setOrientation(glm::value_ptr(dir), glm::value_ptr(up));
+}
+
 
 // @TODO this is currently never called
 void Audio::destroy() {
 
-    for (auto source : m_sources) {
-        source.second.destroy();
-    }
+    for (auto pair : m_sources) {
+        pair.second->source.destroy();
 
-    for (auto buff : m_buffers) {
-        m_ctx.removeBuffer(buff.second);
+        // @TODO clean up buffers -- isn't this also done by deleting the context?
+        // if (pair.second->isBuffer) {
+        //     auto buff = dynamic_cast<BufferAudioSource>(pair.second);
+        // }
     }
 
     alure::Context::MakeCurrent(nullptr);
 
-    auto dev = m_ctx.getDevice();
-    
     m_ctx.destroy();
-
-    dev.close();
+    m_device.close();
 
 }

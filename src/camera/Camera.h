@@ -28,9 +28,15 @@ public:
     ~Camera();
 
     void setSize(float frameBufferWidth, float frameBufferHeight);
-    void bind() const;
 
+    // glm::vec3 getOrientation(); // @TODO use in audio listener setOrientation()
+    inline glm::vec3 getForward() { return front; }
+    inline glm::vec3 getUp() { return up; }
+    inline glm::vec3 getRight() { return right; }
+
+    void bind() const;
     void update(float time);
+
 
 private:
 

@@ -22,14 +22,22 @@ MyScene::MyScene() {
 }
 
 void MyScene::preload() {
-    m_audio->createSource("intro_music", "assets/music/MOM$ - Spacial (pop off).mp3");
-    m_audio->createSource("end_music", "assets/music/Qteku - Energy Star (trim).mp3");
-    m_audio->createSource("race_music", "assets/music/Glidelas - Angel File [WIP] (trim).mp3");
-    m_audio->createSource("YouWin", "assets/audio/voice/you_win.mp3");
-    m_audio->createSource("Countdown_3", "assets/audio/voice/3.mp3");
-    m_audio->createSource("Countdown_2", "assets/audio/voice/2.mp3");
-    m_audio->createSource("Countdown_1", "assets/audio/voice/1.mp3");
-    m_audio->createSource("Countdown_GO", "assets/audio/voice/go.mp3");
+
+    glm::vec3 audioPos = { 0.0f, 0.5f, 3.0f };
+
+    m_audio->stream("intro_music", "assets/music/MOM$ - Spacial (pop off).mp3");
+    m_audio->stream("race_music", "assets/music/Glidelas - Angel File [WIP] (trim).mp3");
+    m_audio->stream("end_music", "assets/music/Qteku - Energy Star (trim).mp3");
+
+    m_audio->add("Countdown_3", "assets/audio/voice/3.mp3")->setPosition(audioPos);
+    m_audio->add("Countdown_2", "assets/audio/voice/2.mp3")->setPosition(audioPos);
+    m_audio->add("Countdown_1", "assets/audio/voice/1.mp3")->setPosition(audioPos);
+    m_audio->add("Countdown_GO", "assets/audio/voice/go.mp3")->setPosition(audioPos);
+    m_audio->add("YouWin", "assets/audio/voice/you_win.mp3")->setPosition(audioPos);
+
+    // auto src = m_audio->add("MOI", "assets/music/Qteku - Energy Star.mp3");
+    // src->setPosition(audioPos);
+    // m_audio->play("MOI");
 }
 
 void MyScene::init() {
@@ -84,7 +92,7 @@ void MyScene::bindEvents() {
         Log(state->getName());
 
         if (state->inGroup("countdown")) {
-            m_audio->get("intro_music").fadeOutToStop(0.0f, std::chrono::milliseconds(1000));
+            m_audio->fadeOut("intro_music");
             m_audio->play(state->getName());
         }
 
@@ -99,7 +107,7 @@ void MyScene::bindEvents() {
 
         if (state->is("Finish")) {
             // m_audio->stop("race_music");
-            m_audio->get("race_music").fadeOutToStop(0.0f, std::chrono::milliseconds(1000));
+            m_audio->fadeOut("race_music");
             m_audio->play("YouWin");
             m_audio->play("end_music");
         }
@@ -110,6 +118,7 @@ void MyScene::update(float time, float dt) {
 
     m_camera->update(time);
     m_state.update(time, dt); // @TODO move to base update
+    m_audio->updateListener(m_camera->getPosition(), m_camera->getForward(), m_camera->getUp());
     
     // Log(m_state.getName());
     
