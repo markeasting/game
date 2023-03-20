@@ -7,13 +7,13 @@ in VS_OUT {
     vec3 V;
 } fs_in;
 
-uniform vec3 ambient = vec3(0.329412, 0.223529, 0.027451);
-uniform vec3 diffuseAlbedo = vec3(0.780392, 0.568627, 0.113725);
-uniform vec3 specularAlbedo = vec3(0.5, 0.5, 0.5);
-uniform vec3 rimColor = vec3(0.8, 0.9, 0.9);
+uniform vec3 ambient = vec3(0.15, 0.0, 0.0);
+uniform vec3 diffuseAlbedo = vec3(0.7, 0.1, 0.0);
+uniform vec3 specularAlbedo = vec3(1.0, 0.8, 0.8);
+uniform vec3 rimColor = vec3(0.3, 0.3, 0.3) * 2.0;
 
-uniform float shininess = 128.0;
-uniform float rimPower = 1.0;
+uniform float shininess = 100.0;
+uniform float rimPower = 4.0;
 
 uniform int specularOn = 1;
 uniform int rimLightOn = 1;
