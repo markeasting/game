@@ -1,11 +1,12 @@
 
 #include "scenes/Test/MyScene.h"
+#include "scene/SceneManager.h"
 #include "util/Anim.h"
 
 MyScene::MyScene() {
 
-    this->addLayer("world", m_world);
-    this->addLayer("overlay", m_overlay);
+    m_layers.add("world", m_world);
+    m_layers.add("overlay", m_overlay);
 
     m_overlay->m_active = false;
 
@@ -64,7 +65,10 @@ void MyScene::bindEvents() {
     Events::on(Events::KEYUP, [&](SDL_KeyCode key) {
         switch (key) {
             case SDLK_SPACE:
-                m_state.next();
+                // if (m_state.is("Finish"))
+                //     m_sceneManager->switchTo(0);
+                // else
+                    m_state.next();
             break;
         }
     });
@@ -126,7 +130,7 @@ void MyScene::update(float time, float dt) {
     }
 
     if (m_state.is("Finish")) {
-        m_layers["overlay"]->m_active = (int) time % 2 == 0;
+        m_layers.get("overlay")->m_active = (int) time % 2 == 0;
         Anim::lerp(m_camera->m_camRadius, 2.5f, 0.05f);
     }
 }

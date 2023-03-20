@@ -2,7 +2,7 @@
 
 #include "common.h"
 #include "app/Window.h"
-#include "core/SceneManager.h"
+#include "scene/SceneManager.h"
 #include "camera/Camera.h"
 #include "gfx/Renderer.h"
 

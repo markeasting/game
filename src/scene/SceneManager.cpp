@@ -1,5 +1,5 @@
 #include "common.h"
-#include "core/SceneManager.h"
+#include "scene/SceneManager.h"
 #include "scene/Scene.h"
 
 SceneManager::SceneManager() {}
@@ -17,12 +17,14 @@ unsigned int SceneManager::add(Ref<Scene> scene) {
     auto inserted = m_scenes.insert(std::make_pair(m_insertedSceneIdx, scene));
 
     scene->m_audio = m_audio; /* Inject audio manager / could also do singleton? */
+    // scene->m_sceneManager = ref<SceneManager>(*this); /* Inject SceneManager / could also do singleton? */
+    scene->m_layers.initLayers();
     scene->init();
     scene->bindEvents();
 
-    for (auto& it : scene->m_layers) {
-        it.second->init();
-    }
+    // for (auto& pair : scene->m_layers.all()) {
+    //     pair.second->init();
+    // }
 
     return m_insertedSceneIdx++;
 }
