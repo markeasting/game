@@ -1,6 +1,7 @@
 #pragma once
 
 #include "gfx/BufferObject.h"
+#include "objload.h"
 
 class Renderer;
 
@@ -11,6 +12,7 @@ public:
     Geometry();
     Geometry(Ref<VertexBuffer> vbo, Ref<IndexBuffer> ibo = nullptr);
     Geometry(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices = {});
+    Geometry(const obj::Model &objModel);
 
     // template<typename T>
     // void setAttribute(BufferObject<T> attribute) {
@@ -28,6 +30,7 @@ public:
 protected:
     Ref<IndexBuffer> m_indexBuffer = nullptr;
     Ref<VertexBuffer> m_vertexBuffer = nullptr;
+    // Ref<BufferObject<float>> m_vertexBuffer = nullptr;
 
 private:
     friend Renderer;
