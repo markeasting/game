@@ -1,6 +1,10 @@
 .DS_Store
 .vs
+
 bin/bin
 bin/release
 bin/debug
+
 assets/music/*
+
+*.blend1
