@@ -8,7 +8,7 @@ void World::init() {
 
     // @TODO share this stuff with the parent scene / other layers. 
     // E.g. using the same lights
-    auto lightDirection = ref<Uniform<glm::vec3>>("u_lightDirection", glm::vec3(0.5f, 0.0f, 2.0f));
+    auto lightDirection = ref<Uniform<glm::vec3>>("u_lightDirection", glm::normalize(glm::vec3(0.5f, 0.0f, 1.0f)));
 
     Material phongMaterial = Material("Phong", { lightDirection });
     Material phongMaterial2 = Material("Phong", {
@@ -26,16 +26,16 @@ void World::init() {
     floor->setRotation({ -90.0f, 0.0f, 0.0f });
     this->add(floor);
 
-    // auto sphere = ref<Mesh>(SphereGeometry(1.0f), phongMaterial);
-    // sphere->setPosition({ 0.0f, 0.5f, 3.0f });
-    // this->add(sphere);
+    auto sphere = ref<Mesh>(SphereGeometry(1.0f), phongMaterial);
+    sphere->setPosition({ 0.0f, 0.5f, 3.0f });
+    this->add(sphere);
 
     /* Testing OBJ loading */
-    obj::Model cube = obj::loadModelFromFile("assets/objects/cube.obj");
+    obj::Model cube = obj::loadModelFromFile("assets/objects/car/car.obj");
 
     auto obj = ref<Mesh>(Geometry(cube), phongMaterial);
-    obj->setPosition({ 0.0f, 0.5f, 3.0f });
-    obj->setScale(0.5f);
+    obj->setPosition({ 4.0f, 0, 0 });
+    // obj->setScale(0.5f);
     this->add(obj);
 
 }
