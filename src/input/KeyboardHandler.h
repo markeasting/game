@@ -2,7 +2,7 @@
 
 #include <SDL.h>
 
-class Keyboard {
+class KeyboardHandler {
 public:
 
     static bool w;
@@ -18,3 +18,5 @@ public:
     static void handle(SDL_Event e);
 
 };
+
+using Keyboard = KeyboardHandler;
