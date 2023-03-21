@@ -1,12 +1,10 @@
 #pragma once
 
 #include "common.h"
+
 #include "gfx/Shader.h"
 #include "gfx/Uniforms.h"
 #include "gfx/Texture.h"
-
-#include <unordered_map>
-#include <vector>
 
 class Material {
 public:

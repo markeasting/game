@@ -57,8 +57,8 @@ Geometry::Geometry(const obj::Model &objModel)
         auto v = objModel.texCoord[i + 1];
 
         vertices.push_back(Vertex(
-            glm::vec3(vx, vy, vz),
-            glm::vec3(nx, ny, nz)
+            vec3(vx, vy, vz),
+            vec3(nx, ny, nz)
         ));
     }
 
@@ -66,7 +66,7 @@ Geometry::Geometry(const obj::Model &objModel)
     for (size_t i = 0; i < vertices.size(); i ++) {
         auto u = objModel.vertex[i * 2];
         auto v = objModel.vertex[i * 2 + 1];
-        vertices[i].uv = glm::vec2(u, v);
+        vertices[i].uv = vec2(u, v);
     }
 
     this->setData(

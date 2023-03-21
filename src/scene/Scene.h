@@ -6,6 +6,7 @@
 #include "state/StateManager.h"
 #include "scene/LayerManager.h"
 #include "audio/Audio.h"
+#include "event/Events.h"
 
 // class SceneManager;
 

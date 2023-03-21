@@ -18,8 +18,6 @@ public:
 	Window m_window;
 
     Renderer m_renderer;
-
-    // static EventEmitter events;
     
     Game();
     ~Game();

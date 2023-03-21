@@ -2,9 +2,11 @@
 #include "common.h"
 #include "gfx/Vertex.h"
 
+
+
 Vertex::Vertex() {}
 
-Vertex::Vertex(glm::vec3 position, glm::vec3 normal, glm::vec2 uv)
+Vertex::Vertex(vec3 position, vec3 normal, vec2 uv)
     : position(position), normal(normal), uv(uv)
 {}
 

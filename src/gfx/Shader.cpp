@@ -3,8 +3,6 @@
 #include "gfx/Uniforms.h"
 #include "util/Filesystem.h"
 
-#include <string>
-
 Shader::Shader() {}
 
 Shader::Shader(const std::string& vertexShader, const std::string& fragmentShader, bool autoCompile) 

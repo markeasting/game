@@ -1,7 +1,6 @@
 #pragma once
 
 #include "common.h"
-#include <vector>
 
 class Object3D {
 public:
@@ -22,33 +21,33 @@ public:
     // https://levelup.gitconnected.com/how-to-implement-method-chaining-in-c-3ec9f255972a
     void add(Ref<Object3D> object);
     
-    void setPosition(const glm::vec3& position);
+    void setPosition(const vec3& position);
 
-    void setRotation(const glm::vec3& euler);
-    void setRotation(const glm::quat& rotation);
+    void setRotation(const vec3& euler);
+    void setRotation(const quat& rotation);
     
     void setScale(float uniformScale);
-    void setScale(const glm::vec3& scale);
+    void setScale(const vec3& scale);
     
-    void translate(glm::vec3 translation);
-    void rotate(float angle, const glm::vec3& direction);
+    void translate(vec3 translation);
+    void rotate(float angle, const vec3& direction);
 
-    glm::vec3 getPosition();
-    glm::quat getRotation();
-    glm::vec3 getScale();
+    vec3 getPosition();
+    quat getRotation();
+    vec3 getScale();
 
-    glm::mat4 getWorldPositionMatrix();
+    mat4 getWorldPositionMatrix();
 
 protected:
 
-    glm::vec3 m_position = glm::vec3(0.0f, 0.0f, 0.0f);
-    glm::quat m_rotation = glm::quat(1.0f, 0, 0, 0);
-    glm::vec3 m_scale = glm::vec3(1.0f, 1.0f, 1.0f);
+    vec3 m_position = vec3(0.0f, 0.0f, 0.0f);
+    quat m_rotation = quat(1.0f, 0, 0, 0);
+    vec3 m_scale = vec3(1.0f, 1.0f, 1.0f);
 
 private:
 
     bool m_worldPosMatrixNeedsUpdate = true;
-    glm::mat4 m_worldPositionMatrix = glm::mat4(1.0f);
+    mat4 m_worldPositionMatrix = mat4(1.0f);
 
 };
 

@@ -1,10 +1,7 @@
 #pragma once
 
-#include <iostream>
-#include <unordered_map>
-
+#include "common.h"
 #include "AL/alure2.h"
-#include "util/log.h"
 
 struct AudioSource {
     bool isStream = false;
@@ -20,7 +17,7 @@ struct AudioSource {
     };
 
     // @TODO chain pattern
-    void setPosition(glm::vec3 pos) {
+    void setPosition(vec3 pos) {
         source.set3DSpatialize(alure::Spatialize::On);
         source.setPosition(glm::value_ptr(pos));
         // source.setVelocity(pos);
@@ -76,7 +73,7 @@ public:
     void fadeOut(const char* handle, int time_ms = 1000);
 
     void update();
-    void updateListener(glm::vec3 pos, glm::vec3 dir, glm::vec3 up);
+    void updateListener(vec3 pos, vec3 dir, vec3 up);
 
     void destroy();
 

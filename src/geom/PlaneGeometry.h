@@ -19,10 +19,10 @@ private:
         float y = 0.5f * height;
         
         std::vector<Vertex> vertices {
-            Vertex(glm::vec3(  x, -y, 0 ), glm::vec3( 0, 0, 1 ), glm::vec2( 1, 0 )),
-            Vertex(glm::vec3(  x,  y, 0 ), glm::vec3( 0, 0, 1 ), glm::vec2( 1, 1 )),
-            Vertex(glm::vec3( -x, -y, 0 ), glm::vec3( 0, 0, 1 ), glm::vec2( 0, 0 )),
-            Vertex(glm::vec3( -x,  y, 0 ), glm::vec3( 0, 0, 1 ), glm::vec2( 0, 1 )),
+            Vertex(vec3(  x, -y, 0 ), vec3( 0, 0, 1 ), vec2( 1, 0 )),
+            Vertex(vec3(  x,  y, 0 ), vec3( 0, 0, 1 ), vec2( 1, 1 )),
+            Vertex(vec3( -x, -y, 0 ), vec3( 0, 0, 1 ), vec2( 0, 0 )),
+            Vertex(vec3( -x,  y, 0 ), vec3( 0, 0, 1 ), vec2( 0, 1 )),
         };
 
         std::vector<unsigned int> indices = {

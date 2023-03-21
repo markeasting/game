@@ -1,8 +1,9 @@
+
 #include "app/Window.h"
 
 Window::Window() {
 
-    if(SDL_Init(SDL_INIT_VIDEO) < 0) {
+    if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) < 0) {
         printf(
             "SDL could not be initialized!\n"
             "SDL_Error: %s\n", 

@@ -22,14 +22,14 @@ private:
         const float z_dist = 0.5f * depth;
 
         std::vector<Vertex> vertices {
-            Vertex(glm::vec3(-x_dist, -y_dist, -z_dist)), // Front
-            Vertex(glm::vec3( x_dist, -y_dist, -z_dist)), // Front
-            Vertex(glm::vec3( x_dist,  y_dist, -z_dist)), // Front
-            Vertex(glm::vec3(-x_dist,  y_dist, -z_dist)), // Front
-            Vertex(glm::vec3( x_dist, -y_dist,  z_dist)), // Back
-            Vertex(glm::vec3( x_dist,  y_dist,  z_dist)), // Back
-            Vertex(glm::vec3(-x_dist,  y_dist,  z_dist)), // Back
-            Vertex(glm::vec3(-x_dist, -y_dist,  z_dist)), // Back
+            Vertex(vec3(-x_dist, -y_dist, -z_dist)), // Front
+            Vertex(vec3( x_dist, -y_dist, -z_dist)), // Front
+            Vertex(vec3( x_dist,  y_dist, -z_dist)), // Front
+            Vertex(vec3(-x_dist,  y_dist, -z_dist)), // Front
+            Vertex(vec3( x_dist, -y_dist,  z_dist)), // Back
+            Vertex(vec3( x_dist,  y_dist,  z_dist)), // Back
+            Vertex(vec3(-x_dist,  y_dist,  z_dist)), // Back
+            Vertex(vec3(-x_dist, -y_dist,  z_dist)), // Back
         }; 
 
         std::vector<unsigned int> indices = {

@@ -1,6 +1,6 @@
 
 #include "core/Object3D.h"
-#include <type_traits>
+// #include <type_traits>
 
 void Object3D::add(Ref<Object3D> object) {
 
@@ -15,31 +15,31 @@ void Object3D::add(Ref<Object3D> object) {
     children.push_back(object);
 }
 
-glm::vec3 Object3D::getPosition() {
+vec3 Object3D::getPosition() {
     return m_position;
 }
 
-glm::quat Object3D::getRotation() {
+quat Object3D::getRotation() {
     return m_rotation;
 }
 
-glm::vec3 Object3D::getScale() {
+vec3 Object3D::getScale() {
     return m_scale;
 }
 
-void Object3D::setPosition(const glm::vec3& position) {
+void Object3D::setPosition(const vec3& position) {
     m_position = position;
     m_worldPosMatrixNeedsUpdate = true;
 }
 
-void Object3D::setRotation(const glm::quat& rotation) {
-    m_rotation = glm::normalize(rotation);
+void Object3D::setRotation(const quat& rotation) {
+    m_rotation = glm::normalize(rotation); // @TODO check if required?
     m_worldPosMatrixNeedsUpdate = true;
 }
 
-void Object3D::setRotation(const glm::vec3& euler) {
+void Object3D::setRotation(const vec3& euler) {
 
-    m_rotation = glm::quat(glm::vec3(
+    m_rotation = quat(vec3(
         glm::radians(euler.x), 
         glm::radians(euler.y), 
         glm::radians(euler.z)
@@ -51,26 +51,26 @@ void Object3D::setRotation(const glm::vec3& euler) {
 }
 
 void Object3D::setScale(float uniformScale) {
-    setScale(glm::vec3(uniformScale));
+    setScale(vec3(uniformScale));
 }
 
-void Object3D::setScale(const glm::vec3& scale) {
+void Object3D::setScale(const vec3& scale) {
     m_scale = scale;
     m_worldPosMatrixNeedsUpdate = true;
 }
 
-void Object3D::translate(glm::vec3 translation) {
+void Object3D::translate(vec3 translation) {
     m_position += translation;
     m_worldPosMatrixNeedsUpdate = true;
 }
 
-void Object3D::rotate(float angle, const glm::vec3& direction) {
+void Object3D::rotate(float angle, const vec3& direction) {
     m_rotation = glm::rotate(m_rotation, glm::radians(angle), direction);
     m_rotation = glm::normalize(m_rotation);
     m_worldPosMatrixNeedsUpdate = true;
 }
 
-glm::mat4 Object3D::getWorldPositionMatrix() {
+mat4 Object3D::getWorldPositionMatrix() {
     if(m_worldPosMatrixNeedsUpdate) {
 
         m_worldPositionMatrix = glm::scale(

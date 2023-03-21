@@ -3,6 +3,8 @@
 #include "common.h"
 #include <fstream>
 #include <sstream>
+#include <string>
+#include <unistd.h>
 
 #ifdef __APPLE__
 #include <mach-o/dyld.h>

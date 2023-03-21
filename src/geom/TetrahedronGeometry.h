@@ -18,10 +18,10 @@ private:
         float oneThird = 0.333333333333333333 * size;
 
         std::vector<Vertex> vertices {
-            Vertex(glm::vec3(0, -oneThird, sqrt8over9)),
-            Vertex(glm::vec3(sqrt2over3, -oneThird, -sqrt2over9)), 
-            Vertex(glm::vec3(-sqrt2over3, -oneThird, -sqrt2over9)),
-            Vertex(glm::vec3(0, size, 0)),
+            Vertex(vec3(0, -oneThird, sqrt8over9)),
+            Vertex(vec3(sqrt2over3, -oneThird, -sqrt2over9)), 
+            Vertex(vec3(-sqrt2over3, -oneThird, -sqrt2over9)),
+            Vertex(vec3(0, size, 0)),
         };
 
         std::vector<unsigned int> indices = {

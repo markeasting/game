@@ -1,7 +1,6 @@
 #pragma once
 
 #include "common.h"
-#include <string>
 
 class IUniform {
 public:

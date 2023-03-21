@@ -1,5 +1,6 @@
-#include "common.h"
+
 #include "camera/Camera.h"
+#include "input/KeyboardHandler.h"
 
 Camera::Camera() {}
 
@@ -32,7 +33,7 @@ void Camera::update(float time) {
         m_position.z = cos(time) * m_camRadius;
         m_position.y = 1.0f;
 
-        m_viewMatrix = glm::lookAt(m_position, m_lookAtPos, glm::vec3(0.0, 1.0, 0.0));
+        m_viewMatrix = glm::lookAt(m_position, m_lookAtPos, vec3(0.0, 1.0, 0.0));
 
     } else {
 

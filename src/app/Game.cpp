@@ -2,9 +2,7 @@
 #include "scenes/Test/MyScene.h"
 
 #include "input/KeyboardHandler.h"
-
-/* Initialize static member */
-// EventEmitter Game::events;
+#include "event/Events.h"
 
 Game::Game() {
     this->registerScenes();

@@ -1,8 +1,6 @@
 #include "common.h"
 #include "util/Filesystem.h"
 
-#include <unistd.h>
-
 #ifdef __linux__
 #include <unistd.h>
 #elif __APPLE__

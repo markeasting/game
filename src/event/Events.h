@@ -1,6 +1,6 @@
 #pragma once
 
-#include "util/log.h"
+#include "common/log.h"
 #include "event/EventEmitter.h"
 
 class Events {

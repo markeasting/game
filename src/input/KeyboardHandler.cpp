@@ -1,7 +1,5 @@
 
 #include "input/KeyboardHandler.h"
-
-#include "util/log.h"
 #include "event/Events.h"
 
 bool KeyboardHandler::w = false;

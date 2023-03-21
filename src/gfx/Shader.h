@@ -3,9 +3,6 @@
 #include "common.h"
 #include "gfx/Uniforms.h"
 
-#include <string>
-#include <unordered_map>
-
 class Shader {
 public:
     GLuint m_program = 0;

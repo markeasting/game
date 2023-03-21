@@ -1,5 +1,5 @@
 
-#include "util/log.h"
+#include "common/log.h"
 
 void Log(const std::string& msg, LogLevel&& logLevel, const std::string& origin) {
 

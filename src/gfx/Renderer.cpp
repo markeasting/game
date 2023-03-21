@@ -26,10 +26,10 @@ Renderer::Renderer() {
 	// glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP); // Default, see docs for custom behavior
 
     std::vector<Vertex> geometry {
-        Vertex(glm::vec3(  1, -1, 0 ), glm::vec3( 0, 0, 1 ), glm::vec2( 1, 0 )),
-        Vertex(glm::vec3(  1,  1, 0 ), glm::vec3( 0, 0, 1 ), glm::vec2( 1, 1 )),
-        Vertex(glm::vec3( -1, -1, 0 ), glm::vec3( 0, 0, 1 ), glm::vec2( 0, 0 )),
-        Vertex(glm::vec3( -1,  1, 0 ), glm::vec3( 0, 0, 1 ), glm::vec2( 0, 1 )),
+        Vertex(vec3(  1, -1, 0 ), vec3( 0, 0, 1 ), vec2( 1, 0 )),
+        Vertex(vec3(  1,  1, 0 ), vec3( 0, 0, 1 ), vec2( 1, 1 )),
+        Vertex(vec3( -1, -1, 0 ), vec3( 0, 0, 1 ), vec2( 0, 0 )),
+        Vertex(vec3( -1,  1, 0 ), vec3( 0, 0, 1 ), vec2( 0, 1 )),
     };
 
     std::vector<unsigned int> indices = {

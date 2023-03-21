@@ -23,7 +23,7 @@ MyScene::MyScene() {
 
 void MyScene::preload() {
 
-    glm::vec3 audioPos = { 0.0f, 0.5f, 3.0f };
+    vec3 audioPos = { 0.0f, 0.5f, 3.0f };
 
     m_audio->stream("intro_music", "assets/music/MOM$ - Spacial (pop off).mp3");
     m_audio->stream("race_music", "assets/music/Glidelas - Angel File [WIP] (trim).mp3");
@@ -44,13 +44,13 @@ void MyScene::init() {
 
     m_audio->play("intro_music");
 
-    m_camera->setPosition(glm::vec3(0.0f, 2.0f, 8.0f));
+    m_camera->setPosition(vec3(0.0f, 2.0f, 8.0f));
     m_camera->m_camRadius = 8.0f;
 
-    auto lightDirection = ref<Uniform<glm::vec3>>("u_lightDirection", glm::vec3(0.5f, 0.0f, 2.0f));
+    auto lightDirection = ref<Uniform<vec3>>("u_lightDirection", vec3(0.5f, 0.0f, 2.0f));
 
     Material colorMaterial = Material("Color", {
-        ref<Uniform<glm::vec4>>("u_color", glm::vec4(0.0f, 0.0f, 0.8f, 1.0f)),
+        ref<Uniform<vec4>>("u_color", vec4(0.0f, 0.0f, 0.8f, 1.0f)),
     });
 
     auto box = ref<Mesh>(BoxGeometry(0.5f), colorMaterial);
@@ -123,11 +123,11 @@ void MyScene::update(float time, float dt) {
     // Log(m_state.getName());
     
     float oscillator = sin(time * 1.5f) / 2.0f + 0.5f;
-    m_tetra->m_material->setUniform("u_color", glm::vec4(0.0f, oscillator, 0.8f, 1.0f));
+    m_tetra->m_material->setUniform("u_color", vec4(0.0f, oscillator, 0.8f, 1.0f));
     m_tetra->setRotation({ time * 100.0f, 0.0f, 0.0f });
 
     if (m_state.inGroup("countdown")) {
-        m_tetra->m_material->setUniform("u_color", glm::vec4(oscillator, 0.0f, 0.3f, 1.0f));
+        m_tetra->m_material->setUniform("u_color", vec4(oscillator, 0.0f, 0.3f, 1.0f));
     }
 
     if (m_state.is("PLAYING")) {
@@ -135,7 +135,7 @@ void MyScene::update(float time, float dt) {
         m_tetra->setScale(sin(beatMatch) * 0.3f + 0.8f);
         m_tetra->setRotation({ 0.0f, beatMatch * 180.0f/M_PI, 0.0f });
 
-        m_camera->m_lookAtPos = glm::vec3(0, 1.0f, 0);
+        m_camera->m_lookAtPos = vec3(0, 1.0f, 0);
         Anim::lerp(m_camera->m_camRadius, 5.0f, 0.1f);
 
     }

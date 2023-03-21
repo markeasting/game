@@ -54,8 +54,8 @@ private:
                 // t = (float)i / stackCount;
 
                 vertices.push_back(Vertex(
-                    glm::vec3(x, y, z),
-                    glm::vec3(nx, ny, nz)
+                    vec3(x, y, z),
+                    vec3(nx, ny, nz)
                 ));
                 
             }

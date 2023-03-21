@@ -1,9 +1,12 @@
 #pragma once
 
 #include "common.h"
+
+
 #include "gfx/Shader.h"
 #include "gfx/Uniforms.h"
 #include "gfx/Mesh.h"
+
 #include "scene/Scene.h"
 #include "camera/Camera.h"
 

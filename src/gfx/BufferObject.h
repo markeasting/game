@@ -1,9 +1,8 @@
 #pragma once
 
 #include "common.h"
-#include "gfx/Vertex.h"
 
-#include <vector>
+#include "gfx/Vertex.h"
 
 class IBufferObject {
 public:

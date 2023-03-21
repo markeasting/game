@@ -81,7 +81,7 @@ void Audio::update() {
     m_ctx.update();
 }
 
-void Audio::updateListener(glm::vec3 pos, glm::vec3 dir, glm::vec3 up) {
+void Audio::updateListener(vec3 pos, vec3 dir, vec3 up) {
     auto listener = m_ctx.getListener();
 
     listener.setPosition(glm::value_ptr(pos));
