@@ -6,6 +6,7 @@ struct WindowConfig {
     const char* windowTitle = "MOI";
     uint16_t windowWidth = 1280;
     uint16_t windowHeight = 720;
+    bool fullscreen = false;
     bool vsync = true;
 };
 

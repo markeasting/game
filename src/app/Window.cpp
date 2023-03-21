@@ -28,6 +28,10 @@ Window::Window() {
         std::exit(EXIT_FAILURE);
     }
 
+    if (m_config.fullscreen) 
+        SDL_SetWindowFullscreen(m_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+
+    /* OpenGL context */
     int context_flags = SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG;
     
     #ifndef NDEBUG
