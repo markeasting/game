@@ -3,6 +3,8 @@ The libraries below are also present in the `lib` directory.
 
 See `lib/alure/README.md` how to build and install Alure (OpenAL). 
 
+Be sure to run `sudo ldconfig` after building libs!
+
 ## MacOS
 
 `brew install sdl2`
