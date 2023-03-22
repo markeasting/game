@@ -4,10 +4,10 @@
             "${workspaceFolder}/src/**",
             "${workspaceFolder}/lib/SDL2/include",
             "${workspaceFolder}/lib/glad/include",
+            "${workspaceFolder}/lib/glm-0.9.9.8",
             "${workspaceFolder}/lib/stb_image",
             "${workspaceFolder}/lib/alure/include",
-            "${workspaceFolder}/lib/objload",
-            "${workspaceFolder}/lib/tinygltf"
+            "${workspaceFolder}/lib/objload"
         ]
     },
     "configurations": [

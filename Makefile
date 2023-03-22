@@ -6,10 +6,11 @@ TARGET := game
 # Compiler and linker settings
 # The -MMD flag ensures dependency files (.d) are created
 CXX := g++
-CXXFLAGS := -std=c++20 -MMD -Winvalid-pch
+CXXFLAGS := -std=c++20 -MMD -Wvolatile
 INCLUDES := -I${SRCDIR} \
 	-Ilib/SDL2/include \
 	-Ilib/glad/include \
+	-Ilib/glm-0.9.9.8 \
 	-Ilib/stb_image \
 	-Ilib/alure/include \
 	-Ilib/objload 
@@ -21,7 +22,7 @@ ifeq ($(UNAME_S), Darwin)
 	LDFLAGS += -framework OpenGL
 endif
 
-# Precompiled headers
+# Precompiled headers -- also see -Winvalid-pch 
 # PCH_SRC = src/common.h
 # PCH_OUT = src/common.h.gch
 
