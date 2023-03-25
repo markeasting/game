@@ -6,7 +6,7 @@ TARGET := game
 # Compiler and linker settings
 # The -MMD flag ensures dependency files (.d) are created
 CXX := g++
-CXXFLAGS := -std=c++20 -MMD -Wvolatile
+CXXFLAGS := -std=c++20 -MMD
 INCLUDES := -I${SRCDIR} \
 	-Ilib/SDL2/include \
 	-Ilib/glad/include \
