@@ -33,7 +33,7 @@ struct BufferAudioSource : public AudioSource {
         : AudioSource(source)
     {}
 
-    BufferAudioSource(alure::Source source, alure::Buffer)
+    BufferAudioSource(alure::Source source, alure::Buffer buffer)
         : AudioSource(source), buffer(buffer)
     {}
 
