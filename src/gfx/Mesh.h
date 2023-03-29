@@ -11,6 +11,8 @@ public:
 
     Ref<Geometry> m_geometry = nullptr;
     Ref<Material> m_material = nullptr;
+
+    bool m_managedByRigidBody = false;
     
     Mesh();
     Mesh(const Geometry& geometry);

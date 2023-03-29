@@ -28,5 +28,7 @@ void KeyboardHandler::handle(SDL_Event e) {
         case SDLK_LCTRL:    KeyboardHandler::ctrl = isDown; Events::emit(ev, SDLK_LCTRL); break;
         case SDLK_LSHIFT:   KeyboardHandler::shift = isDown; Events::emit(ev, SDLK_LSHIFT); break;
         case SDLK_SPACE:    KeyboardHandler::space = isDown; Events::emit(ev, SDLK_SPACE); break;
+        default:
+            Events::emit(ev, e.key.keysym.sym);
     }
 }

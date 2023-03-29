@@ -8,6 +8,9 @@
 #include "geom/index.h"
 #include "gfx/Mesh.h"
 
+#include "physics/PhysicsHandler.h"
+#include "physics/RigidBody.h"
+
 class MyScene final : public Scene
 {
 public:
@@ -22,9 +25,12 @@ public:
     void update(float time, float dt) override;
 
 private:
+    PhysicsHandler m_phys;
+
     Ref<World> m_world = ref<World>();
     Ref<UI> m_overlay = ref<UI>();
 
     Ref<Mesh> m_tetra = nullptr;
+    Ref<RigidBody> m_player = nullptr;
 
 };
