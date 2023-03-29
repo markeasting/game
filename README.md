@@ -19,6 +19,6 @@ Be sure to run `sudo ldconfig` after building libs!
 
 # Build (Linux / MacOS)
 
-`make -j 4` 
+`make -j $(nproc)` 
 
 Available targets: `debug` and `release`
