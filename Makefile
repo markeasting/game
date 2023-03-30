@@ -50,8 +50,8 @@ RELEASE_OBJECTS := $(patsubst $(SRCDIR)/%, $(RELOBJ)/%, $(SOURCES:.$(SRCEXT)=.o)
 # Targets
 all: debug
 # pch: mkdir $(DEBUG_PCH) $(RELEASE_PCH)
-debug: mkdir $(DEBUG_TARGET) copy_shaders_debug
-release: mkdir $(RELEASE_TARGET) copy_shaders_release
+debug: mkdir $(DEBUG_TARGET) copy_assets_debug
+release: mkdir $(RELEASE_TARGET) copy_assets_release
 
 # Checks whether dependency files have changed, see -MMD flag
 -include $(RELEASE_OBJECTS:%.o=%.d)
@@ -83,9 +83,9 @@ mkdir:
 	mkdir -p $(DBGOBJ)
 	mkdir -p $(RELOBJ)
 
-copy_shaders_debug:
-	rsync -rup assets $(DBGDIR)
-copy_shaders_release:
-	rsync -rup assets $(RELDIR)
+copy_assets_debug:
+	rsync -ru --exclude='*.blend' assets $(DBGDIR)
+copy_assets_release:
+	rsync -ru --exclude='*.blend' assets $(RELDIR)
 
-.PHONY: all debug release mkdir clean copy_shaders_debug copy_shaders_release
+.PHONY: all debug release mkdir clean copy_assets_debug copy_assets_release
