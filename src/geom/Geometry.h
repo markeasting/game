@@ -27,7 +27,7 @@ public:
 
     bool hasIndices() const { return m_indexBuffer != nullptr; }
 
-protected:
+// protected:
     Ref<IndexBuffer> m_indexBuffer = nullptr;
     Ref<VertexBuffer> m_vertexBuffer = nullptr;
     // Ref<BufferObject<float>> m_vertexBuffer = nullptr;

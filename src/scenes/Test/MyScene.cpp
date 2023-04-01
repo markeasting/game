@@ -1,5 +1,6 @@
 
 #include "scenes/Test/MyScene.h"
+#include "physics/Collider.h"
 #include "scene/SceneManager.h"
 #include "util/Anim.h"
 
@@ -25,9 +26,9 @@ void MyScene::preload() {
 
     vec3 audioPos = { 0.0f, 0.5f, 3.0f };
 
-    m_audio->stream("intro_music", "assets/music/MOM$ - Spacial (pop off).mp3");
-    m_audio->stream("race_music", "assets/music/Glidelas - Angel File [WIP] (trim).mp3");
-    m_audio->stream("end_music", "assets/music/Qteku - Energy Star (trim).mp3");
+    // m_audio->stream("intro_music", "assets/music/MOM$ - Spacial (pop off).mp3");
+    // m_audio->stream("race_music", "assets/music/Glidelas - Angel File [WIP] (trim).mp3");
+    // m_audio->stream("end_music", "assets/music/Qteku - Energy Star (trim).mp3");
 
     m_audio->add("Countdown_3", "assets/audio/voice/3.mp3")->setPosition(audioPos);
     m_audio->add("Countdown_2", "assets/audio/voice/2.mp3")->setPosition(audioPos);
@@ -42,26 +43,55 @@ void MyScene::preload() {
 
 void MyScene::init() {
 
-    m_audio->play("intro_music");
+    // m_audio->play("intro_music");
 
     m_camera->setPosition(vec3(0.0f, 2.0f, 8.0f));
     m_camera->m_camRadius = 8.0f;
 
     auto lightDirection = ref<Uniform<vec3>>("u_lightDirection", vec3(0.5f, 0.0f, 2.0f));
 
+    Material phongMaterial = Material("Phong", { lightDirection });
     Material colorMaterial = Material("Color", {
         ref<Uniform<vec4>>("u_color", vec4(0.0f, 0.0f, 0.8f, 1.0f)),
     });
 
-    auto box = ref<Mesh>(BoxGeometry(0.5f), colorMaterial);
-    box->setPosition({ 2.0f, 0.5f, 0.0f });
-    m_world->add(box);
+    auto cube = ref<Mesh>(BoxGeometry(0.5f), colorMaterial);
+        cube->setPosition({ 2.0f, 0.5f, 0.0f });
+        m_world->add(cube);
 
     m_tetra = ref<Mesh>(TetrahedronGeometry(1.0f), colorMaterial);
-    m_tetra->setPosition({ 0.0f, 1.0f, 0.0f });
-    m_world->add(m_tetra);
+        m_tetra->setPosition({ 0.0f, 1.0f, 0.0f });
+        m_world->add(m_tetra);
+        m_tetra->add(cube);
 
-    m_tetra->add(box);
+    /* Physics world */
+    auto car = ref<Mesh>(Geometry(obj::loadModelFromFile("assets/objects/car/car.obj")), phongMaterial);
+
+    auto colliderSize = vec3(1.42f, 0.95f, 3.0f);
+    m_player = ref<RigidBody>(
+            ref<BoxCollider>(colliderSize),
+            car
+        );
+        m_player->setBox(colliderSize);
+        m_player->setColliderOffset(vec3(0, 0.48f, -0.12));
+        m_player->setPosition({ 4.0f, 2.0f, 0.0f });
+        m_world->add(m_player->mesh);
+
+    auto box = ref<RigidBody>(
+            ref<BoxCollider>(), 
+            ref<Mesh>(BoxGeometry(1.0f), colorMaterial)
+        );
+        box->setPosition({ -2.0f, 2.0f, 0.0f});
+        m_world->add(box->mesh);
+
+    auto floor = ref<RigidBody>(ref<PlaneCollider>());
+        floor->makeStatic();
+
+    m_phys.Enqueue(m_player);
+    m_phys.Enqueue(box); // idk, but order seems to matter here :P
+    m_phys.Enqueue(floor);
+
+    // m_phys.update(0.0f);
 
 }
 
@@ -72,13 +102,18 @@ void MyScene::init() {
  */
 void MyScene::bindEvents() {
 
+    Events::on(Events::KEYDOWN, [&](SDL_KeyCode key) {
+        switch (key) {
+            case SDLK_i:
+                m_player->applyForce(vec3(0, 250.0f, 0));
+            break;
+        }
+    });
+
     Events::on(Events::KEYUP, [&](SDL_KeyCode key) {
         switch (key) {
             case SDLK_SPACE:
-                // if (m_state.is("Finish"))
-                //     m_sceneManager->switchTo(0);
-                // else
-                    m_state.next();
+                m_state.next();
             break;
         }
     });
@@ -92,30 +127,29 @@ void MyScene::bindEvents() {
         Log(state->getName());
 
         if (state->inGroup("countdown")) {
-            m_audio->fadeOut("intro_music");
+            // m_audio->fadeOut("intro_music");
             m_audio->play(state->getName());
         }
 
         if (state->is("Countdown_3")) {
-            m_audio->play("race_music");
+            // m_audio->play("race_music");
         }
 
         if (state->is("PLAYING")) {
             m_audio->play("Countdown_GO");
-            // m_audio->play("race_music");
         }
 
         if (state->is("Finish")) {
-            // m_audio->stop("race_music");
-            m_audio->fadeOut("race_music");
+            // m_audio->fadeOut("race_music");
+            // m_audio->play("end_music");
             m_audio->play("YouWin");
-            m_audio->play("end_music");
         }
     });
 }
 
 void MyScene::update(float time, float dt) {
 
+    m_phys.update(dt);
     m_camera->update(time);
     m_state.update(time, dt); // @TODO move to base update
     m_audio->updateListener(m_camera->getPosition(), m_camera->getForward(), m_camera->getUp());

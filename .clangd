@@ -1,0 +1,3 @@
+CompileFlags:
+    Add: [ "-Isrc", "-Ilib/SDL2/include", "-Ilib/glad/include", "-Ilib/glm-0.9.9.8", "-Ilib/stb_image", "-Ilib/alure/include", "-Ilib/objload" ]
+    # Remove: -W*                     # strip all other warning-related flagsat all files as C++, enable more warnings
