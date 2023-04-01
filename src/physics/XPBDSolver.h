@@ -50,7 +50,6 @@ namespace XPBDSolver {
     float applyBodyPairCorrection(
         RigidBody* body0,
         RigidBody* body1,
-        // const ContactSet* contact,
         const glm::vec3& corr,
         const float& compliance,
         const float& dt,

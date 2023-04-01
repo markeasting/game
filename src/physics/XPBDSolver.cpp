@@ -74,21 +74,21 @@ std::vector<CollisionPair> XPBDSolver::collectCollisionPairs(const std::vector<R
             /* (3.5) k * dt * vbody */
             const float collisionMargin = 2.0f * (float) dt * glm::length(A->vel - B->vel);
 
-            switch(A->collider->colliderType) {
+            switch(A->collider->m_type) {
                 case ColliderType::ConvexMesh :
-                    switch(B->collider->colliderType) {
+                    switch(B->collider->m_type) {
                         case ColliderType::Plane : {
 
                             // @TODO use a different / better cast?
                             const auto MC = static_cast<MeshCollider*>(A->collider.get());
                             const auto PC = static_cast<PlaneCollider*>(B->collider.get());
-                            const vec3& N = glm::normalize(PC->normal);
+                            const vec3& N = glm::normalize(PC->m_normal);
 
                             float deepestPenetration = 0.0f;
 
-                            // This should be a simple AABB check instead of actual loop over all vertices
-                            for(int i = 0; i < MC->uniqueIndices.size(); i++) {
-                                const Vertex& v = MC->vertices[MC->uniqueIndices[i]];
+                            // This should be a simple AABB check instead of actual loop over all m_vertices
+                            for(int i = 0; i < MC->m_uniqueIndices.size(); i++) {
+                                const Vertex& v = MC->m_vertices[MC->m_uniqueIndices[i]];
                                 
                                 // vec3 contactPointW = CoordinateSystem::localToWorld(v.position, A->pose.q, A->pose.p);
                                 vec3 contactPointW = A->localToWorld(v.position);
@@ -122,9 +122,9 @@ std::vector<ContactSet*> XPBDSolver::getContacts(const std::vector<CollisionPair
         RigidBody* A = collision.A;
         RigidBody* B = collision.B;
 
-        switch(A->collider->colliderType) {
+        switch(A->collider->m_type) {
             case ColliderType::ConvexMesh :
-                switch(B->collider->colliderType) {
+                switch(B->collider->m_type) {
                     case ColliderType::Plane : {
 
                         const auto MC = static_cast<MeshCollider*>(A->collider.get());
@@ -132,11 +132,11 @@ std::vector<ContactSet*> XPBDSolver::getContacts(const std::vector<CollisionPair
 
                         // @TODO store some kind of plane object in PlaneCollider
                         // @TODO check if vertex is actually inside plane size :)
-                        const vec3& N = PC->normal;
+                        const vec3& N = PC->m_normal;
                         // const float C = glm::dot(B->pose.p, N); // plane constant (dist from origin)
 
-                        for(int i = 0; i < MC->uniqueIndices.size(); i++) {
-                            const Vertex& v = MC->vertices[MC->uniqueIndices[i]];
+                        for(int i = 0; i < MC->m_uniqueIndices.size(); i++) {
+                            const Vertex& v = MC->m_vertices[MC->m_uniqueIndices[i]];
                             // const vec3 point = CoordinateSystem::localToWorld(v.position, A->pose.q, A->pose.p);
 
                             /* (26) - p1 */

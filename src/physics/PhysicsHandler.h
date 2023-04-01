@@ -1,22 +1,12 @@
 #pragma once
 
-#include "physics/XPBDSolver.h"
 #include "physics/RigidBody.h"
-#include "physics/Collider.h"
-
-enum SolverType {
-    XPBD
-};
 
 class PhysicsHandler {
 public:
 
-    const SolverType solverType = SolverType::XPBD;
+	std::vector<Ref<RigidBody>> m_bodies = {};
 
-	std::vector<Ref<RigidBody>> bodies = {};
-
-	// static PhysicsHandler& Instance();
-	// PhysicsHandler(const PhysicsHandler&) = delete;
     PhysicsHandler() = default;
     ~PhysicsHandler() = default;
 
@@ -25,8 +15,5 @@ public:
     void update(float dt);
 
 private:
-    // PhysicsHandler();
-
-    unsigned int bodyID = 0;
 
 };
