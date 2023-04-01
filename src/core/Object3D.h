@@ -14,8 +14,8 @@ public:
     bool m_useProjectionMatrix = true;
 
     // std::weak_ptr<Object3D> parent;
-    Object3D* parent = nullptr; // @TODO use weak_ptr?
-    std::vector<Ref<Object3D>> children = {};
+    Object3D* m_parent = nullptr; // @TODO use weak_ptr?
+    std::vector<Ref<Object3D>> m_children = {};
 
     // @TODO convert these to chaining pattern
     // https://levelup.gitconnected.com/how-to-implement-method-chaining-in-c-3ec9f255972a

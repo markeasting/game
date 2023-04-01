@@ -11,8 +11,8 @@ void Object3D::add(Ref<Object3D> object) {
     //     // @TODO remove from parent
     // }
 
-    object->parent = this;
-    children.push_back(object);
+    object->m_parent = this;
+    m_children.push_back(object);
 }
 
 vec3 Object3D::getPosition() {
@@ -83,10 +83,10 @@ mat4 Object3D::getWorldPositionMatrix() {
             m_scale
         );
 
-        if (parent)
-            m_worldPositionMatrix = parent->m_worldPositionMatrix * m_worldPositionMatrix;
+        if (m_parent)
+            m_worldPositionMatrix = m_parent->m_worldPositionMatrix * m_worldPositionMatrix;
 
-        for (auto&& child : children) {
+        for (auto&& child : m_children) {
             child->m_worldPosMatrixNeedsUpdate = true;
         }
 
