@@ -62,6 +62,8 @@ public:
 
     void updateGeometry();
 
+    void setColliderOffset(const vec3& offset);
+    
 private:
     void updateCollider();
 };

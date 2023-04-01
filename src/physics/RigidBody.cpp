@@ -177,6 +177,8 @@ RigidBody RigidBody::setBox(const vec3& size, float density) {
 RigidBody RigidBody::setPosition(const vec3& position) {
     this->pose.p = position;
 
+    this->updateCollider();
+
     return *this;
 }
 
@@ -234,6 +236,11 @@ void RigidBody::updateGeometry() {
     }
 }
 
+void RigidBody::setColliderOffset(const vec3& offset) {
+    this->collider->setRelativePos(offset);
+    this->updateCollider();
+}
+
 void RigidBody::updateCollider() {
-    this->collider->updateRotation(this->pose.q);
+    this->collider->updateGlobalPose(this->pose);
 }
