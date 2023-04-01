@@ -57,6 +57,14 @@ void MeshCollider::setGeometry(Ref<Geometry> geometry) {
     }
 }
 
+void MeshCollider::setRelativePos(const vec3& pos) {
+    m_relativePos = pos;
+
+    for (int i = 0; i < m_vertices.size(); i++) {
+        m_vertices[i] += pos;
+    }
+}
+
 void MeshCollider::updateGlobalPose(const Pose& pose) {
 
     // float min = vec3(std::numeric_limits<float>::infinity());

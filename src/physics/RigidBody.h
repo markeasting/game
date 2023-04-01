@@ -33,7 +33,7 @@ public:
     float gravity = -9.81f;
     float staticFriction = 0.50f;                               // https://en.m.wikipedia.org/wiki/Friction
     float dynamicFriction = 0.30f;                              // https://en.m.wikipedia.org/wiki/Friction
-    float bounciness = 0.7f;                                    // https://en.m.wikipedia.org/wiki/Coefficient_of_restitution
+    float bounciness = 0.4f;                                    // https://en.m.wikipedia.org/wiki/Coefficient_of_restitution
 
     RigidBody() = default;
     RigidBody(Ref<Mesh> mesh);

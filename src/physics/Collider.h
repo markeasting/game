@@ -24,7 +24,7 @@ public:
 
     virtual void updateGlobalPose(const Pose& pose);
 
-    virtual void setRelativePos(vec3 pos) {
+    virtual void setRelativePos(const vec3& pos) {
         m_relativePos = pos;
     }
 
@@ -42,7 +42,7 @@ struct PlaneCollider : public Collider {
     vec3 m_normalRef = vec3(0.0f, 0.0f, 1.0f);
 
     PlaneCollider(const vec2 &size = { 1.0f, 1.0f }, const vec3 &normal = vec3(0.0f, 1.0f, 0.0f));
-    void updateGlobalPose(const Pose& pose);
+    void updateGlobalPose(const Pose& pose) override;
 };
 
 struct SphereCollider : public Collider {
@@ -63,9 +63,10 @@ struct MeshCollider : public Collider {
     MeshCollider(Ref<Mesh> mesh);
     
     void setGeometry(Ref<Geometry> geometry);
-    void updateGlobalPose(const Pose& pose);
+    void setRelativePos(const vec3& pos) override;
+    void updateGlobalPose(const Pose& pose) override;
 
-    vec3 findFurthestPoint(const vec3& dir);
+    vec3 findFurthestPoint(const vec3& dir) override;
     
 };
 
