@@ -84,21 +84,15 @@ std::vector<CollisionPair> XPBDSolver::collectCollisionPairs(const std::vector<R
                             const auto PC = static_cast<PlaneCollider*>(B->collider.get());
                             const vec3& N = glm::normalize(PC->m_normal);
 
-                            float deepestPenetration = 0.0f;
-
                             // This should be a simple AABB check instead of actual loop over all m_vertices
                             for(int i = 0; i < MC->m_uniqueIndices.size(); i++) {
-                                const Vertex& v = MC->m_vertices[MC->m_uniqueIndices[i]];
                                 
-                                // vec3 contactPointW = CoordinateSystem::localToWorld(v.position, A->pose.q, A->pose.p);
-                                vec3 contactPointW = A->localToWorld(v.position);
+                                const vec3 contactPointW = MC->m_verticesWorldSpace[MC->m_uniqueIndices[i]];
                                 const float signedDistance = glm::dot(N, (contactPointW - B->pose.p)); // Simple point-to-plane dist
-
-                                deepestPenetration = std::min(deepestPenetration, signedDistance);
-                            }
-
-                            if(deepestPenetration < collisionMargin) {
-                                collisions.push_back({ A.get(), B.get() });
+                                
+                                if(signedDistance < collisionMargin) {
+                                    collisions.push_back({ A.get(), B.get() });
+                                }
                             }
 
                             break;
@@ -136,17 +130,14 @@ std::vector<ContactSet*> XPBDSolver::getContacts(const std::vector<CollisionPair
                         // const float C = glm::dot(B->pose.p, N); // plane constant (dist from origin)
 
                         for(int i = 0; i < MC->m_uniqueIndices.size(); i++) {
-                            const Vertex& v = MC->m_vertices[MC->m_uniqueIndices[i]];
-                            // const vec3 point = CoordinateSystem::localToWorld(v.position, A->pose.q, A->pose.p);
 
                             /* (26) - p1 */
-                            const vec3 r1 = v.position;
-                            const vec3 p1 = A->pose.p + A->pose.q * r1;
+                            const vec3 r1 = MC->m_vertices[MC->m_uniqueIndices[i]];
+                            const vec3 p1 = MC->m_verticesWorldSpace[MC->m_uniqueIndices[i]];
 
                             /* (26) - p2 */
                             const float signedDistance = glm::dot(N, p1 - B->pose.p);
                             const vec3 p2 = p1 - (N * signedDistance);
-                            // const vec3 r2 = CoordinateSystem::worldToLocal(p2, B->pose.q, B->pose.p);
                             const vec3 r2 = B->worldToLocal(p2);
 
                             /* (3.5) Penetration depth -- Note: sign was flipped! */
