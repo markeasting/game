@@ -4,6 +4,7 @@
 #include "geom/Geometry.h"
 #include "geom/index.h"
 #include "gfx/Mesh.h"
+#include "physics/Pose.h"
 
 enum ColliderType {
     Box, Plane, Sphere, ConvexMesh
@@ -14,23 +15,34 @@ public:
 
     ColliderType m_type = Sphere;
 
-    glm::vec3 m_relativePos = glm::vec3(0.0f);
+    vec3 m_relativePos = vec3(0.0f);
+
+    // @TODO Box3 / AABB
 
     Collider() = default;
-    ~Collider() = default;
+    virtual ~Collider() = default;
 
-    virtual void updateRotation(const glm::quat& rotation);
+    virtual void updateGlobalPose(const Pose& pose);
+
+    virtual void setRelativePos(vec3 pos) {
+        m_relativePos = pos;
+    }
+
+    /* GJK */
+    virtual vec3 findFurthestPoint(const vec3& dir) {
+        return vec3(0);
+    }
 
 };
 
 struct PlaneCollider : public Collider {
     
-    glm::vec2 m_size = glm::vec2(1.0f, 1.0f);
-    glm::vec3 m_normal = glm::vec3(0.0f, 0.0f, 1.0f);
-    glm::vec3 m_normalRef = glm::vec3(0.0f, 0.0f, 1.0f);
+    vec2 m_size = vec2(1.0f, 1.0f);
+    vec3 m_normal = vec3(0.0f, 0.0f, 1.0f);
+    vec3 m_normalRef = vec3(0.0f, 0.0f, 1.0f);
 
-    PlaneCollider(const glm::vec2 &size = { 1.0f, 1.0f }, const glm::vec3 &normal = glm::vec3(0.0f, 1.0f, 0.0f));
-    void updateRotation(const glm::quat& rotation);
+    PlaneCollider(const vec2 &size = { 1.0f, 1.0f }, const vec3 &normal = vec3(0.0f, 1.0f, 0.0f));
+    void updateGlobalPose(const Pose& pose);
 };
 
 struct SphereCollider : public Collider {
@@ -40,17 +52,24 @@ struct SphereCollider : public Collider {
 
 struct MeshCollider : public Collider {
 
-    std::vector<Vertex> m_vertices;
+    std::vector<vec3> m_vertices;
+    std::vector<vec3> m_verticesWorldSpace;
     std::vector<unsigned int> m_indices;
     std::vector<unsigned int> m_uniqueIndices;
+
+    // @TODO convexHull;
 
     MeshCollider(Ref<Geometry> convexGeometry);
     MeshCollider(Ref<Mesh> mesh);
     
     void setGeometry(Ref<Geometry> geometry);
+    void updateGlobalPose(const Pose& pose);
+
+    vec3 findFurthestPoint(const vec3& dir);
+    
 };
 
 struct BoxCollider : public MeshCollider {
-    glm::vec3 m_size = glm::vec3(1.0f, 1.0f, 1.0f);
-    BoxCollider(const glm::vec3 &size = { 1.0f, 1.0f, 1.0f });
+    vec3 m_size = vec3(1.0f, 1.0f, 1.0f);
+    BoxCollider(const vec3 &size = { 1.0f, 1.0f, 1.0f });
 };

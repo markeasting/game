@@ -1,7 +1,7 @@
 
 #include "physics/Collider.h"
 
-void Collider::updateRotation(const glm::quat& rotation) { }
+void Collider::updateGlobalPose(const Pose& pose) { }
 
 PlaneCollider::PlaneCollider(const glm::vec2 &size, const glm::vec3 &normal) {
     m_type = ColliderType::Plane;
@@ -9,9 +9,9 @@ PlaneCollider::PlaneCollider(const glm::vec2 &size, const glm::vec3 &normal) {
     m_normal = glm::normalize(normal);
     m_normalRef = glm::normalize(normal);
 }
-void PlaneCollider::updateRotation(const glm::quat& rotation) {
-    // normal = rotation * glm::vec3(0.0f, 0.0f, 1.0f);
-    m_normal = rotation * m_normalRef;
+
+void PlaneCollider::updateGlobalPose(const Pose& pose) {
+    m_normal = pose.q * m_normalRef;
 }
 
 SphereCollider::SphereCollider(const float &diameter) {
@@ -30,8 +30,13 @@ MeshCollider::MeshCollider(Ref<Mesh> mesh)
 
 void MeshCollider::setGeometry(Ref<Geometry> geometry) {
 
-    m_vertices = geometry->m_vertexBuffer->m_data;
+    for(Vertex v : geometry->m_vertexBuffer->m_data) {
+        m_vertices.push_back(v.position);
+        m_verticesWorldSpace.push_back(v.position);
+    }
 
+    // @TODO this doesn't work if geometry has indices but vertices on the same locations. 
+    // So, we should check EPS with all vertices here instead...
     if(geometry->hasIndices()) {
         m_indices = geometry->m_indexBuffer->m_data;
 
@@ -51,6 +56,41 @@ void MeshCollider::setGeometry(Ref<Geometry> geometry) {
 
     }
 }
+
+void MeshCollider::updateGlobalPose(const Pose& pose) {
+
+    // float min = vec3(std::numeric_limits<float>::infinity());
+    // float max = vec3(-std::numeric_limits<float>::infinity());
+
+    for (int i = 0; i < m_vertices.size(); i++) {
+        auto v = m_vertices[i];
+
+        m_verticesWorldSpace[i] = (pose.q * v) + pose.p;
+
+        // min = glm::min(m_verticesWorldSpace[i]);
+        // max = glm::max(m_verticesWorldSpace[i]);
+    }
+
+    // this.aabb.set(min, max);
+}
+
+vec3 MeshCollider::findFurthestPoint(const vec3& dir) {
+
+    vec3 maxPoint;
+    float maxDist = std::numeric_limits<float>::infinity();
+
+    for (auto vertex : m_verticesWorldSpace) {
+        float distance = glm::dot(vertex, dir);
+
+        if (distance > maxDist) {
+            maxDist = distance;
+            maxPoint = vertex;
+        }
+    }
+
+    return maxPoint;
+}
+
 
 BoxCollider::BoxCollider(const glm::vec3 &size) 
 : MeshCollider(ref<BoxGeometry>(size.x, size.y, size.z)) 
