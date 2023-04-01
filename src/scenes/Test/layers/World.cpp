@@ -30,12 +30,4 @@ void World::init() {
     sphere->setPosition({ 0.0f, 0.5f, 3.0f });
     this->add(sphere);
 
-    /* Testing OBJ loading */
-    obj::Model cube = obj::loadModelFromFile("assets/objects/car/car.obj");
-
-    auto obj = ref<Mesh>(Geometry(cube), phongMaterial);
-    obj->setPosition({ 4.0f, 0, 0 });
-    // obj->setScale(0.5f);
-    this->add(obj);
-
 }

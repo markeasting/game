@@ -1,5 +1,6 @@
 
 #include "scenes/Test/MyScene.h"
+#include "physics/Collider.h"
 #include "scene/SceneManager.h"
 #include "util/Anim.h"
 
@@ -49,30 +50,48 @@ void MyScene::init() {
 
     auto lightDirection = ref<Uniform<vec3>>("u_lightDirection", vec3(0.5f, 0.0f, 2.0f));
 
+    Material phongMaterial = Material("Phong", { lightDirection });
     Material colorMaterial = Material("Color", {
         ref<Uniform<vec4>>("u_color", vec4(0.0f, 0.0f, 0.8f, 1.0f)),
     });
 
-    auto box = ref<Mesh>(BoxGeometry(0.5f), colorMaterial);
-        box->setPosition({ 2.0f, 0.5f, 0.0f });
-        m_world->add(box);
+    auto cube = ref<Mesh>(BoxGeometry(0.5f), colorMaterial);
+        cube->setPosition({ 2.0f, 0.5f, 0.0f });
+        m_world->add(cube);
 
     m_tetra = ref<Mesh>(TetrahedronGeometry(1.0f), colorMaterial);
         m_tetra->setPosition({ 0.0f, 1.0f, 0.0f });
         m_world->add(m_tetra);
-        m_tetra->add(box);
+        m_tetra->add(cube);
 
     /* Physics world */
-    m_player = ref<RigidBody>(ref<Mesh>(BoxGeometry(1.0f), colorMaterial));
-        m_player->setBox(vec3(1.0f));
-        m_player->setPosition({ -2.0f, 2.0f, 0.0f });
+    auto car = ref<Mesh>(Geometry(obj::loadModelFromFile("assets/objects/car/car.obj")), phongMaterial);
+
+    auto colliderSize = vec3(1.42f, 0.95f, 3.0f);
+    m_player = ref<RigidBody>(
+            ref<BoxCollider>(colliderSize),
+            car
+        );
+        m_player->setBox(colliderSize);
+        m_player->setColliderOffset(vec3(0, 0.48f, -0.12));
+        m_player->setPosition({ 4.0f, 2.0f, 0.0f });
         m_world->add(m_player->mesh);
+
+    auto box = ref<RigidBody>(
+            ref<BoxCollider>(), 
+            ref<Mesh>(BoxGeometry(1.0f), colorMaterial)
+        );
+        box->setPosition({ -2.0f, 2.0f, 0.0f});
+        m_world->add(box->mesh);
 
     auto floor = ref<RigidBody>(ref<PlaneCollider>());
         floor->makeStatic();
 
     m_phys.Enqueue(m_player);
+    m_phys.Enqueue(box); // idk, but order seems to matter here :P
     m_phys.Enqueue(floor);
+
+    // m_phys.update(0.0f);
 
 }
 
@@ -86,7 +105,7 @@ void MyScene::bindEvents() {
     Events::on(Events::KEYDOWN, [&](SDL_KeyCode key) {
         switch (key) {
             case SDLK_i:
-                m_player->applyForce(vec3(0, 50.0f, 0));
+                m_player->applyForce(vec3(0, 250.0f, 0));
             break;
         }
     });
