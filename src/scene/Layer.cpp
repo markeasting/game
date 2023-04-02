@@ -33,6 +33,8 @@ void Layer::add(Ref<RigidBody> body) {
         const auto MC = static_cast<MeshCollider*>(body->collider.get());
 
         this->add(MC->m_mesh);
+
+        MC->m_mesh->m_material->wireframe = true;
     }
 
 }

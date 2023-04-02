@@ -108,6 +108,14 @@ void Renderer::draw(Ref<Scene> scene, Ref<Camera> camera) {
                     : matrix
             );
 
+            if(mesh->m_material && mesh->m_material->wireframe) {
+                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+                glDisable(GL_CULL_FACE);
+            } else {
+                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+                glEnable(GL_CULL_FACE);
+            }
+
             // @TODO add support for instanced meshes using glDrawArraysInstanced and glDrawElementsInstanced
             if(mesh->m_geometry->hasIndices()) {
                 glDrawElements(GL_TRIANGLES, mesh->m_geometry->m_indexBuffer->getCount(), GL_UNSIGNED_INT, 0);
@@ -125,6 +133,8 @@ void Renderer::draw(Ref<Scene> scene, Ref<Camera> camera) {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glClear(GL_COLOR_BUFFER_BIT);
         glDisable(GL_DEPTH_TEST);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        glEnable(GL_CULL_FACE);
 
         m_fullscreenQuad.bind();
         glActiveTexture(GL_TEXTURE0);
