@@ -24,6 +24,19 @@ void Layer::add(Ref<Mesh> mesh) {
     m_children.push_back(mesh);
 }
 
+void Layer::add(Ref<RigidBody> body) {
+    assert(body != nullptr);
+
+    this->add(body->mesh);
+
+    if (body->collider->m_type == ColliderType::ConvexMesh) {
+        const auto MC = static_cast<MeshCollider*>(body->collider.get());
+
+        this->add(MC->m_mesh);
+    }
+
+}
+
 // void Layer::init() {}
 // void Layer::destroy() {}
 

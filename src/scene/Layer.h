@@ -3,6 +3,7 @@
 #include "common.h"
 #include "gfx/Mesh.h"
 #include "gfx/Material.h"
+#include "physics/RigidBody.h"
 
 class Layer {
 public:
@@ -17,6 +18,7 @@ public:
 
     void add(Ref<Object3D> object);
     void add(Ref<Mesh> mesh);
+    void add(Ref<RigidBody> body);
 
     virtual void init() {};
     virtual void destroy() {}; // @TODO handle with destructor?

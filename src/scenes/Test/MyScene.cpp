@@ -75,14 +75,14 @@ void MyScene::init() {
         m_player->setBox(colliderSize);
         m_player->setColliderOffset(vec3(0, 0.48f, -0.12));
         m_player->setPosition({ 4.0f, 2.0f, 0.0f });
-        m_world->add(m_player->mesh);
+        m_world->add(m_player);
 
     auto box = ref<RigidBody>(
             ref<BoxCollider>(), 
             ref<Mesh>(BoxGeometry(1.0f), colorMaterial)
         );
         box->setPosition({ -2.0f, 2.0f, 0.0f});
-        m_world->add(box->mesh);
+        m_world->add(box);
 
     auto floor = ref<RigidBody>(ref<PlaneCollider>());
         floor->makeStatic();
