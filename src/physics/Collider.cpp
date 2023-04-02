@@ -30,6 +30,8 @@ MeshCollider::MeshCollider(Ref<Mesh> mesh)
 
 void MeshCollider::setGeometry(Ref<Geometry> geometry) {
 
+    m_mesh = ref<Mesh>(*geometry);
+
     for(Vertex v : geometry->m_vertexBuffer->m_data) {
         m_vertices.push_back(v.position);
         m_verticesWorldSpace.push_back(v.position);
@@ -59,6 +61,7 @@ void MeshCollider::setGeometry(Ref<Geometry> geometry) {
 
 void MeshCollider::setRelativePos(const vec3& pos) {
     m_relativePos = pos;
+    m_relativePosW = pos;
 
     for (int i = 0; i < m_vertices.size(); i++) {
         m_vertices[i] += pos;
@@ -69,6 +72,8 @@ void MeshCollider::updateGlobalPose(const Pose& pose) {
 
     // float min = vec3(std::numeric_limits<float>::infinity());
     // float max = vec3(-std::numeric_limits<float>::infinity());
+
+    m_relativePosW = (pose.q * m_relativePos) + pose.p;
 
     for (int i = 0; i < m_vertices.size(); i++) {
         auto v = m_vertices[i];

@@ -16,6 +16,11 @@ public:
     ColliderType m_type = Sphere;
 
     vec3 m_relativePos = vec3(0.0f);
+    vec3 m_relativePosW = vec3(0.0f);
+    
+    Ref<Mesh> m_mesh = nullptr; // Debug mesh
+
+    // m_sdf; // distance function?
 
     // @TODO Box3 / AABB
 
