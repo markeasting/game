@@ -234,6 +234,11 @@ void RigidBody::updateGeometry() {
         this->mesh->setPosition(this->pose.p);
         this->mesh->setRotation(this->pose.q);
     }
+
+    if (this->collider->m_mesh != nullptr) {
+        this->collider->m_mesh->setPosition(this->collider->m_relativePosW);
+        this->collider->m_mesh->setRotation(this->pose.q);
+    }
 }
 
 void RigidBody::setColliderOffset(const vec3& offset) {
