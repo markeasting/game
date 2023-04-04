@@ -33,12 +33,10 @@ void Camera::update(float time) {
         m_position.z = cos(time) * m_camRadius;
         m_position.y = 1.0f;
 
-        m_viewMatrix = glm::lookAt(m_position, m_lookAtPos, vec3(0.0, 1.0, 0.0));
-
-    } else {
+    } else if (m_enableFreeCam) {
 
         float posDelta = m_speed; // * time.dt;
-
+    
         if (Keyboard::shift)
             posDelta *= 3.0f;
 
@@ -71,9 +69,13 @@ void Camera::update(float time) {
         right = glm::normalize(glm::cross(front, glm::vec3(0.0f, 1.0f, 0.0f)));
         up    = glm::normalize(glm::cross(right, front));
 
-        m_viewMatrix = glm::lookAt(m_position, m_position + front, up);
+        m_lookAtPos = m_position + front;
+
+        // m_viewMatrix = glm::lookAt(m_position, m_position + front, up);
 
     }
+    
+    m_viewMatrix = glm::lookAt(m_position, m_lookAtPos, vec3(0.0, 1.0, 0.0));
     
     m_viewProjectionMatrix = m_projectionMatrix * m_viewMatrix;
 }

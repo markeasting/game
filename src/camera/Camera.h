@@ -13,6 +13,7 @@ public:
     // float zoomspeed = 0.05f;
 
     bool m_autoRotate = true;
+    bool m_enableFreeCam = true;
     float m_camRadius = 10.0f;
 
     vec3 m_lookAtPos = vec3(0.0f, 0.0f, 0.0f);
