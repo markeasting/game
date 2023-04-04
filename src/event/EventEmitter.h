@@ -143,6 +143,6 @@ public:
     }
 };
 
-extern EventEmitter _EventEmitter;
+// extern EventEmitter _EventEmitter;
 
 #endif
