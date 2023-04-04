@@ -148,38 +148,51 @@ void MyScene::bindEvents() {
 }
 
 void MyScene::update(float time, float dt) {
-
+    
     m_phys.update(dt);
-    m_camera->update(time);
-    m_state.update(time, dt); // @TODO move to base update
-    m_audio->updateListener(m_camera->getPosition(), m_camera->getForward(), m_camera->getUp());
     
-    // Log(m_state.getName());
-    
-    float oscillator = sin(time * 1.5f) / 2.0f + 0.5f;
-    m_tetra->m_material->setUniform("u_color", vec4(0.0f, oscillator, 0.8f, 1.0f));
+    /* Update colors */
+    float osc = sin(time * 1.5f) / 2.0f + 0.5f;
+    m_tetra->m_material->setUniform("u_color", vec4(0.0f, osc, 0.8f, 1.0f));
     m_tetra->setRotation({ time * 100.0f, 0.0f, 0.0f });
 
     if (m_state.inGroup("countdown")) {
-        m_tetra->m_material->setUniform("u_color", vec4(oscillator, 0.0f, 0.3f, 1.0f));
+        m_tetra->m_material->setUniform("u_color", vec4(osc, 0.0f, 0.3f, 1.0f));
+
+        m_camera->m_enableFreeCam = false;
+        m_camera->m_fov = 65;
+        Anim::lerp(m_camera->m_camRadius, 2.5f, 0.05f);
     }
 
     if (m_state.is("PLAYING")) {
         const float beatMatch = (145.0f / 60.0f) * time * 2.0f * M_PI; 
         m_tetra->setScale(sin(beatMatch) * 0.3f + 0.8f);
         m_tetra->setRotation({ 0.0f, beatMatch * 180.0f/M_PI, 0.0f });
-
-        m_camera->m_lookAtPos = vec3(0, 1.0f, 0);
-        Anim::lerp(m_camera->m_camRadius, 5.0f, 0.1f);
-
     }
 
+    // @TODO move to State::onUpdate() / State::onInit() as anonymous func?
     if (m_state.is("Finish")) {
         m_layers.get("overlay")->m_active = (int) time % 2 == 0;
-        Anim::lerp(m_camera->m_camRadius, 2.5f, 0.05f);
+        
+        m_camera->m_autoRotate = true;
     }
+
+    /* Player controls */
+    m_camera->m_lookAtPos = m_player->localToWorld({ 0, 1.2f, 0 });
+    m_camera->setPosition(m_player->localToWorld({ 0, 1.5f, -3.4f }));
+    
+    if (Keyboard::w) 
+        m_player->applyForce(m_player->localToWorld({ 0, 0, 100.0f }), m_player->localToWorld({ 0, 0, 0 }));
+    if (Keyboard::s) 
+        m_player->applyForce(m_player->localToWorld({ 0, 0, -100.0f }), m_player->localToWorld({ 0, 0, 0 }));
+    if (Keyboard::a) 
+        m_player->applyTorque({ 0, 25.0f, 0 });
+    if (Keyboard::d) 
+        m_player->applyTorque({ 0, -25.0f, 0 });
+    
+    m_camera->update(time); /* Camera must be updated here to prevent lag */
+    m_state.update(time, dt); // @TODO move to base Scene update
+    m_audio->updateListener(m_camera->getPosition(), m_camera->getForward(), m_camera->getUp());
 }
 
-
 void MyScene::destroy() {}
-
