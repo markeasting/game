@@ -56,6 +56,7 @@ public:
     RigidBody makeStatic();
 
     RigidBody applyForce(const vec3& force, const vec3& position = vec3(0));
+    RigidBody applyTorque(const vec3& torque);
     // void applyForceL(RigidBodyForce force);
     // void applyForceL(vec3 forceW, vec3 positionL = vec3(0.0f));
     // void applyForceW(RigidBodyForce force);

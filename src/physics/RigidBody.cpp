@@ -54,6 +54,12 @@ RigidBody RigidBody::applyForce(const vec3& force, const vec3& position) {
     return *this;
 }
 
+RigidBody RigidBody::applyTorque(const vec3& torque) {
+    this->torque += torque;
+
+    return *this;
+}
+
 void RigidBody::applyRotation(const vec3& rot, float scale) {
 
     // Safety clamping. This happens very rarely if the solver
@@ -93,12 +99,12 @@ void RigidBody::integrate(const float &dt) {
     // this->pose.p += this->vel * dt;
     // this->applyRotation(this->omega, dt);
 
-    // Euler step (updated), need to fix torque/omega
+    // Euler step (updated)
     this->vel += vec3(0, this->gravity, 0) * dt;
     this->vel += dt * this->force * this->invMass;
     this->pose.p += dt * this->vel;
 
-    // this->omega += dt * this->invInertia * (this->torque - (this->omega * (1.0f/this->invInertia * this->omega)));
+    this->omega += dt * this->torque * this->invInertia;
     // this->pose.q += dt * 0.5 * glm::vec4(omega.x, omega.y, omega.z, 0) * this->pose.q;
     // this->pose.q = glm::normalize(this->pose.q);
     this->applyRotation(this->omega, dt);
