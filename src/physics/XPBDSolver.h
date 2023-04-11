@@ -2,10 +2,10 @@
 
 #include "common.h"
 #include "physics/RigidBody.h"
-#include "physics/PhysicsHandler.h"
+#include "physics/gjk-epa/GjkEpa.h"
 // #include "physics/ContactSet.h"
 
-#include "physics/gjk-epa/GjkEpa.h"
+#include "gfx/Mesh.h"
 
 struct CollisionPair {
     RigidBody* A = NULL;
@@ -69,6 +69,14 @@ struct ContactSet {
 namespace XPBDSolver {
 
     const int numSubSteps = 20;
+
+    inline Ref<Mesh> p1;
+    inline Ref<Mesh> p2;
+    inline Ref<Mesh> r1;
+    inline Ref<Mesh> r2;
+    inline Ref<Mesh> n;
+
+    void init();
 
     void update(const std::vector<Ref<RigidBody>>& rigidBodies, const float& dt);
 

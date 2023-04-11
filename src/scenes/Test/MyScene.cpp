@@ -73,6 +73,7 @@ void MyScene::init() {
             car
         );
         m_player->setBox(colliderSize);
+        m_player->makeStatic();
         m_player->setColliderOffset(vec3(0, 0.48f, -0.12));
         m_player->setPosition({ 4.0f, 2.0f, 0.0f });
         m_world->add(m_player);
@@ -91,6 +92,10 @@ void MyScene::init() {
     m_phys.Enqueue(m_player);
     m_phys.Enqueue(box); // idk, but order seems to matter here :P
     m_phys.Enqueue(floor);
+
+    m_phys.init();
+    for (auto const& mesh : m_phys.m_debugMeshes) 
+        m_world->add(mesh);
 
     // m_phys.update(0.0f);
 

@@ -1,5 +1,51 @@
 #include "physics/XPBDSolver.h"
 
+void XPBDSolver::init() {
+    Material colorMaterial = Material("Color");
+    colorMaterial.wireframe = true;
+
+    XPBDSolver::p1 = ref<Mesh>(BoxGeometry(0.05f), colorMaterial);
+    XPBDSolver::p2 = ref<Mesh>(BoxGeometry(0.05f), colorMaterial);
+    XPBDSolver::r1 = ref<Mesh>(ArrowGeometry(1.0f), colorMaterial);
+    XPBDSolver::r2 = ref<Mesh>(ArrowGeometry(1.0f), colorMaterial);
+    XPBDSolver::n = ref<Mesh>(ArrowGeometry(1.0f), colorMaterial);
+}
+
+
+glm::quat QuatFromTwoVectors(glm::vec3 vFrom, glm::vec3 vTo) {
+    // https://github.com/Mugen87/three.js/blob/master/src/math/Quaternion.js
+
+    vFrom = glm::normalize(vFrom);
+    vTo = glm::normalize(vTo);
+    
+    float r;
+    float EPS = 0.000001;
+    glm::vec3 v1 = glm::vec3();
+
+    r = glm::dot(vFrom, vTo ) + 1.0f;
+
+    if ( r < EPS ) {
+        r = 0;
+        if ( abs( vFrom.x ) > abs( vFrom.z ) ) {
+            v1 = { -vFrom.y, vFrom.x, 0 };
+        } else {
+            v1 = { 0, - vFrom.z, vFrom.y };
+        }
+    } else {
+        v1 = glm::cross( vFrom, vTo );
+    }
+
+    glm::quat result;
+
+    result.x = v1.x;
+    result.y = v1.y;
+    result.z = v1.z;
+    result.w = r;
+
+    return glm::normalize(result);    
+}
+
+
 void XPBDSolver::update(const std::vector<Ref<RigidBody>>& bodies, const float& dt) {
 
     /* XPBD algorithm 2 */
@@ -142,6 +188,14 @@ std::vector<ContactSet*> XPBDSolver::getContacts(const std::vector<CollisionPair
                             B->worldToLocal(contact.p2)
                         ));
 
+                        XPBDSolver::p1->setPosition(contact.p1);
+                        XPBDSolver::p2->setPosition(contact.p2);
+
+                        Log(glm::length(contact.p1 - contact.p2));
+                        
+                        XPBDSolver::n->setPosition(contact.p1);
+                        XPBDSolver::n->setRotation(QuatFromTwoVectors(vec3(0), contact.normal));
+
                         break;
                     }
 
@@ -207,9 +261,6 @@ void XPBDSolver::_solvePenetration(ContactSet* contact, const float& h) {
     /* (3.5) if d ≤ 0 we skip the contact */
     if(contact->d <= 0.0f)
         return;
-
-    Log(contact->d);
-    Log(contact->n);
 
     /* (3.5) Resolve penetration (Δx = dn using a = 0 and λn) */
     const vec3 dx = contact->d * contact->n;

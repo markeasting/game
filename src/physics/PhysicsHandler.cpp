@@ -2,6 +2,16 @@
 #include "physics/PhysicsHandler.h"
 #include "physics/XPBDSolver.h"
 
+void PhysicsHandler::init() {
+    XPBDSolver::init();
+
+    m_debugMeshes.push_back(XPBDSolver::p1);
+    m_debugMeshes.push_back(XPBDSolver::p2);
+    m_debugMeshes.push_back(XPBDSolver::r1);
+    m_debugMeshes.push_back(XPBDSolver::r2);
+    m_debugMeshes.push_back(XPBDSolver::n);
+}
+
 void PhysicsHandler::Enqueue(Ref<RigidBody> body) {
     assert(body != nullptr);
 
