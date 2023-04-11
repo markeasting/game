@@ -21,14 +21,14 @@ public:
 
 	}
 
-	float distanceToPoint(vec3 point) {
+	float distanceToPoint(vec3 point) const {
 
 		return glm::dot(normal, point) + constant;
 
 	}
 
     /* @TODO TEST */
-	vec3 projectPoint(vec3 point) {
+	vec3 projectPoint(vec3 point) const {
 		return point + (normal * -Plane::distanceToPoint(point));
 	}
 

@@ -21,19 +21,19 @@ public:
         max += scalar;
     }
 
-    inline bool containsPoint(vec3 point) {
+    inline bool containsPoint(vec3 point) const {
         return point.x < min.x || point.x > max.x ||
             point.y < min.y || point.y > max.y ||
             point.z < min.z || point.z > max.z ? false : true;
     }
 
-    inline bool intersects(AABB other) {
+    inline bool intersects(AABB other) const {
         return other.max.x < min.x || other.min.x > max.x ||
             other.max.y < min.y || other.min.y > max.y ||
             other.max.z < min.z || other.min.z > max.z ? false : true;
     }
 
-    inline bool intersectsPlane(Plane plane) {
+    inline bool intersectsPlane(Plane plane) const {
         float _min, _max;
 
 		if ( plane.normal.x > 0 ) {
