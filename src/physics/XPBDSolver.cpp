@@ -124,24 +124,23 @@ std::vector<ContactSet*> XPBDSolver::getContacts(const std::vector<CollisionPair
 
                         Simplex simplex = GjkEpa::GJK(A->collider.get(), B->collider.get());
 
-                        if (simplex.containsOrigin) {
+                        if (!simplex.containsOrigin)
+                            break;
 
-                            auto contact = GjkEpa::EPA(simplex, A->collider.get(), B->collider.get());
-                            
-                            if (!contact.exists || contact.d <= 0.0)
-                                break;
+                        auto contact = GjkEpa::EPA(simplex, A->collider.get(), B->collider.get());
+                        
+                        if (!contact.exists || contact.d <= 0.0)
+                            break;
 
-                            contacts.push_back(new ContactSet(
-                                A,
-                                B,
-                                -contact.normal,
-                                contact.p1,
-                                contact.p2,
-                                A->worldToLocal(contact.p1),
-                                B->worldToLocal(contact.p2)
-                            ));
-
-                        }
+                        contacts.push_back(new ContactSet(
+                            A,
+                            B,
+                            -contact.normal,
+                            contact.p1,
+                            contact.p2,
+                            A->worldToLocal(contact.p1),
+                            B->worldToLocal(contact.p2)
+                        ));
 
                         break;
                     }
@@ -208,6 +207,9 @@ void XPBDSolver::_solvePenetration(ContactSet* contact, const float& h) {
     /* (3.5) if d ≤ 0 we skip the contact */
     if(contact->d <= 0.0f)
         return;
+
+    Log(contact->d);
+    Log(contact->n);
 
     /* (3.5) Resolve penetration (Δx = dn using a = 0 and λn) */
     const vec3 dx = contact->d * contact->n;
