@@ -9,7 +9,7 @@ void XPBDSolver::update(const std::vector<Ref<RigidBody>>& bodies, const float& 
      * collision pairs once per time step instead of once per
      * sub-step using a tree of axis aligned bounding boxes.
      */
-    auto collisions = XPBDSolver::collectCollisionPairs(bodies, dt); // AABBs
+    auto collisions = XPBDSolver::collectCollisionPairs(bodies, dt);
 
     // const double h = dt / XPBDSolver::numSubSteps;
     const double h = (1.0f / 60.0f) / XPBDSolver::numSubSteps;
@@ -22,13 +22,13 @@ void XPBDSolver::update(const std::vector<Ref<RigidBody>>& bodies, const float& 
          */
         auto contacts = XPBDSolver::getContacts(collisions);
 
-        for (auto& body: bodies) {
+        for (auto const& body: bodies) {
             body->integrate(h);
         }
 
         XPBDSolver::solvePositions(contacts, h);
 
-        for (auto& body: bodies) {
+        for (auto const& body: bodies) {
             body->update(h);
         }
 
@@ -37,7 +37,7 @@ void XPBDSolver::update(const std::vector<Ref<RigidBody>>& bodies, const float& 
     }
 
     // @TODO move to start of body->integrate?
-    for (auto& body: bodies) {
+    for (auto const& body: bodies) {
         body->force = vec3(0.0f);
         body->torque = vec3(0.0f);
         body->updateGeometry();
@@ -49,14 +49,12 @@ std::vector<CollisionPair> XPBDSolver::collectCollisionPairs(const std::vector<R
     // @TODO Chunking / octree
     // https://github.com/mwarning/SimpleOctree/tree/master/src
 
-    // @TODO Broad phase collision detection using bounding boxes
-
     std::vector<CollisionPair> collisions = {};
 
     std::vector<std::string> pairs = {};
 
-    for (auto A: rigidBodies) {
-        for (auto B: rigidBodies) {
+    for (auto const& A: rigidBodies) {
+        for (auto const& B: rigidBodies) {
 
             if ((A == B) || (!A->isDynamic && !B->isDynamic))
                 continue;
@@ -74,26 +72,22 @@ std::vector<CollisionPair> XPBDSolver::collectCollisionPairs(const std::vector<R
             /* (3.5) k * dt * vbody */
             const float collisionMargin = 2.0f * (float) dt * glm::length(A->vel - B->vel);
 
+            AABB aabb1(A->collider->m_aabb);
+            AABB aabb2(A->collider->m_aabb);
+            aabb1.expandByScalar(collisionMargin);
+            aabb2.expandByScalar(collisionMargin);
+
             switch(A->collider->m_type) {
-                case ColliderType::ConvexMesh :
+                case ColliderType::cMesh :
                     switch(B->collider->m_type) {
-                        case ColliderType::Plane : {
+                        case ColliderType::cPlane : {
 
                             // @TODO use a different / better cast?
-                            const auto MC = static_cast<MeshCollider*>(A->collider.get());
-                            const auto PC = static_cast<PlaneCollider*>(B->collider.get());
-                            const vec3& N = glm::normalize(PC->m_normal);
+                            const auto& MC = static_cast<MeshCollider*>(A->collider.get());
+                            const auto& PC = static_cast<PlaneCollider*>(B->collider.get());
 
-                            // This should be a simple AABB check instead of actual loop over all m_vertices
-                            for(int i = 0; i < MC->m_uniqueIndices.size(); i++) {
-                                
-                                const vec3 contactPointW = MC->m_verticesWorldSpace[MC->m_uniqueIndices[i]];
-                                const float signedDistance = glm::dot(N, (contactPointW - B->pose.p)); // Simple point-to-plane dist
-                                
-                                if(signedDistance < collisionMargin) {
-                                    collisions.push_back({ A.get(), B.get() });
-                                }
-                            }
+                            if (aabb1.intersectsPlane(PC->m_plane))
+                                collisions.push_back({ A.get(), B.get() });
 
                             break;
                         }
@@ -111,23 +105,22 @@ std::vector<ContactSet*> XPBDSolver::getContacts(const std::vector<CollisionPair
 
     std::vector<ContactSet*> contacts = {};
 
-    for (auto collision: collisions) {
+    for (auto const& collision: collisions) {
 
         RigidBody* A = collision.A;
         RigidBody* B = collision.B;
 
         switch(A->collider->m_type) {
-            case ColliderType::ConvexMesh :
+            case ColliderType::cMesh :
                 switch(B->collider->m_type) {
-                    case ColliderType::Plane : {
+                    case ColliderType::cPlane : {
 
-                        const auto MC = static_cast<MeshCollider*>(A->collider.get());
-                        const auto PC = static_cast<PlaneCollider*>(B->collider.get());
+                        const auto& MC = static_cast<MeshCollider*>(A->collider.get());
+                        const auto& PC = static_cast<PlaneCollider*>(B->collider.get());
 
-                        // @TODO store some kind of plane object in PlaneCollider
                         // @TODO check if vertex is actually inside plane size :)
-                        const vec3& N = PC->m_normal;
-                        // const float C = glm::dot(B->pose.p, N); // plane constant (dist from origin)
+                        // @TODO incorporate plane constant (dist from origin)
+                        const vec3 N = PC->m_plane.normal;
 
                         for(int i = 0; i < MC->m_uniqueIndices.size(); i++) {
 
@@ -158,6 +151,8 @@ std::vector<ContactSet*> XPBDSolver::getContacts(const std::vector<CollisionPair
                             contact->r2 = r2;
 
                             /*
+                             * @TODO move to ContactSet constructor
+                             *
                              * (29) Relative velocity
                              * This is calculated before the velocity solver,
                              * so that we can solve restitution (Eq. 34).
@@ -190,7 +185,7 @@ std::vector<ContactSet*> XPBDSolver::getContacts(const std::vector<CollisionPair
 
 void XPBDSolver::solvePositions(const std::vector<ContactSet*>& contacts, const float& h) {
 
-    for (auto contact: contacts) {
+    for (auto const& contact: contacts) {
         /* (3.5) Handling contacts and friction */
         XPBDSolver::_solvePenetration(contact, h);
         XPBDSolver::_solveFriction(contact, h);
@@ -276,7 +271,7 @@ void XPBDSolver::solveVelocities(const std::vector<ContactSet*>& contacts, const
 
     /* (3.6) Velocity level */
 
-    for (auto contact: contacts) {
+    for (auto const& contact: contacts) {
 
         // Update contact positions
         const vec3 p1 = contact->A->pose.p + contact->A->pose.q * contact->r1;
