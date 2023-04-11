@@ -5,24 +5,26 @@
 #include "geom/index.h"
 #include "gfx/Mesh.h"
 #include "physics/Pose.h"
+#include "physics/AABB.h"
+#include "physics/Plane.h"
 
 enum ColliderType {
-    Box, Plane, Sphere, ConvexMesh
+    cBox, cPlane, cSphere, cMesh
 };
 
 struct Collider {
 public:
 
-    ColliderType m_type = Sphere;
+    ColliderType m_type = cSphere;
 
     vec3 m_relativePos = vec3(0.0f);
     vec3 m_relativePosW = vec3(0.0f);
     
     Ref<Mesh> m_mesh = nullptr; // Debug mesh
 
-    // m_sdf; // distance function?
+    AABB m_aabb;
 
-    // @TODO Box3 / AABB
+    // m_sdf; // @TODO distance function?
 
     Collider() = default;
     virtual ~Collider() = default;
@@ -43,8 +45,8 @@ public:
 struct PlaneCollider : public Collider {
     
     vec2 m_size = vec2(1.0f, 1.0f);
-    vec3 m_normal = vec3(0.0f, 0.0f, 1.0f);
-    vec3 m_normalRef = vec3(0.0f, 0.0f, 1.0f);
+
+    Plane m_plane;
 
     PlaneCollider(const vec2 &size = { 1.0f, 1.0f }, const vec3 &normal = vec3(0.0f, 1.0f, 0.0f));
     void updateGlobalPose(const Pose& pose) override;

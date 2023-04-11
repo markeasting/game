@@ -4,23 +4,37 @@
 void Collider::updateGlobalPose(const Pose& pose) { }
 
 PlaneCollider::PlaneCollider(const glm::vec2 &size, const glm::vec3 &normal) {
-    m_type = ColliderType::Plane;
+    m_type = ColliderType::cPlane;
     m_size = size;
-    m_normal = glm::normalize(normal);
-    m_normalRef = glm::normalize(normal);
+
+    m_plane.normal = glm::normalize(normal);
+    m_plane.constant = 0.0f; // @TODO set plane constant
 }
 
+// void PlaneCollider::updateGlobalPose(const Pose& pose) {
+//     m_normal = pose.q * m_normalRef;
+// }
+
 void PlaneCollider::updateGlobalPose(const Pose& pose) {
-    m_normal = pose.q * m_normalRef;
+
+    // vec3 min = vec3(std::numeric_limits<float>::infinity());
+    // vec3 max = vec3(-std::numeric_limits<float>::infinity());
+
+    m_relativePosW = (pose.q * m_relativePos) + pose.p;
+
+    m_plane.normal = pose.q * m_plane.normal;
+    m_plane.constant = glm::length(m_relativePosW);
+
+    // m_aabb.set(min, max);
 }
 
 SphereCollider::SphereCollider(const float &diameter) {
-    m_type = ColliderType::Sphere;
+    m_type = ColliderType::cSphere;
     m_radius = diameter/2;
 }
 
 MeshCollider::MeshCollider(Ref<Geometry> convexGeometry) {
-    m_type = ColliderType::ConvexMesh;
+    m_type = ColliderType::cMesh;
     setGeometry(convexGeometry);
 }
 
@@ -70,8 +84,8 @@ void MeshCollider::setRelativePos(const vec3& pos) {
 
 void MeshCollider::updateGlobalPose(const Pose& pose) {
 
-    // float min = vec3(std::numeric_limits<float>::infinity());
-    // float max = vec3(-std::numeric_limits<float>::infinity());
+    vec3 min = vec3(std::numeric_limits<float>::infinity());
+    vec3 max = vec3(-std::numeric_limits<float>::infinity());
 
     m_relativePosW = (pose.q * m_relativePos) + pose.p;
 
@@ -80,11 +94,11 @@ void MeshCollider::updateGlobalPose(const Pose& pose) {
 
         m_verticesWorldSpace[i] = (pose.q * v) + pose.p;
 
-        // min = glm::min(m_verticesWorldSpace[i]);
-        // max = glm::max(m_verticesWorldSpace[i]);
+        min = glm::min(min, m_verticesWorldSpace[i]);
+        max = glm::max(max, m_verticesWorldSpace[i]);
     }
 
-    // this.aabb.set(min, max);
+    m_aabb.set(min, max);
 }
 
 vec3 MeshCollider::findFurthestPoint(const vec3& dir) {
@@ -92,7 +106,7 @@ vec3 MeshCollider::findFurthestPoint(const vec3& dir) {
     vec3 maxPoint;
     float maxDist = std::numeric_limits<float>::infinity();
 
-    for (auto vertex : m_verticesWorldSpace) {
+    for (auto& vertex : m_verticesWorldSpace) {
         float distance = glm::dot(vertex, dir);
 
         if (distance > maxDist) {
@@ -108,6 +122,6 @@ vec3 MeshCollider::findFurthestPoint(const vec3& dir) {
 BoxCollider::BoxCollider(const glm::vec3 &size) 
 : MeshCollider(ref<BoxGeometry>(size.x, size.y, size.z)) 
 {
-    // colliderType = ColliderType::Box;
-    m_type = ColliderType::ConvexMesh;
+    // colliderType = ColliderType::cBox;
+    m_type = ColliderType::cMesh;
 }
