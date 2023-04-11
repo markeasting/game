@@ -82,14 +82,14 @@ void Renderer::draw(Ref<Scene> scene, Ref<Camera> camera) {
         glEnable(GL_DEPTH_TEST);
     }
     
-    for (auto& pair : scene->m_layers.all()) {
+    for (auto const& pair : scene->m_layers.all()) {
         
         auto& layer = pair.second;
 
         if (!layer->m_active)
             continue;
 
-        for (auto& mesh : layer->m_meshes) {
+        for (auto const& mesh : layer->m_meshes) {
 
             mesh->bind();
 

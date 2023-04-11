@@ -106,7 +106,7 @@ vec3 MeshCollider::findFurthestPoint(const vec3& dir) {
     vec3 maxPoint;
     float maxDist = std::numeric_limits<float>::infinity();
 
-    for (auto& vertex : m_verticesWorldSpace) {
+    for (auto const& vertex : m_verticesWorldSpace) {
         float distance = glm::dot(vertex, dir);
 
         if (distance > maxDist) {

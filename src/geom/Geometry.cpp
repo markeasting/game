@@ -37,8 +37,8 @@ Geometry::Geometry(const obj::Model &objModel)
     std::vector<unsigned int> indices;
 
     // @TODO load vertex attribs into separate buffers (non-interleaved)
-    for (auto f : objModel.faces) {
-        for (auto i : f.second) {
+    for (auto const& f : objModel.faces) {
+        for (auto const& i : f.second) {
             indices.push_back(i);
         }
     }

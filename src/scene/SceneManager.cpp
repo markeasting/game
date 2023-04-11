@@ -24,7 +24,7 @@ unsigned int SceneManager::add(Ref<Scene> scene) {
     scene->init();
     scene->bindEvents();
 
-    // for (auto& pair : scene->m_layers.all()) {
+    // for (auto const& pair : scene->m_layers.all()) {
     //     pair.second->init();
     // }
 

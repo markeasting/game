@@ -92,7 +92,7 @@ void Audio::updateListener(vec3 pos, vec3 dir, vec3 up) {
 // @TODO this is currently never called
 void Audio::destroy() {
 
-    for (auto pair : m_sources) {
+    for (auto& pair : m_sources) {
         pair.second->source.destroy();
 
         // @TODO clean up buffers -- isn't this also done by deleting the context?

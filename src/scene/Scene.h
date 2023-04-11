@@ -26,7 +26,7 @@ public:
 
     /* Called by SceneManager */
     inline void _init() {
-        for (auto& pair : m_layers.all()) {
+        for (auto const& pair : m_layers.all()) {
             pair.second->init();
         }
     }
