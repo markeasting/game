@@ -84,8 +84,8 @@ void MeshCollider::setRelativePos(const vec3& pos) {
 
 void MeshCollider::updateGlobalPose(const Pose& pose) {
 
-    vec3 min = vec3(std::numeric_limits<float>::infinity());
-    vec3 max = vec3(-std::numeric_limits<float>::infinity());
+    vec3 min = vec3(FLT_MAX);
+    vec3 max = vec3(-FLT_MAX);
 
     m_relativePosW = (pose.q * m_relativePos) + pose.p;
 
@@ -101,10 +101,10 @@ void MeshCollider::updateGlobalPose(const Pose& pose) {
     m_aabb.set(min, max);
 }
 
-vec3 MeshCollider::findFurthestPoint(const vec3& dir) {
+vec3 MeshCollider::findFurthestPoint(const vec3& dir) const {
 
     vec3 maxPoint;
-    float maxDist = std::numeric_limits<float>::infinity();
+    float maxDist = FLT_MAX; //std::numeric_limits<float>::infinity();
 
     for (auto const& vertex : m_verticesWorldSpace) {
         float distance = glm::dot(vertex, dir);

@@ -36,7 +36,7 @@ public:
     }
 
     /* GJK */
-    virtual vec3 findFurthestPoint(const vec3& dir) {
+    virtual vec3 findFurthestPoint(const vec3& dir) const {
         return vec3(0);
     }
 
@@ -73,7 +73,7 @@ struct MeshCollider : public Collider {
     void setRelativePos(const vec3& pos) override;
     void updateGlobalPose(const Pose& pose) override;
 
-    vec3 findFurthestPoint(const vec3& dir) override;
+    vec3 findFurthestPoint(const vec3& dir) const override;
     
 };
 
