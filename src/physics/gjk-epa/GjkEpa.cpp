@@ -83,6 +83,8 @@ namespace GjkEpa {
         case 4:
             return GjkEpa::Tetrahedron(simplex, direction);
         }
+
+        return false;
     }
 
     bool Line(
@@ -101,7 +103,6 @@ namespace GjkEpa {
         }
         else
         {
-            // simplex = { a };
             simplex.assign({a});
             direction = ao;
         }
@@ -228,8 +229,8 @@ namespace GjkEpa {
             minNormal.z = normals[minFace].z;
             minDistance = normals[minFace].w;
             
-            if (iterations++ > 1) {
-                // Log("Too many EPA iterations");
+            if (iterations++ > 32) {
+                Log("Too many EPA iterations");
                 break;
             }
 

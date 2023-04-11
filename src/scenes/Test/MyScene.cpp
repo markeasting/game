@@ -81,7 +81,8 @@ void MyScene::init() {
             ref<BoxCollider>(), 
             ref<Mesh>(BoxGeometry(1.0f), colorMaterial)
         );
-        box->setPosition({ -2.0f, 2.0f, 0.0f});
+        // box->setPosition({ -2.0f, 2.0f, 0.0f});
+        box->setPosition({ 4.0f, 6.0f, 0.0f });
         m_world->add(box);
 
     auto floor = ref<RigidBody>(ref<PlaneCollider>());

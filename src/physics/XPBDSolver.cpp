@@ -131,15 +131,15 @@ std::vector<ContactSet*> XPBDSolver::getContacts(const std::vector<CollisionPair
                             if (!contact.exists || contact.d <= 0.0)
                                 break;
 
-                            // contacts.push_back(new ContactSet(
-                            //     A, 
-                            //     B, 
-                            //     -contact.normal,
-                            //     contact.p1,
-                            //     contact.p2,
-                            //     A->worldToLocal(contact.p1),
-                            //     B->worldToLocal(contact.p2)
-                            // ));
+                            contacts.push_back(new ContactSet(
+                                A,
+                                B,
+                                -contact.normal,
+                                contact.p1,
+                                contact.p2,
+                                A->worldToLocal(contact.p1),
+                                B->worldToLocal(contact.p2)
+                            ));
 
                         }
 

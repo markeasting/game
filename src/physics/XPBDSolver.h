@@ -68,7 +68,7 @@ struct ContactSet {
 
 namespace XPBDSolver {
 
-    const int numSubSteps = 4;
+    const int numSubSteps = 20;
 
     void update(const std::vector<Ref<RigidBody>>& rigidBodies, const float& dt);
 
