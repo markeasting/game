@@ -29,7 +29,39 @@ struct ContactSet {
     float lambdaN = 0.0f;
     float lambdaT = 0.0f;
 
-    ContactSet(RigidBody* A, RigidBody* B): A(A), B(B) {}
+    ContactSet(
+        RigidBody* A, 
+        RigidBody* B,
+        vec3 normal,
+        vec3 _p1,
+        vec3 _p2,
+        vec3 _r1,
+        vec3 _r2
+    ): A(A), B(B), n(normal), p1(_p1), p2(_p2), r1(_r1), r2(_r2) {
+
+        assert(A != B);
+
+        /*
+         * (29) Relative velocity
+         * This is calculated before the velocity solver,
+         * so that we can solve restitution (Eq. 34).
+         * 
+         * ṽn == vn
+         */
+        vrel = A->getVelocityAt(p1) - B->getVelocityAt(p2);
+        vn = glm::dot(n, vrel);
+
+        e = 0.5f * (A->bounciness + B->bounciness);
+        staticFriction = 0.5f * (A->staticFriction + B->staticFriction);
+        dynamicFriction = 0.5f * (A->dynamicFriction + B->dynamicFriction);
+
+    }
+
+    void update() {
+        // @TODO maybe recalculate N as well
+        p1 = A->pose.p + A->pose.q * r1;
+        p2 = B->pose.p + B->pose.q * r2;
+    }
 };
 
 namespace XPBDSolver {

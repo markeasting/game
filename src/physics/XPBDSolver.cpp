@@ -141,35 +141,7 @@ std::vector<ContactSet*> XPBDSolver::getContacts(const std::vector<CollisionPair
                             if (d <= 0.0f)
                                 continue;
 
-                            ContactSet* contact = new ContactSet(A, B);
-
-                            contact->d = d;
-                            contact->n = N;
-                            contact->p1 = p1;
-                            contact->p2 = p2;
-                            contact->r1 = r1;
-                            contact->r2 = r2;
-
-                            /*
-                             * @TODO move to ContactSet constructor
-                             *
-                             * (29) Relative velocity
-                             * This is calculated before the velocity solver,
-                             * so that we can solve restitution (Eq. 34).
-                             * 
-                             * ṽn == contact->vn
-                             */
-                            contact->vrel = (
-                                A->getVelocityAt(contact->p1) - 
-                                B->getVelocityAt(contact->p2)
-                            );
-                            contact->vn = glm::dot(contact->n, contact->vrel);
-
-                            contact->e = 0.5f * (A->bounciness + B->bounciness);
-                            contact->staticFriction = 0.5f * (A->staticFriction + B->staticFriction);
-                            contact->dynamicFriction = 0.5f * (A->dynamicFriction + B->dynamicFriction);
-
-                            contacts.push_back(contact);
+                            contacts.push_back(new ContactSet(A, B, N, p1, p2, r1, r2));
                         }
 
                         break;
@@ -194,12 +166,8 @@ void XPBDSolver::solvePositions(const std::vector<ContactSet*>& contacts, const 
 
 void XPBDSolver::_solvePenetration(ContactSet* contact, const float& h) {
 
-    auto A = contact->A;
-    auto B = contact->B;
-
     /* (26) - p1 & p2 */
-    contact->p1 = A->pose.p + A->pose.q * contact->r1;
-    contact->p2 = B->pose.p + B->pose.q * contact->r2;
+    contact->update();
 
     /* (3.5) Penetration depth -- Note: sign was flipped! */
     contact->d = - glm::dot((contact->p1 - contact->p2), contact->n);
@@ -212,8 +180,8 @@ void XPBDSolver::_solvePenetration(ContactSet* contact, const float& h) {
     const vec3 dx = contact->d * contact->n;
 
     float dlambda = XPBDSolver::applyBodyPairCorrection(
-        A,
-        B,
+        contact->A,
+        contact->B,
         dx,
         0.0f,
         h,
@@ -228,22 +196,18 @@ void XPBDSolver::_solvePenetration(ContactSet* contact, const float& h) {
 
 void XPBDSolver::_solveFriction(ContactSet* contact, const float& h) {
 
-    auto A = contact->A;
-    auto B = contact->B;
-
     /* (3.5)
      * To handle static friction we compute the relative
      * motion of the contact points and its tangential component
      */
 
     /* (26) Positions in current state and before the substep integration */
-    const vec3 p1prev = contact->p1; //A->prevPose.p + A->prevPose.q * contact->r1;
-    const vec3 p2prev = contact->p2; //B->prevPose.p + B->prevPose.q * contact->r2;
-    const vec3 p1 = A->pose.p + A->pose.q * contact->r1;
-    const vec3 p2 = B->pose.p + B->pose.q * contact->r2;
+    const vec3 p1prev = contact->p1; // A->prevPose.p + A->prevPose.q * contact->r1;
+    const vec3 p2prev = contact->p2; // B->prevPose.p + B->prevPose.q * contact->r2;
+    contact->update();
 
     /* (27) (28) Relative motion and tangential component */
-    const vec3 dp = (p1 - p1prev) - (p2 - p2prev);
+    const vec3 dp = (contact->p1 - p1prev) - (contact->p2 - p2prev);
     const vec3 dp_t = dp - glm::dot(dp, contact->n) * contact->n;
 
     /* (3.5)
@@ -255,8 +219,8 @@ void XPBDSolver::_solveFriction(ContactSet* contact, const float& h) {
      */
     if (contact->lambdaT < contact->staticFriction * contact->lambdaN) {
         XPBDSolver::applyBodyPairCorrection(
-            A,
-            B,
+            contact->A,
+            contact->B,
             dp_t,
             0.0f,
             h,
@@ -273,9 +237,7 @@ void XPBDSolver::solveVelocities(const std::vector<ContactSet*>& contacts, const
 
     for (auto const& contact: contacts) {
 
-        // Update contact positions
-        const vec3 p1 = contact->A->pose.p + contact->A->pose.q * contact->r1;
-        const vec3 p2 = contact->B->pose.p + contact->B->pose.q * contact->r2;
+        contact->update();
 
         vec3 dv = vec3(0.0f);
 
