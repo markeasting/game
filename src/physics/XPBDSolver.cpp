@@ -73,13 +73,20 @@ std::vector<CollisionPair> XPBDSolver::collectCollisionPairs(const std::vector<R
             const float collisionMargin = 2.0f * (float) dt * glm::length(A->vel - B->vel);
 
             AABB aabb1(A->collider->m_aabb);
-            AABB aabb2(A->collider->m_aabb);
+            AABB aabb2(B->collider->m_aabb);
             aabb1.expandByScalar(collisionMargin);
             aabb2.expandByScalar(collisionMargin);
 
             switch(A->collider->m_type) {
                 case ColliderType::cMesh :
                     switch(B->collider->m_type) {
+                        case ColliderType::cMesh : {
+
+                            if (aabb1.intersects(aabb2))
+                                collisions.push_back({ A.get(), B.get() });
+
+                            break;
+                        }
                         case ColliderType::cPlane : {
 
                             // @TODO use a different / better cast?
@@ -113,6 +120,32 @@ std::vector<ContactSet*> XPBDSolver::getContacts(const std::vector<CollisionPair
         switch(A->collider->m_type) {
             case ColliderType::cMesh :
                 switch(B->collider->m_type) {
+                    case ColliderType::cMesh : {
+
+                        Simplex simplex = GjkEpa::GJK(A->collider.get(), B->collider.get());
+
+                        if (simplex.containsOrigin) {
+
+                            auto contact = GjkEpa::EPA(simplex, A->collider.get(), B->collider.get());
+                            
+                            if (!contact.exists || contact.d <= 0.0)
+                                break;
+
+                            // contacts.push_back(new ContactSet(
+                            //     A, 
+                            //     B, 
+                            //     -contact.normal,
+                            //     contact.p1,
+                            //     contact.p2,
+                            //     A->worldToLocal(contact.p1),
+                            //     B->worldToLocal(contact.p2)
+                            // ));
+
+                        }
+
+                        break;
+                    }
+
                     case ColliderType::cPlane : {
 
                         const auto& MC = static_cast<MeshCollider*>(A->collider.get());

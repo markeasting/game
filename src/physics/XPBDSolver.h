@@ -5,6 +5,8 @@
 #include "physics/PhysicsHandler.h"
 // #include "physics/ContactSet.h"
 
+#include "physics/gjk-epa/GjkEpa.h"
+
 struct CollisionPair {
     RigidBody* A = NULL;
     RigidBody* B = NULL;
@@ -66,7 +68,7 @@ struct ContactSet {
 
 namespace XPBDSolver {
 
-    const int numSubSteps = 20;
+    const int numSubSteps = 4;
 
     void update(const std::vector<Ref<RigidBody>>& rigidBodies, const float& dt);
 
