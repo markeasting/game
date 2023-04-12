@@ -35,11 +35,12 @@ struct ContactSet {
         RigidBody* A, 
         RigidBody* B,
         vec3 normal,
+        float d,
         vec3 _p1,
         vec3 _p2,
         vec3 _r1,
         vec3 _r2
-    ): A(A), B(B), n(normal), p1(_p1), p2(_p2), r1(_r1), r2(_r2) {
+    ): A(A), B(B), n(normal), d(d), p1(_p1), p2(_p2), r1(_r1), r2(_r2) {
 
         assert(A != B);
 
@@ -57,9 +58,17 @@ struct ContactSet {
         staticFriction = 0.5f * (A->staticFriction + B->staticFriction);
         dynamicFriction = 0.5f * (A->dynamicFriction + B->dynamicFriction);
 
+        /* (3.5) Penetration depth -- Note: sign was flipped! 
+         * 
+         * Note: d is often already calculated when finding collisions, so
+         *       it's already given as an argument. This is often (EPS) equal
+         *       to the equation from (3.5).
+         */
+        // d = - glm::dot((p1 - p2), n);
+
     }
 
-    void update() {
+    inline void update() {
         // @TODO maybe recalculate N as well
         p1 = A->pose.p + A->pose.q * r1;
         p2 = B->pose.p + B->pose.q * r2;

@@ -182,6 +182,7 @@ std::vector<ContactSet*> XPBDSolver::getContacts(const std::vector<CollisionPair
                             A,
                             B,
                             -epa.normal,
+                            epa.d,
                             epa.p1,
                             epa.p2,
                             A->worldToLocal(epa.p1),
@@ -222,7 +223,8 @@ std::vector<ContactSet*> XPBDSolver::getContacts(const std::vector<CollisionPair
                             if (d <= 0.0f)
                                 continue;
 
-                            auto contact = new ContactSet(A, B, N, p1, p2, r1, r2);
+                            auto contact = new ContactSet(A, B, N, d, p1, p2, r1, r2);
+                            contact->d = d;
 
                             contacts.push_back(contact);
                             // XPBDSolver::debugContact(contact);
@@ -253,8 +255,8 @@ void XPBDSolver::_solvePenetration(ContactSet* contact, const float& h) {
     /* (26) - p1 & p2 */
     contact->update();
 
-    /* (3.5) Penetration depth -- Note: sign was flipped! */
-    contact->d = - glm::dot((contact->p1 - contact->p2), contact->n);
+    // /* (3.5) Penetration depth -- Handled by contact->update() */
+    // contact->d = - glm::dot((contact->p1 - contact->p2), contact->n);
 
     /* (3.5) if d ≤ 0 we skip the contact */
     if(contact->d <= 0.0f)
@@ -262,8 +264,6 @@ void XPBDSolver::_solvePenetration(ContactSet* contact, const float& h) {
 
     /* (3.5) Resolve penetration (Δx = dn using a = 0 and λn) */
     const vec3 dx = contact->d * contact->n;
-
-    // XPBDSolver::debugContact(contact);
 
     float dlambda = XPBDSolver::applyBodyPairCorrection(
         contact->A,
@@ -288,8 +288,8 @@ void XPBDSolver::_solveFriction(ContactSet* contact, const float& h) {
      */
 
     /* (26) Positions in current state and before the substep integration */
-    const vec3 p1prev = contact->p1; // A->prevPose.p + A->prevPose.q * contact->r1;
-    const vec3 p2prev = contact->p2; // B->prevPose.p + B->prevPose.q * contact->r2;
+    const vec3 p1prev = vec3(contact->p1); // A->prevPose.p + A->prevPose.q * contact->r1;
+    const vec3 p2prev = vec3(contact->p2); // B->prevPose.p + B->prevPose.q * contact->r2;
     contact->update();
 
     /* (27) (28) Relative motion and tangential component */
