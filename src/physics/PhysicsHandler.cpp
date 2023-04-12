@@ -12,7 +12,7 @@ void PhysicsHandler::init() {
     m_debugMeshes.push_back(XPBDSolver::n);
 }
 
-void PhysicsHandler::Enqueue(Ref<RigidBody> body) {
+void PhysicsHandler::add(Ref<RigidBody> body) {
     assert(body != nullptr);
 
     body->id = m_bodies.size();

@@ -11,7 +11,7 @@ public:
     PhysicsHandler() = default;
     ~PhysicsHandler() = default;
 
-    void Enqueue(Ref<RigidBody> body);
+    void add(Ref<RigidBody> body);
 
     void init();
     
