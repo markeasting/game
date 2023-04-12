@@ -66,32 +66,33 @@ void MyScene::init() {
 
     /* Physics world */
     auto car = ref<Mesh>(Geometry(obj::loadModelFromFile("assets/objects/car/car.obj")), phongMaterial);
-
     auto colliderSize = vec3(1.42f, 0.95f, 3.0f);
+
     m_player = ref<RigidBody>(
             ref<BoxCollider>(colliderSize),
             car
         );
         m_player->setBox(colliderSize);
-        m_player->makeStatic();
         m_player->setColliderOffset(vec3(0, 0.48f, -0.12));
-        m_player->setPosition({ 4.0f, 2.0f, 0.0f });
+        m_player->setPosition({ 4.0f, 2.0f, -3.0f });
+        // m_player->makeStatic();
         m_world->add(m_player);
+        m_phys.add(m_player);
 
-    auto box = ref<RigidBody>(
-            ref<BoxCollider>(), 
+    for (size_t i = 0; i < 4; i++) {
+        auto box = ref<RigidBody>(
+            ref<BoxCollider>(1.0f), 
             ref<Mesh>(BoxGeometry(1.0f), colorMaterial)
         );
-        // box->setPosition({ -2.0f, 2.0f, 0.0f});
-        box->setPosition({ 4.0f, 6.0f, 0.0f });
+        box->setPosition({ 4.0f, 0.5f + i * 1.2f, 0.0f });
+        box->setBox(vec3(1.0f));
         m_world->add(box);
+        m_phys.add(box);
+    }
 
     auto floor = ref<RigidBody>(ref<PlaneCollider>());
         floor->makeStatic();
-
-    m_phys.Enqueue(m_player);
-    m_phys.Enqueue(box); // idk, but order seems to matter here :P
-    m_phys.Enqueue(floor);
+        m_phys.add(floor); // idk, but order seems to matter here :P    
 
     m_phys.init();
     for (auto const& mesh : m_phys.m_debugMeshes) 
@@ -124,6 +125,7 @@ void MyScene::bindEvents() {
         }
     });
 
+    SDL_SetRelativeMouseMode(SDL_TRUE);
     Events::on(Events::MOUSEUP, [&]() {
         m_camera->m_autoRotate = !m_camera->m_autoRotate;
         SDL_SetRelativeMouseMode(m_camera->m_autoRotate ? SDL_FALSE : SDL_TRUE);
@@ -155,7 +157,8 @@ void MyScene::bindEvents() {
 
 void MyScene::update(float time, float dt) {
     
-    m_phys.update(dt);
+    // if (Keyboard::space)
+        m_phys.update(dt);
     
     /* Update colors */
     float osc = sin(time * 1.5f) / 2.0f + 0.5f;
@@ -166,6 +169,7 @@ void MyScene::update(float time, float dt) {
         m_tetra->m_material->setUniform("u_color", vec4(osc, 0.0f, 0.3f, 1.0f));
 
         m_camera->m_enableFreeCam = false;
+        m_camera->m_autoRotate = false;
         m_camera->m_fov = 65;
         Anim::lerp(m_camera->m_camRadius, 2.5f, 0.05f);
     }
@@ -179,23 +183,24 @@ void MyScene::update(float time, float dt) {
     // @TODO move to State::onUpdate() / State::onInit() as anonymous func?
     if (m_state.is("Finish")) {
         m_layers.get("overlay")->m_active = (int) time % 2 == 0;
-        
         m_camera->m_autoRotate = true;
     }
 
     /* Player controls */
-    m_camera->m_lookAtPos = m_player->localToWorld({ 0, 1.2f, 0 });
-    m_camera->setPosition(m_player->localToWorld({ 0, 1.5f, -3.4f }));
+    if (!m_camera->m_enableFreeCam) {
+        m_camera->m_lookAtPos = m_player->localToWorld({ 0, 1.2f, 0 });
+        m_camera->setPosition(m_player->localToWorld({ 0, 1.5f, -3.4f }));
     
-    if (Keyboard::w) 
-        m_player->applyForce(m_player->localToWorld({ 0, 0, 100.0f }), m_player->localToWorld({ 0, 0, 0 }));
-    if (Keyboard::s) 
-        m_player->applyForce(m_player->localToWorld({ 0, 0, -100.0f }), m_player->localToWorld({ 0, 0, 0 }));
-    if (Keyboard::a) 
-        m_player->applyTorque({ 0, 25.0f, 0 });
-    if (Keyboard::d) 
-        m_player->applyTorque({ 0, -25.0f, 0 });
-    
+        if (Keyboard::w) 
+            m_player->applyForce(m_player->localToWorld({ 0, 0, 100.0f }), m_player->localToWorld({ 0, 0, 0 }));
+        if (Keyboard::s) 
+            m_player->applyForce(m_player->localToWorld({ 0, 0, -100.0f }), m_player->localToWorld({ 0, 0, 0 }));
+        if (Keyboard::a) 
+            m_player->applyTorque({ 0, 25.0f, 0 });
+        if (Keyboard::d) 
+            m_player->applyTorque({ 0, -25.0f, 0 });
+    }
+
     m_camera->update(time); /* Camera must be updated here to prevent lag */
     m_state.update(time, dt); // @TODO move to base Scene update
     m_audio->updateListener(m_camera->getPosition(), m_camera->getForward(), m_camera->getUp());
