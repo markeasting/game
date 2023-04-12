@@ -229,8 +229,8 @@ namespace GjkEpa {
             minNormal.z = normals[minFace].z;
             minDistance = normals[minFace].w;
             
-            if (iterations++ > 32) {
-                Log("Too many EPA iterations");
+            if (iterations++ > 16) {
+                // Log("Too many EPA iterations");
                 break;
             }
 
