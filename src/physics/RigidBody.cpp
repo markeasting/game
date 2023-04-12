@@ -86,6 +86,12 @@ void RigidBody::applyRotation(const vec3& rot, float scale) {
 
 void RigidBody::integrate(const float &dt) {
 
+    if (glm::all(glm::isnan(this->pose.p)) || glm::all(glm::isnan(this->pose.q))) {
+        this->pose = Pose();
+        this->isDynamic = false;
+        Log("ERR: RigidBody pose contains nan values");
+    }
+
     if(!this->isDynamic) 
         return;
 
@@ -214,17 +220,11 @@ float RigidBody::getInverseMass(const vec3& normal, const vec3& pos) {
 }
 
 vec3 RigidBody::getVelocityAt(const vec3& pos, bool beforeSolve) const {
-    vec3 vel = vec3(0.0f);
 
-    if(this->isDynamic) {
-        if (beforeSolve) {
-            vel = this->velPrev + glm::cross(this->omegaPrev, (pos - this->prevPose.p));
-        } else {
-            vel = this->vel + glm::cross(this->omega, (pos - this->pose.p));
-        }
-    }
+    if(!this->isDynamic)
+        return vec3(0.0f);
 
-    return vel;
+    return this->vel + glm::cross(this->omega, (pos - this->pose.p));
 }
 
 vec3 RigidBody::localToWorld(const vec3& v) {
