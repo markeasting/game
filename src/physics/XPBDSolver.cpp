@@ -1,7 +1,7 @@
 #include "physics/XPBDSolver.h"
 
 void XPBDSolver::init() {
-    Material colorMaterial = Material("Color");
+    Material colorMaterial = Material("Basic");
     colorMaterial.wireframe = true;
 
     XPBDSolver::p1 = ref<Mesh>(BoxGeometry(0.05f), colorMaterial);
@@ -116,7 +116,7 @@ std::vector<CollisionPair> XPBDSolver::collectCollisionPairs(const std::vector<R
             pairs.push_back(pair);
 
             /* (3.5) k * dt * vbody */
-            const float collisionMargin = 2.0f * (float) dt * glm::length(A->vel - B->vel);
+            const float collisionMargin = 2.0f * dt * glm::length(A->vel - B->vel);
 
             AABB aabb1(A->collider->m_aabb);
             AABB aabb2(B->collider->m_aabb);
@@ -173,28 +173,23 @@ std::vector<ContactSet*> XPBDSolver::getContacts(const std::vector<CollisionPair
                         if (!simplex.containsOrigin)
                             break;
 
-                        auto contact = GjkEpa::EPA(simplex, A->collider.get(), B->collider.get());
+                        auto epa = GjkEpa::EPA(simplex, A->collider.get(), B->collider.get());
                         
-                        if (!contact.exists || contact.d <= 0.0)
+                        if (!epa.exists || epa.d <= 0.0)
                             break;
 
-                        contacts.push_back(new ContactSet(
+                        auto contact = new ContactSet(
                             A,
                             B,
-                            -contact.normal,
-                            contact.p1,
-                            contact.p2,
-                            A->worldToLocal(contact.p1),
-                            B->worldToLocal(contact.p2)
-                        ));
+                            -epa.normal,
+                            epa.p1,
+                            epa.p2,
+                            A->worldToLocal(epa.p1),
+                            B->worldToLocal(epa.p1)
+                        );
 
-                        XPBDSolver::p1->setPosition(contact.p1);
-                        XPBDSolver::p2->setPosition(contact.p2);
-
-                        Log(glm::length(contact.p1 - contact.p2));
-                        
-                        XPBDSolver::n->setPosition(contact.p1);
-                        XPBDSolver::n->setRotation(QuatFromTwoVectors(vec3(0), contact.normal));
+                        contacts.push_back(contact);
+                        XPBDSolver::debugContact(contact);
 
                         break;
                     }
@@ -227,7 +222,10 @@ std::vector<ContactSet*> XPBDSolver::getContacts(const std::vector<CollisionPair
                             if (d <= 0.0f)
                                 continue;
 
-                            contacts.push_back(new ContactSet(A, B, N, p1, p2, r1, r2));
+                            auto contact = new ContactSet(A, B, N, p1, p2, r1, r2);
+
+                            contacts.push_back(contact);
+                            XPBDSolver::debugContact(contact);
                         }
 
                         break;
@@ -264,6 +262,8 @@ void XPBDSolver::_solvePenetration(ContactSet* contact, const float& h) {
 
     /* (3.5) Resolve penetration (Δx = dn using a = 0 and λn) */
     const vec3 dx = contact->d * contact->n;
+
+    // XPBDSolver::debugContact(contact);
 
     float dlambda = XPBDSolver::applyBodyPairCorrection(
         contact->A,
@@ -410,4 +410,23 @@ float XPBDSolver::applyBodyPairCorrection(
     body1->applyCorrection(-n, pos1, velocityLevel);
 
     return dlambda;
+}
+
+void XPBDSolver::debugContact(ContactSet* contact) {
+
+    assert(contact != nullptr);
+
+    XPBDSolver::p1->setPosition(contact->p1);
+    XPBDSolver::p2->setPosition(contact->p2);
+
+    XPBDSolver::n->setPosition(contact->p1);
+    XPBDSolver::n->setRotation(QuatFromTwoVectors(vec3(0, 1.0f, 0), contact->n));
+
+    XPBDSolver::r1->setPosition(contact->A->pose.p);
+    XPBDSolver::r2->setPosition(contact->B->pose.p);
+    XPBDSolver::r1->setRotation(contact->A->pose.q * QuatFromTwoVectors(vec3(0, 1.0f, 0), contact->r1));
+    XPBDSolver::r2->setRotation(contact->B->pose.q * QuatFromTwoVectors(vec3(0, 1.0f, 0), contact->r2));
+    XPBDSolver::r1->setScale(glm::length(contact->r1));
+    XPBDSolver::r2->setScale(glm::length(contact->r2));
+
 }

@@ -68,7 +68,7 @@ struct ContactSet {
 
 namespace XPBDSolver {
 
-    const int numSubSteps = 20;
+    const int numSubSteps = 15;
 
     inline Ref<Mesh> p1;
     inline Ref<Mesh> p2;
@@ -99,5 +99,7 @@ namespace XPBDSolver {
         const glm::vec3& pos1 = glm::vec3(0.0f),
         const bool& velocityLevel = false
     );
+
+    void debugContact(ContactSet* contact);
 
 }
