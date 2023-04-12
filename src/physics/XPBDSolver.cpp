@@ -189,7 +189,7 @@ std::vector<ContactSet*> XPBDSolver::getContacts(const std::vector<CollisionPair
                         );
 
                         contacts.push_back(contact);
-                        XPBDSolver::debugContact(contact);
+                        // XPBDSolver::debugContact(contact);
 
                         break;
                     }
@@ -225,7 +225,7 @@ std::vector<ContactSet*> XPBDSolver::getContacts(const std::vector<CollisionPair
                             auto contact = new ContactSet(A, B, N, p1, p2, r1, r2);
 
                             contacts.push_back(contact);
-                            XPBDSolver::debugContact(contact);
+                            // XPBDSolver::debugContact(contact);
                         }
 
                         break;
