@@ -12,7 +12,7 @@ public:
     float m_fov = 70; // g_settings.fov;
     // float zoomspeed = 0.05f;
 
-    bool m_autoRotate = true;
+    bool m_autoRotate = false;
     bool m_enableFreeCam = true;
     float m_camRadius = 10.0f;
 
