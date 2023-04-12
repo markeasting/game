@@ -232,7 +232,7 @@ vec3 RigidBody::localToWorld(const vec3& v) {
 }
 
 vec3 RigidBody::worldToLocal(const vec3& v) {
-    return this->pose.q * (v - this->pose.p);
+    return glm::conjugate(this->pose.q) * (v - this->pose.p);
 }
 
 void RigidBody::updateGeometry() {
