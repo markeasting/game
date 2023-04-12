@@ -118,6 +118,12 @@ vec3 MeshCollider::findFurthestPoint(const vec3& dir) const {
     return maxPoint;
 }
 
+BoxCollider::BoxCollider(float size) 
+: MeshCollider(ref<BoxGeometry>(size, size, size)) 
+{
+    m_type = ColliderType::cMesh;
+}
+
 
 BoxCollider::BoxCollider(const glm::vec3 &size) 
 : MeshCollider(ref<BoxGeometry>(size.x, size.y, size.z)) 

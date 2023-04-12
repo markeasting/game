@@ -79,5 +79,6 @@ struct MeshCollider : public Collider {
 
 struct BoxCollider : public MeshCollider {
     vec3 m_size = vec3(1.0f, 1.0f, 1.0f);
+    BoxCollider(float size = 1.0f);
     BoxCollider(const vec3 &size = { 1.0f, 1.0f, 1.0f });
 };
