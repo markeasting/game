@@ -147,10 +147,11 @@ void MyScene::bindEvents() {
         }
     });
 
-    SDL_SetRelativeMouseMode(SDL_TRUE);
     Events::on(Events::MOUSEUP, [&]() {
-        m_camera->m_autoRotate = !m_camera->m_autoRotate;
-        SDL_SetRelativeMouseMode(m_camera->m_autoRotate ? SDL_FALSE : SDL_TRUE);
+        // m_camera->m_autoRotate = !m_camera->m_autoRotate;
+        // SDL_SetRelativeMouseMode(m_camera->m_autoRotate ? SDL_FALSE : SDL_TRUE);
+        SDL_SetRelativeMouseMode(SDL_GetRelativeMouseMode() == SDL_TRUE ? SDL_FALSE : SDL_TRUE);
+        
     });
 
     Events::on(Events::STATE_CHANGE, [&](Ref<State> state) {
