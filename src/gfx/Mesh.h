@@ -17,6 +17,7 @@ public:
     Mesh();
     Mesh(const Geometry& geometry);
     Mesh(const Geometry& geometry, const Material& material);
+    Mesh(Ref<Geometry> geometry, const Material& material);
 
     virtual ~Mesh() = default;
 

@@ -27,7 +27,7 @@ public:
 
     T m_value;
 
-    Uniform(const std::string& name, const T &value = {}) 
+    Uniform(const std::string& name, T value = {}) 
         : IUniform(name), m_value(value) {}
 
     virtual void set(T value) { 
