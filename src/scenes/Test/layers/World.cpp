@@ -22,9 +22,9 @@ void World::init() {
         lightDirection
     });
 
-    auto floor = ref<Mesh>(PlaneGeometry(10.0f), phongMaterial2);
-    floor->setRotation({ -90.0f, 0.0f, 0.0f });
-    this->add(floor);
+    // auto floor = ref<Mesh>(PlaneGeometry(10.0f), phongMaterial2);
+    // floor->setRotation({ -90.0f, 0.0f, 0.0f });
+    // this->add(floor);
 
     auto sphere = ref<Mesh>(SphereGeometry(1.0f), phongMaterial);
     sphere->setPosition({ 0.0f, 0.5f, 3.0f });

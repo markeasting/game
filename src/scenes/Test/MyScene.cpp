@@ -90,15 +90,20 @@ void MyScene::init() {
         m_phys.add(box);
     }
 
-    auto floor = ref<RigidBody>(ref<PlaneCollider>());
+    Material floorMaterial = Material("Basic.vert", "BasicTextured.frag");
+    floorMaterial.assignTexture("assets/texture/asphalt.jpg", "texture1");
+
+    auto floor = ref<RigidBody>(
+            ref<PlaneCollider>(vec2(30.0f, 30.0f)),
+            ref<Mesh>(PlaneGeometry(30.0f, true), floorMaterial)
+        );
         floor->makeStatic();
-        m_phys.add(floor); // idk, but order seems to matter here :P    
+        m_world->add(floor);
+        m_phys.add(floor); // idk, but order seems to matter here :P
 
     m_phys.init();
     for (auto const& mesh : m_phys.m_debugMeshes) 
         m_world->add(mesh);
-
-    // m_phys.update(0.0f);
 
 }
 
