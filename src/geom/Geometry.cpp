@@ -45,16 +45,16 @@ Geometry::Geometry(const obj::Model &objModel)
 
     for (size_t i = 0; i < objModel.vertex.size(); i += 3) {
     
-        auto vx = objModel.vertex[i];
-        auto vy = objModel.vertex[i + 1];
-        auto vz = objModel.vertex[i + 2];
+        float vx = objModel.vertex[i];
+        float vy = objModel.vertex[i + 1];
+        float vz = objModel.vertex[i + 2];
 
-        auto nx = objModel.normal[i];
-        auto ny = objModel.normal[i + 1];
-        auto nz = objModel.normal[i + 2];
+        float nx = objModel.normal.size() ? objModel.normal[i] : 0.0f;
+        float ny = objModel.normal.size() ? objModel.normal[i + 1] : 0.0f;
+        float nz = objModel.normal.size() ? objModel.normal[i + 2] : 0.0f;
 
-        auto u = objModel.texCoord[i];
-        auto v = objModel.texCoord[i + 1];
+        float u = objModel.texCoord.size() ? objModel.texCoord[i] : 0.0f;
+        float v = objModel.texCoord.size() ? objModel.texCoord[i + 1] : 0.0f;
 
         vertices.push_back(Vertex(
             vec3(vx, vy, vz),
