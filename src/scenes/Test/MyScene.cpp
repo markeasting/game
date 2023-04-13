@@ -101,6 +101,13 @@ void MyScene::init() {
         m_world->add(floor);
         m_phys.add(floor); // idk, but order seems to matter here :P
 
+    // auto floor = ref<RigidBody>(
+    //         ref<Mesh>(PlaneGeometry(30.0f, true), floorMaterial)
+    //     );
+    //     floor->makeStatic();
+    //     m_world->add(floor);
+    //     m_phys.add(floor);
+
     m_phys.init();
     for (auto const& mesh : m_phys.m_debugMeshes) 
         m_world->add(mesh);
