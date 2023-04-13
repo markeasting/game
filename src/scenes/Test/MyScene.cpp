@@ -50,7 +50,7 @@ void MyScene::init() {
 
     auto lightDirection = ref<Uniform<vec3>>("u_lightDirection", vec3(0.5f, 0.0f, 2.0f));
 
-    Material phongMaterial = Material("Phong", { lightDirection });
+    // Material phongMaterial = Material("Phong", { lightDirection });
     Material colorMaterial = Material("Color", {
         ref<Uniform<vec4>>("u_color", vec4(0.0f, 0.0f, 0.8f, 1.0f)),
     });
@@ -65,19 +65,29 @@ void MyScene::init() {
         m_tetra->add(cube);
 
     /* Physics world */
-    auto car = ref<Mesh>(Geometry(obj::loadModelFromFile("assets/objects/car/car.obj")), phongMaterial);
+
+    auto car = ref<Geometry>(obj::loadModelFromFile("assets/objects/car/car.obj"));
+    auto car_collider = ref<Geometry>(obj::loadModelFromFile("assets/objects/car/car_collider.obj"));
     auto colliderSize = vec3(1.42f, 0.95f, 3.0f);
 
     m_player = ref<RigidBody>(
-            ref<BoxCollider>(colliderSize),
-            car
+            ref<MeshCollider>(car_collider),
+            ref<Mesh>(car, Material("Phong", { lightDirection }))
         );
         m_player->setBox(colliderSize);
-        m_player->setColliderOffset(vec3(0, 0.48f, -0.12));
         m_player->setPosition({ 4.0f, 2.0f, -3.0f });
         // m_player->makeStatic();
         m_world->add(m_player);
         m_phys.add(m_player);
+
+    auto opponent = ref<RigidBody>(
+            ref<MeshCollider>(car_collider),
+            ref<Mesh>(car, Material("Phong", { lightDirection, ref<Uniform<vec3>>("ambient", vec3(0, 0, 0.2)), ref<Uniform<vec3>>("diffuseAlbedo", vec3(0, 0, 0.7)) }))
+        );
+        opponent->setBox(colliderSize);
+        opponent->setPosition({ -4.0f, 2.0f, -3.0f });
+        m_world->add(opponent);
+        m_phys.add(opponent);
 
     for (size_t i = 0; i < 4; i++) {
         auto box = ref<RigidBody>(
