@@ -46,7 +46,7 @@ glm::quat QuatFromTwoVectors(glm::vec3 vFrom, glm::vec3 vTo) {
 }
 
 
-void XPBDSolver::update(const std::vector<Ref<RigidBody>>& bodies, const float& dt) {
+void XPBDSolver::update(const std::vector<Ref<RigidBody>>& bodies, const float dt) {
 
     /* XPBD algorithm 2 */
 
@@ -90,7 +90,7 @@ void XPBDSolver::update(const std::vector<Ref<RigidBody>>& bodies, const float& 
     }
 }
 
-std::vector<CollisionPair> XPBDSolver::collectCollisionPairs(const std::vector<Ref<RigidBody>>& rigidBodies, const float& dt) {
+std::vector<CollisionPair> XPBDSolver::collectCollisionPairs(const std::vector<Ref<RigidBody>>& rigidBodies, const float dt) {
 
     // @TODO Chunking / octree
     // https://github.com/mwarning/SimpleOctree/tree/master/src
@@ -154,9 +154,9 @@ std::vector<CollisionPair> XPBDSolver::collectCollisionPairs(const std::vector<R
     return collisions;
 }
 
-std::vector<ContactSet*> XPBDSolver::getContacts(const std::vector<CollisionPair>& collisions) {
+std::vector<Ref<ContactSet>> XPBDSolver::getContacts(const std::vector<CollisionPair>& collisions) {
 
-    std::vector<ContactSet*> contacts = {};
+    std::vector<Ref<ContactSet>> contacts = {};
 
     for (auto const& collision: collisions) {
 
@@ -178,7 +178,7 @@ std::vector<ContactSet*> XPBDSolver::getContacts(const std::vector<CollisionPair
                         if (!epa.exists || epa.d <= 0.0)
                             break;
 
-                        auto contact = new ContactSet(
+                        auto contact = ref<ContactSet>(
                             A,
                             B,
                             -epa.normal,
@@ -223,7 +223,7 @@ std::vector<ContactSet*> XPBDSolver::getContacts(const std::vector<CollisionPair
                             if (d <= 0.0f)
                                 continue;
 
-                            auto contact = new ContactSet(A, B, N, d, p1, p2, r1, r2);
+                            auto contact = ref<ContactSet>(A, B, N, d, p1, p2, r1, r2);
                             contact->d = d;
 
                             contacts.push_back(contact);
@@ -241,7 +241,7 @@ std::vector<ContactSet*> XPBDSolver::getContacts(const std::vector<CollisionPair
     return contacts;
 }
 
-void XPBDSolver::solvePositions(const std::vector<ContactSet*>& contacts, const float& h) {
+void XPBDSolver::solvePositions(const std::vector<Ref<ContactSet>>& contacts, const float h) {
 
     for (auto const& contact: contacts) {
         /* (3.5) Handling contacts and friction */
@@ -250,7 +250,7 @@ void XPBDSolver::solvePositions(const std::vector<ContactSet*>& contacts, const 
     }
 }
 
-void XPBDSolver::_solvePenetration(ContactSet* contact, const float& h) {
+void XPBDSolver::_solvePenetration(Ref<ContactSet> contact, const float h) {
 
     /* (26) - p1 & p2 */
     contact->update();
@@ -280,7 +280,7 @@ void XPBDSolver::_solvePenetration(ContactSet* contact, const float& h) {
     contact->lambdaN += dlambda;
 }
 
-void XPBDSolver::_solveFriction(ContactSet* contact, const float& h) {
+void XPBDSolver::_solveFriction(Ref<ContactSet> contact, const float h) {
 
     /* (3.5)
      * To handle static friction we compute the relative
@@ -317,7 +317,7 @@ void XPBDSolver::_solveFriction(ContactSet* contact, const float& h) {
     }
 }
 
-void XPBDSolver::solveVelocities(const std::vector<ContactSet*>& contacts, const float& h) {
+void XPBDSolver::solveVelocities(const std::vector<Ref<ContactSet>>& contacts, const float h) {
 
     /* (3.6) Velocity level */
 
@@ -376,11 +376,11 @@ float XPBDSolver::applyBodyPairCorrection(
     RigidBody* body0,
     RigidBody* body1,
     const vec3& corr,
-    const float& compliance,
-    const float& dt,
+    const float compliance,
+    const float dt,
     const vec3& pos0,
     const vec3& pos1,
-    const bool& velocityLevel
+    const bool velocityLevel
 ) {
 
     const float C = glm::length(corr);
@@ -412,7 +412,7 @@ float XPBDSolver::applyBodyPairCorrection(
     return dlambda;
 }
 
-void XPBDSolver::debugContact(ContactSet* contact) {
+void XPBDSolver::debugContact(Ref<ContactSet> contact) {
 
     assert(contact != nullptr);
 

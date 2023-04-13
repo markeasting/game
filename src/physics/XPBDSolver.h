@@ -87,28 +87,28 @@ namespace XPBDSolver {
 
     void init();
 
-    void update(const std::vector<Ref<RigidBody>>& rigidBodies, const float& dt);
+    void update(const std::vector<Ref<RigidBody>>& rigidBodies, const float dt);
 
-    std::vector<CollisionPair> collectCollisionPairs(const std::vector<Ref<RigidBody>>& rigidBodies, const float& dt);
-    std::vector<ContactSet*> getContacts(const std::vector<CollisionPair>& collisions);
+    std::vector<CollisionPair> collectCollisionPairs(const std::vector<Ref<RigidBody>>& rigidBodies, const float dt);
+    std::vector<Ref<ContactSet>> getContacts(const std::vector<CollisionPair>& collisions);
 
-    void solvePositions(const std::vector<ContactSet*>& contacts, const float& h);
-    void solveVelocities(const std::vector<ContactSet*>& contacts, const float& h);
+    void solvePositions(const std::vector<Ref<ContactSet>>& contacts, const float h);
+    void solveVelocities(const std::vector<Ref<ContactSet>>& contacts, const float h);
 
-    void _solvePenetration(ContactSet* contact, const float& h);
-    void _solveFriction(ContactSet* contact, const float& h);
+    void _solvePenetration(Ref<ContactSet> contact, const float h);
+    void _solveFriction(Ref<ContactSet> contact, const float h);
 
     float applyBodyPairCorrection(
         RigidBody* body0,
         RigidBody* body1,
         const glm::vec3& corr,
-        const float& compliance,
-        const float& dt,
+        const float compliance,
+        const float dt,
         const glm::vec3& pos0 = glm::vec3(0.0f),
         const glm::vec3& pos1 = glm::vec3(0.0f),
-        const bool& velocityLevel = false
+        const bool velocityLevel = false
     );
 
-    void debugContact(ContactSet* contact);
+    void debugContact(Ref<ContactSet> contact);
 
 }
