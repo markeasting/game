@@ -47,6 +47,12 @@ RigidBody RigidBody::makeStatic() {
     return *this;
 }
 
+RigidBody RigidBody::disableCollision() {
+    this->canCollide = false;
+
+    return *this;
+}
+
 RigidBody RigidBody::applyForce(const vec3& force, const vec3& position) {
     this->force += force;
     this->torque += glm::cross(force, (this->pose.p - position));
@@ -118,8 +124,8 @@ void RigidBody::integrate(const float &dt) {
 
 void RigidBody::update(const double &dt) {
     
-    if(!this->isDynamic) 
-        return;
+    // if(!this->isDynamic) 
+    //     return;
 
     this->velPrev = this->vel;
     this->omegaPrev = this->omega;
@@ -148,7 +154,7 @@ void RigidBody::applyCorrection(const vec3& corr, const vec3& pos, bool velocity
     vec3 dq = vec3(0.0f);
 
     if (glm::length(pos) < 0.00001f) { // @TODO check epsilon
-        std::cout << "pos is zero!" << std::endl;
+        // std::cout << "pos is zero!" << std::endl;
         dq = corr;
     } else {
         if (velocityLevel)
@@ -194,13 +200,31 @@ RigidBody RigidBody::setPosition(const vec3& position) {
     return *this;
 }
 
-float RigidBody::getInverseMass(const vec3& normal, const vec3& pos) {
+RigidBody RigidBody::setRotation(const quat& rotation) {
+    this->pose.q = rotation;
+
+    this->updateCollider();
+
+    return *this;
+}
+
+RigidBody RigidBody::setColliderOffset(const vec3& offset) {
+    this->collider->setRelativePos(offset);
+    this->updateCollider();
+
+    return *this;
+}
+
+float RigidBody::getInverseMass(const vec3& normal, const vec3& pos) const {
+
+    if (!this->isDynamic)
+        return 0.0f;
 
     vec3 n = vec3(0.0f);
 
     if (glm::length(pos) < 0.0001f) {
         // @TODO check epsilon
-        std::cout << "pos is zero" << std::endl;
+        // std::cout << "pos is zero" << std::endl;
         n = normal;
     } else {
         n = pos - this->pose.p;
@@ -245,11 +269,6 @@ void RigidBody::updateGeometry() {
         this->collider->m_mesh->setPosition(this->collider->m_relativePosW);
         this->collider->m_mesh->setRotation(this->pose.q);
     }
-}
-
-void RigidBody::setColliderOffset(const vec3& offset) {
-    this->collider->setRelativePos(offset);
-    this->updateCollider();
 }
 
 void RigidBody::updateCollider() {
