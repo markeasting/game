@@ -7,6 +7,7 @@ class PhysicsHandler {
 public:
 
 	std::vector<Ref<RigidBody>> m_bodies = {};
+    std::vector<Ref<Mesh>> m_debugMeshes;
 
     PhysicsHandler() = default;
     ~PhysicsHandler() = default;
@@ -17,7 +18,7 @@ public:
     
     void update(float dt);
 
-    std::vector<Ref<Mesh>> m_debugMeshes;
+    float raycast(const vec3& origin, const vec3& dir);
 
 private:
 
