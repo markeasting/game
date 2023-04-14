@@ -11,6 +11,8 @@
 #include "physics/PhysicsHandler.h"
 #include "physics/RigidBody.h"
 
+#include "entity/Car.h"
+
 class MyScene final : public Scene
 {
 public:
@@ -31,6 +33,7 @@ private:
     Ref<UI> m_overlay = ref<UI>();
 
     Ref<Mesh> m_tetra = nullptr;
-    Ref<RigidBody> m_player = nullptr;
+    // Ref<RigidBody> m_player = nullptr;
+    Ref<Car> m_player = nullptr;
 
 };
