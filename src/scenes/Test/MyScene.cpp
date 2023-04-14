@@ -83,14 +83,14 @@ void MyScene::init() {
     m_player = ref<Car>(m_phys);
     m_player->addTo(m_world);
 
-    // auto opponent = ref<RigidBody>(
-    //         ref<MeshCollider>(car_collider),
-    //         ref<Mesh>(car, Material("Phong", { lightDirection, ref<Uniform<vec3>>("ambient", vec3(0, 0, 0.2)), ref<Uniform<vec3>>("diffuseAlbedo", vec3(0, 0, 0.7)) }))
-    //     );
-    //     opponent->setBox(colliderSize);
-    //     opponent->setPosition({ -4.0f, 2.0f, -3.0f });
-    //     m_world->add(opponent);
-    //     m_phys.add(opponent);
+    auto opponent = ref<RigidBody>(
+            ref<MeshCollider>(car_collider),
+            ref<Mesh>(car, Material("Phong", { lightDirection, ref<Uniform<vec3>>("ambient", vec3(0, 0, 0.2)), ref<Uniform<vec3>>("diffuseAlbedo", vec3(0, 0, 0.7)) }))
+        );
+        opponent->setBox(colliderSize);
+        opponent->setPosition({ -4.0f, 2.0f, -3.0f });
+        m_world->add(opponent);
+        m_phys.add(opponent);
 
     // for (size_t i = 0; i < 4; i++) {
     //     auto box = ref<RigidBody>(
@@ -137,8 +137,11 @@ void MyScene::bindEvents() {
     Events::on(Events::KEYDOWN, [&](SDL_KeyCode key) {
         switch (key) {
             case SDLK_i:
-                m_player->m_body->applyForce(vec3(0, 250.0f, 0));
-            break;
+                m_player->m_body->applyForce(vec3(0, 150.0f, 0), m_player->m_body->localToWorld({ 0, 0, 0 }));
+                break;
+            case SDLK_l:
+                m_player->m_body->applyForce(vec3(0, 100.0f, 0));
+                break;
         }
     });
 
@@ -216,17 +219,17 @@ void MyScene::update(float time, float dt) {
 
     /* Player controls */
     if (!m_camera->m_enableFreeCam) {
-        // m_camera->m_lookAtPos = m_player->localToWorld({ 0, 1.2f, 0 });
-        // m_camera->setPosition(m_player->localToWorld({ 0, 1.5f, -3.4f }));
+        m_camera->m_lookAtPos = m_player->m_body->localToWorld({ 0, 1.2f, 0 });
+        m_camera->setPosition(m_player->m_body->localToWorld({ 0, 1.5f, -3.4f }));
     
-        // if (Keyboard::w) 
-        //     m_player->applyForce(m_player->localToWorld({ 0, 0, 100.0f }), m_player->localToWorld({ 0, 0, 0 }));
-        // if (Keyboard::s) 
-        //     m_player->applyForce(m_player->localToWorld({ 0, 0, -100.0f }), m_player->localToWorld({ 0, 0, 0 }));
-        // if (Keyboard::a) 
-        //     m_player->applyTorque({ 0, 25.0f, 0 });
-        // if (Keyboard::d) 
-        //     m_player->applyTorque({ 0, -25.0f, 0 });
+        if (Keyboard::w) 
+            m_player->m_body->applyForce(m_player->m_body->localToWorld({ 0, 0, 50.0f }), m_player->m_body->localToWorld({ 0, 0, 0 }));
+        if (Keyboard::s) 
+            m_player->m_body->applyForce(m_player->m_body->localToWorld({ 0, 0, -50.0f }), m_player->m_body->localToWorld({ 0, 0, 0 }));
+        if (Keyboard::a) 
+            m_player->m_body->applyTorque({ 0, 15.0f, 0 });
+        if (Keyboard::d) 
+            m_player->m_body->applyTorque({ 0, -15.0f, 0 });
     }
 
     m_camera->update(time); /* Camera must be updated here to prevent lag */

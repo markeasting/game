@@ -23,28 +23,22 @@ Car::Car(PhysicsHandler& phys): m_phys(phys) {
 
     for (size_t i = 0; i < 4; i++) {
         vec3 localPos = { 
-            i % 2 == 0 ? 0.598428 : -0.598428, 
-            -0.163302 - 0.2, 
-            i > 1 ? -0.984848 : 0.984848 
+            i % 2 == 0 ? 0.61 : -0.61, 
+            -0.18, 
+            i > 1 ? -0.89729 : 0.984848 
         };
 
-        auto wheel = ref<RigidBody>(
-                ref<BoxCollider>(0.3f),
-                ref<Mesh>(car_wheel, Material("Phong", { lightDirection }))
-            );
-            wheel->disableCollision();
-            wheel->setPosition(m_body->localToWorld(localPos));
+        /* Wheel */
+        auto wheel = Wheel(ref<Mesh>(car_wheel, Material("Phong", { lightDirection, ref<Uniform<vec3>>("ambient", vec3(0.1)), ref<Uniform<vec3>>("diffuseAlbedo", vec3(0.1)) })));
+        wheel.m_hardpoint = localPos;
+
+        /* Debugging */
+        Material colorMaterial = Material("Basic");
+        colorMaterial.wireframe = true;
+        wheel.m_origin = ref<Mesh>(BoxGeometry(0.2f), colorMaterial);
+        wheel.m_line = ref<Mesh>(ArrowGeometry(), colorMaterial);
 
         m_wheels.push_back(wheel);
-        m_phys.add(wheel);
-
-        auto c = ref<Constraint>();
-        c->setStiffness(500.0f);
-        c->setDamping(10.0f, 10.0f);
-        c->setBodies(m_body, wheel, localPos, vec3(0.0f));
-
-        m_constraints.push_back(c);
-        m_phys.m_constraints.push_back(c);
     }
 
 }
@@ -52,36 +46,47 @@ Car::Car(PhysicsHandler& phys): m_phys(phys) {
 Car Car::addTo(Ref<Layer> layer) {
     layer->add(m_body);
 
-    for (auto& wheel : m_wheels) 
-        layer->add(wheel);
+    for (auto& wheel : m_wheels) {
+        layer->add(wheel.m_mesh);
+        layer->add(wheel.m_origin);
+        layer->add(wheel.m_line);
+    }
 
     return *this;
 }
 
 void Car::update(float dt) {
 
-    // for (size_t i = 0; i < 4; i++) {
-
-    //     auto& wheel = m_wheels[i];
-
-    //     vec3 localPos = { 
-    //         i % 2 == 0 ? 0.598428 : -0.598428, 
-    //         -0.163302 - 0.2, 
-    //         i > 1 ? -0.984848 : 0.984848 
-    //     };
-
-    //     vec3 dir = m_body->pose.q * vec3(0, -1.0f, 0); /* Must be normalized */
-
-    //     float length = 0.6f;
-    //     float dist = m_phys.raycast(m_body->localToWorld(localPos), dir);
-    //     float x = dist - length;
-
-    //     if (x > 0)
-    //         continue;
-
-    //     float F = 70 * x;
-    //     m_body->applyForce(F * dir, m_body->localToWorld(localPos));
-
+    // for (auto& c : m_tempConstraints) {
+    //     m_phys.m_constraints.erase(m_phys.m_constraints.begin() + c);
     // }
+
+    // m_phys.m_constraints.clear();
+
+    for (size_t i = 0; i < 4; i++) {
+
+        auto& wheel = m_wheels[i];
+
+        vec3 hardpointW = m_body->localToWorld(wheel.m_hardpoint);
+        vec3 rayDir = m_body->pose.q * vec3(0, -1.0f, 0); /* Must be normalized */
+
+        auto [hit, N, dist, body] = m_phys.raycast(hardpointW, rayDir);
+        vec3 localHitPos = m_body->worldToLocal(hit);
+
+        wheel.update(rayDir, dist, dt);
+
+        // if (body) {
+        //     /* Could be useful for static shadows */
+        //     float projectionDist = glm::dot(N, worldPos - body->pose.p);
+        //     wheel->setPosition(worldPos - N * projectionDist);
+        //     wheel->updateGeometry();
+        // }
+
+        vec3 F = wheel.getSpringForce();
+        m_body->applyForce(F, hardpointW);
+
+        wheel.updateGeometry(m_body);
+        wheel.debug(m_body);
+    }
 
 }
