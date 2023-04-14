@@ -20,7 +20,7 @@ public:
     
     void update(float dt);
 
-    float raycast(const vec3& origin, const vec3& dir);
+    std::tuple<vec3, vec3, float, Ref<RigidBody>> raycast(const vec3& ray_origin, const vec3& ray_dir);
 
 private:
 

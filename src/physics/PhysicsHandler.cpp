@@ -31,9 +31,12 @@ void PhysicsHandler::update(float dt) {
 
 }
 
-float PhysicsHandler::raycast(const vec3& point, const vec3& ray_direction) {
+std::tuple<vec3, vec3, float, Ref<RigidBody>> PhysicsHandler::raycast(const vec3& ray_origin, const vec3& ray_dir) {
 
-    float minDist = FLT_MAX;
+    vec3 hitPoint;
+    vec3 hitNormal;
+    float hitDistance = FLT_MAX;
+    Ref<RigidBody> hitBody = nullptr;
 
     for (const auto& body: m_bodies) {
 
@@ -45,17 +48,28 @@ float PhysicsHandler::raycast(const vec3& point, const vec3& ray_direction) {
         const vec3 normal = PC->m_plane.normal;
         const float C = PC->m_plane.constant;
 
-        float d = -glm::dot(ray_direction, normal);
+        float d = -glm::dot(ray_dir, normal);
         
-        // Skip if ray is parallel or pointing away from the plane
+        // Skip if ray is parallel or ray_origining away from the plane
         if (d < 0.001f)
             continue;
             
-        float distance = glm::dot(point - body->pose.p, normal) / d;
+        float distance = glm::dot(ray_origin - body->pose.p, normal) / d;
 
-        minDist = std::min(minDist, distance);
+        if (distance < hitDistance) {
+            hitPoint = ray_origin + ray_dir * distance;
+            hitDistance = distance;
+            hitNormal = normal;
+            hitBody = body;
+        }
+
     }
 
-    return minDist;
+    return std::make_tuple(
+        hitPoint,
+        hitNormal,
+        hitDistance,
+        hitBody
+    );
 
 }
