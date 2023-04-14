@@ -4,10 +4,16 @@
 #include "physics/PhysicsHandler.h"
 #include "physics/RigidBody.h"
 
+#include "util/QuatFromTwoVectors.h"
+
 struct Wheel {
     
     vec3 m_hardpoint;
     vec3 m_normal;
+
+    // @TODO make static consts
+    vec3 m_forward = vec3(0, 0, 1.0f);
+    vec3 m_right = vec3(1.0f, 0, 0);
 
     float m_pos;
     float m_prevPos;
@@ -30,18 +36,28 @@ struct Wheel {
         if (m_pos > 0)
             return vec3(0.0f);
 
-        Log(m_velocity);
-
-        float F = m_pos * m_stiffness + m_velocity * m_damping;
+        float F = (m_pos * m_stiffness) + (m_velocity * m_damping);
 
         return F * m_normal;
-    };
+    }
+
+    vec3 getSteeringForce(Ref<RigidBody> body, float dt) {
+
+        vec3 _right = body->pose.q * m_right;
+
+        auto v = body->getVelocityAt(body->localToWorld(m_hardpoint));
+
+        float vt = glm::dot(v, _right) * 0.01f;
+
+        vec3 F = - (1.0f/body->invMass * vt/dt) * _right;
+
+        return F;
+    }
 
     void update(vec3 rayDir, float groundDistance, float dt) {
         m_normal = rayDir;
 
         m_prevPos = m_pos;
-        // m_pos = m_springLength + std::min(m_springLength, groundDistance - m_radius);
         m_pos = groundDistance - m_radius;
 
         if (m_pos > m_springLength)
@@ -66,9 +82,8 @@ struct Wheel {
         m_origin->setPosition(body->localToWorld(m_hardpoint));
         m_origin->setRotation(body->pose.q);
 
-        // m_line->setPosition(body->localToWorld(m_hardpoint));
-        // m_line->setRotation(body->pose.q);
-        // m_line->setScale(-m_springLength);
+        m_line->setPosition(body->localToWorld(m_right));
+        m_line->setRotation(QuatFromTwoVectors(vec3(0, 1.0f, 0), m_right));
     }
 };
 

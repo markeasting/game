@@ -82,8 +82,8 @@ void Car::update(float dt) {
         //     wheel->updateGeometry();
         // }
 
-        vec3 F = wheel.getSpringForce();
-        m_body->applyForce(F, hardpointW);
+        m_body->applyForce(wheel.getSpringForce(), hardpointW);
+        m_body->applyForce(wheel.getSteeringForce(m_body, dt), hardpointW);
 
         wheel.updateGeometry(m_body);
         wheel.debug(m_body);
