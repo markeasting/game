@@ -5,25 +5,25 @@
 class Pose {
 public:
 
-    glm::vec3 p = glm::vec3(0.0f, 0.0f, 0.0f);
-    glm::quat q = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);		
+    glm::vec3 p = glm::vec3(0);
+    glm::quat q = glm::quat(1.0f, 0, 0, 0);		
 
     Pose() = default; 
-    Pose(glm::vec3 p, glm::quat q); 
+    Pose(glm::vec3 p, glm::quat q = glm::quat(1.0f, 0, 0, 0)); 
 
     void copy(Pose pose);
 
     Pose clone();
     
-    void translate(glm::vec3& v);
-    void invTranslate(glm::vec3& v);
+    void translate(glm::vec3& v) const;
+    void invTranslate(glm::vec3& v) const;
 
-    void rotate(glm::vec3& v);
-    void invRotate(glm::vec3& v);
+    void rotate(glm::vec3& v) const;
+    void invRotate(glm::vec3& v) const;
 
-    void transform(glm::vec3& v);
-    void invTransform(glm::vec3& v);
+    void transform(glm::vec3& v) const;
+    void invTransform(glm::vec3& v) const;
 
-    void transformPose(Pose& pose);  
+    void transformPose(Pose& pose) const;  
 
 };
