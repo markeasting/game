@@ -4,6 +4,7 @@
 #include "physics/RigidBody.h"
 #include "physics/gjk-epa/GjkEpa.h"
 // #include "physics/ContactSet.h"
+#include "physics/Constraint.h"
 
 #include "gfx/Mesh.h"
 
@@ -87,7 +88,7 @@ namespace XPBDSolver {
 
     void init();
 
-    void update(const std::vector<Ref<RigidBody>>& rigidBodies, const float dt);
+    void update(const std::vector<Ref<RigidBody>>& bodies, const std::vector<Ref<Constraint>>& constraints, const float dt);
 
     std::vector<CollisionPair> collectCollisionPairs(const std::vector<Ref<RigidBody>>& rigidBodies, const float dt);
     std::vector<Ref<ContactSet>> getContacts(const std::vector<CollisionPair>& collisions);

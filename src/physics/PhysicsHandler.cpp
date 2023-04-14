@@ -27,7 +27,7 @@ void PhysicsHandler::add(Ref<RigidBody> body) {
 // https://medium.com/@cancerian0684/singleton-design-pattern-and-how-to-make-it-thread-safe-b207c0e7e368
 void PhysicsHandler::update(float dt) {
 
-    XPBDSolver::update(m_bodies, dt);
+    XPBDSolver::update(m_bodies, m_constraints, dt);
 
 }
 

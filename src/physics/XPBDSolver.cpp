@@ -11,42 +11,7 @@ void XPBDSolver::init() {
     XPBDSolver::n = ref<Mesh>(ArrowGeometry(1.0f), colorMaterial);
 }
 
-
-glm::quat QuatFromTwoVectors(glm::vec3 vFrom, glm::vec3 vTo) {
-    // https://github.com/Mugen87/three.js/blob/master/src/math/Quaternion.js
-
-    vFrom = glm::normalize(vFrom);
-    vTo = glm::normalize(vTo);
-    
-    float r;
-    float EPS = 0.000001;
-    glm::vec3 v1 = glm::vec3();
-
-    r = glm::dot(vFrom, vTo ) + 1.0f;
-
-    if ( r < EPS ) {
-        r = 0;
-        if ( abs( vFrom.x ) > abs( vFrom.z ) ) {
-            v1 = { -vFrom.y, vFrom.x, 0 };
-        } else {
-            v1 = { 0, - vFrom.z, vFrom.y };
-        }
-    } else {
-        v1 = glm::cross( vFrom, vTo );
-    }
-
-    glm::quat result;
-
-    result.x = v1.x;
-    result.y = v1.y;
-    result.z = v1.z;
-    result.w = r;
-
-    return glm::normalize(result);    
-}
-
-
-void XPBDSolver::update(const std::vector<Ref<RigidBody>>& bodies, const float dt) {
+void XPBDSolver::update(const std::vector<Ref<RigidBody>>& bodies, const std::vector<Ref<Constraint>>& constraints, const float dt) {
 
     /* XPBD algorithm 2 */
 
@@ -68,15 +33,19 @@ void XPBDSolver::update(const std::vector<Ref<RigidBody>>& bodies, const float d
          */
         auto contacts = XPBDSolver::getContacts(collisions);
 
-        for (auto const& body: bodies) {
+        for (auto const& body: bodies)
             body->integrate(h);
-        }
+
+        for (auto const& constraint: constraints)
+            constraint->solvePos(h);
 
         XPBDSolver::solvePositions(contacts, h);
 
-        for (auto const& body: bodies) {
+        for (auto const& body: bodies)
             body->update(h);
-        }
+
+        for (auto const& constraint: constraints)
+            constraint->solveVel(h);
 
         XPBDSolver::solveVelocities(contacts, h);
 
@@ -100,9 +69,18 @@ std::vector<CollisionPair> XPBDSolver::collectCollisionPairs(const std::vector<R
     std::vector<std::string> pairs = {};
 
     for (auto const& A: rigidBodies) {
+        if (!A->canCollide)
+            continue;
+
         for (auto const& B: rigidBodies) {
 
-            if ((A == B) || (!A->isDynamic && !B->isDynamic))
+            if (!B->canCollide)
+                continue;
+
+            if (!A->isDynamic && !B->isDynamic)
+                continue;
+
+            if (A == B)
                 continue;
 
             std::string pair = (A->id > B->id)
@@ -390,8 +368,8 @@ float XPBDSolver::applyBodyPairCorrection(
 
     vec3 n = glm::normalize(corr);
 
-    float w0 = body0->isDynamic ? body0->getInverseMass(n, pos0) : 0.0f;
-    float w1 = body1->isDynamic ? body1->getInverseMass(n, pos1) : 0.0f;
+    float w0 = body0 ? body0->getInverseMass(n, pos0) : 0.0f;
+    float w1 = body1 ? body1->getInverseMass(n, pos1) : 0.0f;
 
     float w = w0 + w1;
     if (w == 0.0f)
@@ -406,10 +384,44 @@ float XPBDSolver::applyBodyPairCorrection(
 
     n = n * -dlambda;
 
-    body0->applyCorrection(n, pos0, velocityLevel);
-    body1->applyCorrection(-n, pos1, velocityLevel);
+    if (body0) body0->applyCorrection(n, pos0, velocityLevel);
+    if (body1) body1->applyCorrection(-n, pos1, velocityLevel);
 
     return dlambda;
+}
+
+/* Helpers */
+glm::quat QuatFromTwoVectors(glm::vec3 vFrom, glm::vec3 vTo) {
+    // https://github.com/Mugen87/three.js/blob/master/src/math/Quaternion.js
+
+    vFrom = glm::normalize(vFrom);
+    vTo = glm::normalize(vTo);
+    
+    float r;
+    float EPS = 0.000001;
+    glm::vec3 v1 = glm::vec3();
+
+    r = glm::dot(vFrom, vTo ) + 1.0f;
+
+    if ( r < EPS ) {
+        r = 0;
+        if ( abs( vFrom.x ) > abs( vFrom.z ) ) {
+            v1 = { -vFrom.y, vFrom.x, 0 };
+        } else {
+            v1 = { 0, - vFrom.z, vFrom.y };
+        }
+    } else {
+        v1 = glm::cross( vFrom, vTo );
+    }
+
+    glm::quat result;
+
+    result.x = v1.x;
+    result.y = v1.y;
+    result.z = v1.z;
+    result.w = r;
+
+    return glm::normalize(result);    
 }
 
 void XPBDSolver::debugContact(Ref<ContactSet> contact) {

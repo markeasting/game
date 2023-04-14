@@ -1,12 +1,14 @@
 #pragma once
 
 #include "physics/RigidBody.h"
+#include "physics/Constraint.h"
 #include "gfx/Mesh.h"
 
 class PhysicsHandler {
 public:
 
 	std::vector<Ref<RigidBody>> m_bodies = {};
+	std::vector<Ref<Constraint>> m_constraints = {};
     std::vector<Ref<Mesh>> m_debugMeshes;
 
     PhysicsHandler() = default;
