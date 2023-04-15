@@ -25,8 +25,8 @@ struct Wheel {
     float m_radius = 0.25f;
     float m_springLength = 0.1f;
 
-    float m_stiffness = 250.0f;
-    float m_damping = 20.0f;
+    float m_stiffness = 350.0f;
+    float m_damping = 25.0f;
     float m_springForce = 0.0f;
 
     float m_torque = 20.0f;
@@ -79,15 +79,18 @@ struct Wheel {
 
         m_rotation = steering * 0.6f * (1.0f - v / 25.0f);
         m_right = glm::angleAxis(m_rotation, m_normal) * m_right;
+        m_forward = glm::angleAxis(m_rotation, m_normal) * m_forward;
 
         float vt = glm::dot(vel, m_right);
         
         // @TODO simply use forward/right?
         m_slipAngle = vt / v;
 
-        float a = v > 4.0f
-            ? getGrip() / dt
-            : vt * m_grip * 0.5 / dt;
+        // float a = v > 4.0f
+        //     ? vt * getGrip() / dt
+        //     : vt * m_grip * 0.5 / dt;
+
+        float a = vt * getGrip() / dt;
 
         vec3 F = - (1.0f/body->invMass * a) * m_right;
 
@@ -95,8 +98,10 @@ struct Wheel {
     }
 
     inline float getGrip() {
-        float b = 1.5;
-        return 0.75f * m_grip * (1.0f - pow((m_slipAngle-1.0f/b)*b, 2.0f));
+        // float b = 1.5;
+        // return 0.75f * m_grip * (1.0f - pow((m_slipAngle-1.0f/b)*b, 2.0f));
+
+        return 0.1f * m_grip * std::max(std::min(1.0f * -m_springForce, 5.5f), 0.0f);
     }
 
     vec3 getDrivingForce(float throttle) {
@@ -120,8 +125,12 @@ struct Wheel {
         m_origin->setPosition(body->localToWorld(m_hardpoint));
         m_origin->setRotation(body->pose.q);
 
+        // m_line->setPosition(body->localToWorld(m_hardpoint));
+        // m_line->setRotation(QuatFromTwoVectors(vec3(0, 1.0f, 0), m_right));
+
         m_line->setPosition(body->localToWorld(m_hardpoint));
-        m_line->setRotation(QuatFromTwoVectors(vec3(0, 1.0f, 0), m_right));
+        // m_line->setRotation(QuatFromTwoVectors(vec3(0, 1.0f, 0), m_normal));
+        m_line->setScale(-m_springForce * 0.1f);
     }
 };
 
