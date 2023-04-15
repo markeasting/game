@@ -222,14 +222,28 @@ void MyScene::update(float time, float dt) {
         m_camera->m_lookAtPos = m_player->m_body->localToWorld({ 0, 1.2f, 0 });
         m_camera->setPosition(m_player->m_body->localToWorld({ 0, 1.5f, -3.4f }));
     
-        if (Keyboard::w) 
-            m_player->m_body->applyForce(m_player->m_body->localToWorld({ 0, 0, 50.0f }), m_player->m_body->localToWorld({ 0, 0, 0 }));
-        if (Keyboard::s) 
-            m_player->m_body->applyForce(m_player->m_body->localToWorld({ 0, 0, -50.0f }), m_player->m_body->localToWorld({ 0, 0, 0 }));
-        if (Keyboard::a) 
-            m_player->m_body->applyTorque({ 0, 15.0f, 0 });
-        if (Keyboard::d) 
-            m_player->m_body->applyTorque({ 0, -15.0f, 0 });
+        if (Keyboard::w) {
+            Anim::lerp(m_player->m_throttle, 1.0f, 0.25f);
+            // m_player->applyThrottle(1.0f);
+        } else if (Keyboard::s) {
+            Anim::lerp(m_player->m_throttle, -1.0f, 0.25f);
+            // m_player->applyThrottle(-1.0f);
+        } else {
+            Anim::lerp(m_player->m_throttle, 0.0f, 0.25f);
+        }
+
+        if (Keyboard::a) {
+            Anim::lerp(m_player->m_steering, -1.0f, 0.25f);
+        } else if (Keyboard::d) {
+            Anim::lerp(m_player->m_steering, 1.0f, 0.25f);
+        } else {
+            Anim::lerp(m_player->m_steering, 0.0f, 0.25f);
+        }
+
+        // if (Keyboard::a) 
+        //     m_player->applySteering(-1.0f);
+        // if (Keyboard::d) 
+        //     m_player->applySteering(1.0f);
     }
 
     m_camera->update(time); /* Camera must be updated here to prevent lag */

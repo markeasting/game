@@ -4,6 +4,9 @@
 #include "gfx/Material.h"
 #include "physics/XPBDSolver.h"
 
+vec3 Wheel::FORWARD = vec3(0, 0, 1.0f);
+vec3 Wheel::RIGHT = vec3(1.0f, 0, 0);
+
 Car::Car(PhysicsHandler& phys): m_phys(phys) {
 
     auto lightDirection = ref<Uniform<vec3>>("u_lightDirection", vec3(0.5f, 0.0f, 2.0f));
@@ -25,12 +28,15 @@ Car::Car(PhysicsHandler& phys): m_phys(phys) {
         vec3 localPos = { 
             i % 2 == 0 ? 0.61 : -0.61, 
             -0.18, 
-            i > 1 ? -0.89729 : 0.984848 
+            i >= 2 ? -0.89729 : 0.984848 
         };
 
         /* Wheel */
         auto wheel = Wheel(ref<Mesh>(car_wheel, Material("Phong", { lightDirection, ref<Uniform<vec3>>("ambient", vec3(0.1)), ref<Uniform<vec3>>("diffuseAlbedo", vec3(0.1)) })));
         wheel.m_hardpoint = localPos;
+
+        // if (i >= 2)
+        //     wheel.m_grip = 0.15f;
 
         /* Debugging */
         Material colorMaterial = Material("Basic");
@@ -55,6 +61,14 @@ Car Car::addTo(Ref<Layer> layer) {
     return *this;
 }
 
+void Car::applyThrottle(float throttle) {
+    m_throttle = throttle;
+}
+
+void Car::applySteering(float steering) {
+    m_steering = steering;
+}
+
 void Car::update(float dt) {
 
     // for (auto& c : m_tempConstraints) {
@@ -73,7 +87,7 @@ void Car::update(float dt) {
         auto [hit, N, dist, body] = m_phys.raycast(hardpointW, rayDir);
         vec3 localHitPos = m_body->worldToLocal(hit);
 
-        wheel.update(rayDir, dist, dt);
+        wheel.update(m_body, rayDir, dist, dt);
 
         // if (body) {
         //     /* Could be useful for static shadows */
@@ -83,10 +97,18 @@ void Car::update(float dt) {
         // }
 
         m_body->applyForce(wheel.getSpringForce(), hardpointW);
-        m_body->applyForce(wheel.getSteeringForce(m_body, dt), hardpointW);
+
+        // @TODO set 'driven' property in wheel
+        if (i >= 2) 
+            m_body->applyForce(wheel.getDrivingForce(m_throttle), hardpointW);
+
+        m_body->applyForce(wheel.getSteeringForce(i >= 2 ? 0 : m_steering, m_body, dt), hardpointW);
 
         wheel.updateGeometry(m_body);
         wheel.debug(m_body);
     }
+
+    // m_throttle = 0.0f;
+    // m_steering = 0.0f;
 
 }
