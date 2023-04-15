@@ -6,6 +6,7 @@
 #include <limits>
 #include <algorithm>
 #include <vector>
+#include <array>
 #include <unordered_map>
 #include <string>
 #include <iostream>
