@@ -8,12 +8,13 @@
 
 struct Wheel {
     
-    vec3 m_hardpoint;
-    vec3 m_normal;
+    vec3 m_hardpoint; /* Local space */
 
+    static vec3 NORMAL;
     static vec3 FORWARD;
     static vec3 RIGHT;
 
+    vec3 m_normal;
     vec3 m_forward = vec3(0, 0, 1.0f);
     vec3 m_right = vec3(1.0f, 0, 0);
 
@@ -29,10 +30,11 @@ struct Wheel {
     float m_damping = 25.0f;
     float m_springForce = 0.0f;
 
-    float m_torque = 20.0f;
+    bool m_driven = false;
+    float m_torque = 40.0f;
 
     float m_slipAngle = 0.0f;
-    float m_grip = 0.25f;
+    float m_grip = 30.0f;
 
     Ref<Mesh> m_mesh;
     Ref<Mesh> m_origin;
@@ -40,55 +42,55 @@ struct Wheel {
 
     Wheel(Ref<Mesh> mesh) : m_mesh(mesh) {};
 
-    void update(Ref<RigidBody> body, vec3 rayDir, float groundDistance, float dt) {
+    vec3 update(
+        Ref<RigidBody> body, 
+        float groundDistance, 
+        float throttle,
+        float steering,
+        float dt
+    ) {
 
         /* World space */
+        m_normal = body->pose.q * Wheel::NORMAL;
         m_right = body->pose.q * -Wheel::RIGHT;
         m_forward = body->pose.q * Wheel::FORWARD;
-        m_normal = rayDir;
 
         m_prevPos = m_pos;
         m_pos = groundDistance - m_radius;
-
-        if (m_pos > m_springLength)
-            m_pos = m_springLength;
-
-        if (m_pos < -m_springLength)
-            m_pos = -m_springLength;
+        m_pos = std::clamp(m_pos, -m_springLength, m_springLength);
 
         m_velocity = (m_pos - m_prevPos) / dt;
+
+        vec3 Fy = getSpringForce();
+        vec3 Fsteer = getSteeringForce(steering, body, dt);
+        vec3 Fdrive = getDrivingForce(throttle);
+
+        vec3 Fcircle = glm::clamp(Fsteer + Fdrive, -m_grip, m_grip);
+
+        Log(glm::length(Fcircle));
+
+        vec3 F = Fy + Fcircle;
+
+        return m_pos < 0 ? F : vec3(0.0f);
     }
 
     vec3 getSpringForce() {
-
-        if (m_pos > 0)
-            return vec3(0.0f);
-
         m_springForce = (m_pos * m_stiffness) + (m_velocity * m_damping);
-
         return m_springForce * m_normal;
     }
 
     vec3 getSteeringForce(float steering, Ref<RigidBody> body, float dt) {
-
-        if (m_pos > 0)
-            return vec3(0.0f);
-
         auto vel = body->getVelocityAt(body->localToWorld(m_hardpoint));
         float v = glm::length(vel);
 
-        m_rotation = steering * 0.6f * (1.0f - v / 25.0f);
+        m_rotation = !m_driven 
+            ? steering * 0.5f * (1.0f - v / 35.0f)
+            : 0.0f;
         m_right = glm::angleAxis(m_rotation, m_normal) * m_right;
         m_forward = glm::angleAxis(m_rotation, m_normal) * m_forward;
 
         float vt = glm::dot(vel, m_right);
-        
-        // @TODO simply use forward/right?
         m_slipAngle = vt / v;
-
-        // float a = v > 4.0f
-        //     ? vt * getGrip() / dt
-        //     : vt * m_grip * 0.5 / dt;
 
         float a = vt * getGrip() / dt;
 
@@ -101,14 +103,11 @@ struct Wheel {
         // float b = 1.5;
         // return 0.75f * m_grip * (1.0f - pow((m_slipAngle-1.0f/b)*b, 2.0f));
 
-        return 0.1f * m_grip * std::max(std::min(1.0f * -m_springForce, 5.5f), 0.0f);
+        return 0.03f * std::max(std::min(1.0f * -m_springForce, 5.5f), 0.0f);
     }
 
     vec3 getDrivingForce(float throttle) {
-        if (m_pos > 0)
-            return vec3(0.0f);
-
-        return m_forward * m_torque * throttle;
+        return m_driven ? m_forward * m_torque * throttle : vec3(0);
     }
 
     void updateGeometry(Ref<RigidBody> body) {

@@ -4,6 +4,7 @@
 #include "gfx/Material.h"
 #include "physics/XPBDSolver.h"
 
+vec3 Wheel::NORMAL = vec3(0, -1.0f, 0);
 vec3 Wheel::FORWARD = vec3(0, 0, 1.0f);
 vec3 Wheel::RIGHT = vec3(1.0f, 0, 0);
 
@@ -35,8 +36,10 @@ Car::Car(PhysicsHandler& phys): m_phys(phys) {
         auto wheel = Wheel(ref<Mesh>(car_wheel, Material("Phong", { lightDirection, ref<Uniform<vec3>>("ambient", vec3(0.1)), ref<Uniform<vec3>>("diffuseAlbedo", vec3(0.1)) })));
         wheel.m_hardpoint = localPos;
 
-        // if (i >= 2)
-        //     wheel.m_grip = 0.15f;
+        if (i >= 2) {
+            wheel.m_driven = true;
+            // wheel.m_grip = 15.0f;
+        }
 
         /* Debugging */
         Material colorMaterial = Material("Basic");
@@ -82,12 +85,18 @@ void Car::update(float dt) {
         auto& wheel = m_wheels[i];
 
         vec3 hardpointW = m_body->localToWorld(wheel.m_hardpoint);
-        vec3 rayDir = m_body->pose.q * vec3(0, -1.0f, 0); /* Must be normalized */
+        // vec3 rayDir = m_body->pose.q * vec3(0, -1.0f, 0);
 
-        auto [hit, N, dist, body] = m_phys.raycast(hardpointW, rayDir);
+        auto [hit, N, dist, body] = m_phys.raycast(hardpointW, wheel.m_normal);
         vec3 localHitPos = m_body->worldToLocal(hit);
 
-        wheel.update(m_body, rayDir, dist, dt);
+        vec3 F = wheel.update(
+            m_body, 
+            dist,
+            m_throttle,
+            m_steering,
+            dt
+        );
 
         // if (body) {
         //     /* Could be useful for static shadows */
@@ -96,13 +105,15 @@ void Car::update(float dt) {
         //     wheel->updateGeometry();
         // }
 
-        m_body->applyForce(wheel.getSpringForce(), hardpointW);
+        // m_body->applyForce(wheel.getSpringForce(), hardpointW);
 
-        // @TODO set 'driven' property in wheel
-        if (i >= 2) 
-            m_body->applyForce(wheel.getDrivingForce(m_throttle), hardpointW);
+        // // @TODO set 'driven' property in wheel
+        // if (i >= 2) 
+        //     m_body->applyForce(wheel.getDrivingForce(m_throttle), hardpointW);
 
-        m_body->applyForce(wheel.getSteeringForce(i >= 2 ? 0 : m_steering, m_body, dt), hardpointW);
+        // m_body->applyForce(wheel.getSteeringForce(i >= 2 ? 0 : m_steering, m_body, dt), hardpointW);
+        
+        m_body->applyForce(F, hardpointW);
 
         wheel.updateGeometry(m_body);
         wheel.debug(m_body);
