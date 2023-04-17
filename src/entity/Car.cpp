@@ -15,7 +15,14 @@ Car::Car(PhysicsHandler& phys): m_phys(phys) {
     auto car = ref<Geometry>(obj::loadModelFromFile("assets/objects/car/car.obj"));
     auto car_wheel = ref<Geometry>(obj::loadModelFromFile("assets/objects/car/wheel.obj"));
     auto car_collider = ref<Geometry>(obj::loadModelFromFile("assets/objects/car/car_collider.obj"));
-    auto colliderSize = vec3(1.42f, 0.95f, 3.0f);
+    auto colliderSize = vec3(1.42f, 0.95f, 3.0f); // @TODO update
+
+    Material shadowMaterial = Material("Basic.vert", "BasicTextured.frag");
+    shadowMaterial.assignTexture("assets/objects/car/shadow_body.png", "texture1");
+
+    m_bodyShadow = ref<Mesh>(PlaneGeometry(1.0f, 2.0f, true), shadowMaterial);
+    m_bodyShadow->setPosition({0, 1.0f, 0});
+    m_bodyShadow->setScale(2.2f);
 
     m_body = ref<RigidBody>(
             ref<MeshCollider>(car_collider),
@@ -56,6 +63,8 @@ Car::Car(PhysicsHandler& phys): m_phys(phys) {
 
 Car Car::addTo(Ref<Layer> layer) {
     layer->add(m_body);
+
+    layer->add(m_bodyShadow);
 
     for (auto& wheel : m_wheels) {
         layer->add(wheel.m_mesh);
@@ -105,13 +114,18 @@ void Car::update(float dt) {
 
         // if (body) {
         //     /* Could be useful for static shadows */
-        //     float projectionDist = glm::dot(N, worldPos - body->pose.p);
-        //     wheel->setPosition(worldPos - N * projectionDist);
-        //     wheel->updateGeometry();
+        //     float projectionDist = glm::dot(N, hit - body->pose.p);
+        //     vec3 point = hit - N * projectionDist;
         // }
     }
 
-    // m_throttle = 0.0f;
-    // m_steering = 0.0f;
+    /* Body shadow -- @TODO maybe use point-to-plane dist */
+    auto [hit, N, dist, body] = m_phys.raycast(m_body->pose.p, m_wheels[0].m_normal);
 
+    if (body) {
+        float projectionDist = glm::dot(N, hit - body->pose.p);
+        vec3 point = hit - N * (projectionDist - 0.01f);
+        m_bodyShadow->setPosition(point);
+        // m_bodyShadow->setRotation(m_body->pose.q); // @TODO keep plane normal intact
+    }
 }

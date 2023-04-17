@@ -206,6 +206,8 @@ public:
     // std::vector<Ref<RigidBody>> m_wheels;
     std::vector<Wheel> m_wheels;
 
+    Ref<Mesh> m_bodyShadow;
+
     std::vector<Ref<Constraint>> m_constraints;
     std::vector<int> m_tempConstraints;
 
