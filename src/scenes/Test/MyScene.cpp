@@ -137,10 +137,10 @@ void MyScene::bindEvents() {
     Events::on(Events::KEYDOWN, [&](SDL_KeyCode key) {
         switch (key) {
             case SDLK_i:
-                m_player->m_body->applyForce(vec3(0, 150.0f, 0), m_player->m_body->localToWorld({ 0, 0, 0 }));
+                m_player->m_body->applyForce(vec3(0, 25000.0f, 0), m_player->m_body->localToWorld({ 0, 0, 0 }));
                 break;
             case SDLK_l:
-                m_player->m_body->applyForce(vec3(0, 100.0f, 0));
+                m_player->m_body->applyForce(vec3(0, 10000.0f, 0));
                 break;
         }
     });
@@ -186,6 +186,8 @@ void MyScene::bindEvents() {
 
 void MyScene::update(float time, float dt) {
     
+    m_camera->update(time);
+    
     // if (Keyboard::space) {
         m_phys.update(dt);
         m_player->update(dt);
@@ -213,14 +215,14 @@ void MyScene::update(float time, float dt) {
 
     // @TODO move to State::onUpdate() / State::onInit() as anonymous func?
     if (m_state.is("Finish")) {
-        m_layers.get("overlay")->m_active = (int) time % 2 == 0;
+        // m_layers.get("overlay")->m_active = (int) time % 2 == 0;
         m_camera->m_autoRotate = true;
     }
 
     /* Player controls */
     if (!m_camera->m_enableFreeCam) {
-        m_camera->m_lookAtPos = m_player->m_body->localToWorld({ 0, 1.2f, 0 });
-        m_camera->setPosition(m_player->m_body->localToWorld({ 0, 1.5f, -3.4f }));
+        m_camera->m_lookAtPos = m_player->m_body->localToWorld(m_player->m_camPos);
+        m_camera->setPosition(m_player->m_body->localToWorld(m_player->m_camLookPos));
     
         if (Keyboard::w) {
             Anim::lerp(m_player->m_throttle, 1.0f, 0.25f);
@@ -246,7 +248,6 @@ void MyScene::update(float time, float dt) {
         //     m_player->applySteering(1.0f);
     }
 
-    m_camera->update(time); /* Camera must be updated here to prevent lag */
     m_state.update(time, dt); // @TODO move to base Scene update
     m_audio->updateListener(m_camera->getPosition(), m_camera->getForward(), m_camera->getUp());
 }

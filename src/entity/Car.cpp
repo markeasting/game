@@ -6,7 +6,7 @@
 
 vec3 Wheel::NORMAL = vec3(0, -1.0f, 0);
 vec3 Wheel::FORWARD = vec3(0, 0, 1.0f);
-vec3 Wheel::RIGHT = vec3(1.0f, 0, 0);
+vec3 Wheel::RIGHT = vec3(-1.0f, 0, 0);
 
 Car::Car(PhysicsHandler& phys): m_phys(phys) {
 
@@ -21,15 +21,15 @@ Car::Car(PhysicsHandler& phys): m_phys(phys) {
             ref<MeshCollider>(car_collider),
             ref<Mesh>(car, Material("Phong", { lightDirection }))
         );
-        m_body->setBox(colliderSize);
+        m_body->setBox(colliderSize, 222.5f);
         m_body->setPosition({ 4.0f, 2.0f, -3.0f });
         m_phys.add(m_body);
 
     for (size_t i = 0; i < 4; i++) {
         vec3 localPos = { 
-            i % 2 == 0 ? 0.61 : -0.61, 
-            -0.18, 
-            i >= 2 ? -0.89729 : 0.984848 
+            i % 2 == 0 ? 0.78 : -0.78, 
+            -0.15, 
+            i >= 2 ? -1.25473 : 1.11923  
         };
 
         /* Wheel */
@@ -38,6 +38,7 @@ Car::Car(PhysicsHandler& phys): m_phys(phys) {
 
         if (i >= 2) {
             wheel.m_driven = true;
+            // wheel.m_damping = 10.0f;
             // wheel.m_grip = 15.0f;
         }
 
@@ -100,25 +101,14 @@ void Car::update(float dt) {
             dt
         );
 
+        m_body->applyForce(F, hardpointW);
+
         // if (body) {
         //     /* Could be useful for static shadows */
         //     float projectionDist = glm::dot(N, worldPos - body->pose.p);
         //     wheel->setPosition(worldPos - N * projectionDist);
         //     wheel->updateGeometry();
         // }
-
-        // m_body->applyForce(wheel.getSpringForce(), hardpointW);
-
-        // // @TODO set 'driven' property in wheel
-        // if (i >= 2) 
-        //     m_body->applyForce(wheel.getDrivingForce(m_throttle), hardpointW);
-
-        // m_body->applyForce(wheel.getSteeringForce(i >= 2 ? 0 : m_steering, m_body, dt), hardpointW);
-        
-        m_body->applyForce(F, hardpointW);
-
-        wheel.updateGeometry(m_body);
-        wheel.debug(m_body);
     }
 
     // m_throttle = 0.0f;
