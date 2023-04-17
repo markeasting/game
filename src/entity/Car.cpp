@@ -46,6 +46,7 @@ Car::Car(PhysicsHandler& phys): m_phys(phys) {
         colorMaterial.wireframe = true;
         wheel.m_origin = ref<Mesh>(BoxGeometry(0.2f), colorMaterial);
         wheel.m_line = ref<Mesh>(ArrowGeometry(), colorMaterial);
+        wheel.m_line2 = ref<Mesh>(ArrowGeometry(), colorMaterial);
 
         m_wheels.push_back(wheel);
     }
@@ -59,6 +60,7 @@ Car Car::addTo(Ref<Layer> layer) {
         layer->add(wheel.m_mesh);
         layer->add(wheel.m_origin);
         layer->add(wheel.m_line);
+        layer->add(wheel.m_line2);
     }
 
     return *this;

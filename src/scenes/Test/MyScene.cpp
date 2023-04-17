@@ -107,8 +107,8 @@ void MyScene::init() {
     floorMaterial.assignTexture("assets/texture/asphalt.jpg", "texture1");
 
     auto floor = ref<RigidBody>(
-            ref<PlaneCollider>(vec2(30.0f, 30.0f)),
-            ref<Mesh>(PlaneGeometry(30.0f, true), floorMaterial)
+            ref<PlaneCollider>(vec2(100.0f, 100.0f)),
+            ref<Mesh>(PlaneGeometry(100.0f, true), floorMaterial)
         );
         floor->makeStatic();
         m_world->add(floor);

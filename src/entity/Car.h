@@ -31,14 +31,15 @@ struct Wheel {
     float m_springForce = 0.0f;
 
     bool m_driven = false;
-    float m_torque = 40.0f;
+    float m_torque = 20.0f;
 
     float m_slipAngle = 0.0f;
-    float m_grip = 30.0f;
+    float m_grip = 25.0f;
 
     Ref<Mesh> m_mesh;
     Ref<Mesh> m_origin;
     Ref<Mesh> m_line;
+    Ref<Mesh> m_line2;
 
     Wheel(Ref<Mesh> mesh) : m_mesh(mesh) {};
 
@@ -57,7 +58,7 @@ struct Wheel {
 
         m_prevPos = m_pos;
         m_pos = groundDistance - m_radius;
-        m_pos = std::clamp(m_pos, -m_springLength, m_springLength);
+        m_pos = clamp(m_pos, -m_springLength, m_springLength);
 
         m_velocity = (m_pos - m_prevPos) / dt;
 
@@ -65,7 +66,9 @@ struct Wheel {
         vec3 Fsteer = getSteeringForce(steering, body, dt);
         vec3 Fdrive = getDrivingForce(throttle);
 
-        vec3 Fcircle = glm::clamp(Fsteer + Fdrive, -m_grip, m_grip);
+        vec3 Fcircle = Fsteer + Fdrive;
+        if (glm::length(Fcircle) > m_grip)
+            Fcircle = m_grip * glm::normalize(Fcircle);
 
         Log(glm::length(Fcircle));
 
@@ -84,30 +87,31 @@ struct Wheel {
         float v = glm::length(vel);
 
         m_rotation = !m_driven 
-            ? steering * 0.5f * (1.0f - v / 35.0f)
+            ? steering * 0.5f * (1.0f - min(v / 35.0f, 0.9f))
             : 0.0f;
         m_right = glm::angleAxis(m_rotation, m_normal) * m_right;
         m_forward = glm::angleAxis(m_rotation, m_normal) * m_forward;
 
-        float vt = glm::dot(vel, m_right);
-        m_slipAngle = vt / v;
+        float vx = glm::dot(vel, m_forward);
+        float vy = glm::dot(vel, m_right);
+        m_slipAngle = abs(vx) > 0.5f 
+            ? -atan(vy / abs(vx)) 
+            : -vy;
 
-        float a = vt * getGrip() / dt;
-
-        vec3 F = - (1.0f/body->invMass * a) * m_right;
+        /* Loosly based on Pacejka's Magic Formula */
+        const float D = 0.2f;
+        const float E = 2.5f; /* [0.5-2.5] */
+        float lateralForce = D * m_springForce * sin(E * atan(E * atan(m_slipAngle)));
+        
+        vec3 F = - lateralForce / dt * m_right; /* F = ma, but without m LOL */
 
         return F;
     }
 
-    inline float getGrip() {
-        // float b = 1.5;
-        // return 0.75f * m_grip * (1.0f - pow((m_slipAngle-1.0f/b)*b, 2.0f));
-
-        return 0.03f * std::max(std::min(1.0f * -m_springForce, 5.5f), 0.0f);
-    }
-
     vec3 getDrivingForce(float throttle) {
-        return m_driven ? m_forward * m_torque * throttle : vec3(0);
+        return m_driven 
+            ? m_torque * m_forward * clamp(throttle, -0.1f, 1.0f) 
+            : m_torque * m_forward * clamp(throttle, -1.0f, 0.0f);
     }
 
     void updateGeometry(Ref<RigidBody> body) {
@@ -124,12 +128,12 @@ struct Wheel {
         m_origin->setPosition(body->localToWorld(m_hardpoint));
         m_origin->setRotation(body->pose.q);
 
-        // m_line->setPosition(body->localToWorld(m_hardpoint));
-        // m_line->setRotation(QuatFromTwoVectors(vec3(0, 1.0f, 0), m_right));
+        m_line2->setPosition(body->localToWorld(m_hardpoint));
+        m_line2->setRotation(QuatFromTwoVectors(vec3(0, 1.0f, 0), m_right));
 
         m_line->setPosition(body->localToWorld(m_hardpoint));
-        // m_line->setRotation(QuatFromTwoVectors(vec3(0, 1.0f, 0), m_normal));
         m_line->setScale(-m_springForce * 0.1f);
+        
     }
 };
 
