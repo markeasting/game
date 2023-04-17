@@ -16,6 +16,7 @@ public:
     std::vector<Ref<Texture>> textures = {};
 
     bool wireframe = false;
+    bool transparent = false;
 
     Material(const std::string& shaderBasePath, std::vector<Ref<IUniform>> uniforms = {});
     Material(const std::string& vert, const std::string& frag, std::vector<Ref<IUniform>> uniforms = {});

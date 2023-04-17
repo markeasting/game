@@ -17,6 +17,7 @@ public:
 // private:
 
     GLuint m_texture = 0;
+    GLenum m_format = GL_RGB;
 
     static constexpr const char* defaultTexture = "assets/texture/default.jpg";
 

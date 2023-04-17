@@ -32,6 +32,9 @@ void Material::assignUniform(Ref<IUniform> uniform) {
 void Material::assignTexture(Ref<Texture> texture, const std::string& uniform) {
     this->setUniform(uniform, (int) textures.size());
 
+    if (texture->m_format == GL_RGBA)
+        transparent = true;
+
     textures.push_back(texture);
 }
 
