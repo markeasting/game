@@ -23,6 +23,7 @@ public:
 	// void add(Ref<Mesh> mesh);
 
 	void draw(Ref<Scene> scene, Ref<Camera> camera);
+	void drawMesh(Ref<Mesh> mesh, Ref<Camera> camera);
 	void clear();
 
 private:

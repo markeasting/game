@@ -18,6 +18,9 @@ Renderer::Renderer() {
 
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
     // https://learnopengl.com/Advanced-OpenGL/Stencil-testing
     // glEnable(GL_STENCIL_TEST);
@@ -89,39 +92,24 @@ void Renderer::draw(Ref<Scene> scene, Ref<Camera> camera) {
         if (!layer->m_active)
             continue;
 
+        /* Draw opaque meshes */
         for (auto const& mesh : layer->m_meshes) {
 
-            mesh->bind();
+            if (mesh->m_material->transparent)
+                continue;
 
-            auto matrix = mesh->getWorldPositionMatrix();
+            this->drawMesh(mesh, camera);
 
-            mesh->m_material->setUniform(
-                "u_modelViewMatrix", 
-                mesh->m_useProjectionMatrix 
-                    ? camera->m_viewMatrix * matrix
-                    : matrix
-            );
-            mesh->m_material->setUniform(
-                "u_modelViewProjectionMatrix", 
-                mesh->m_useProjectionMatrix 
-                    ? camera->m_viewProjectionMatrix * matrix
-                    : matrix
-            );
+            // mesh->unbind(); // @TODO check if unbinding VAO / shader / texture is required
+        }
 
-            if(mesh->m_material && mesh->m_material->wireframe) {
-                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-                glDisable(GL_CULL_FACE);
-            } else {
-                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-                glEnable(GL_CULL_FACE);
-            }
+        /* Draw transparent meshes */
+        for (auto const& mesh : layer->m_meshes) {
 
-            // @TODO add support for instanced meshes using glDrawArraysInstanced and glDrawElementsInstanced
-            if(mesh->m_geometry->hasIndices()) {
-                glDrawElements(GL_TRIANGLES, mesh->m_geometry->m_indexBuffer->getCount(), GL_UNSIGNED_INT, 0);
-            } else {
-                glDrawArrays(GL_TRIANGLES, 0, mesh->m_geometry->m_vertexBuffer->getCount());
-            }
+            if (!mesh->m_material->transparent)
+                continue;
+
+            this->drawMesh(mesh, camera);
 
             // mesh->unbind(); // @TODO check if unbinding VAO / shader / texture is required
         }
@@ -143,6 +131,42 @@ void Renderer::draw(Ref<Scene> scene, Ref<Camera> camera) {
         glDrawElements(GL_TRIANGLES, m_fullscreenQuad.m_geometry->m_indexBuffer->getCount(), GL_UNSIGNED_INT, 0);
     }
 
+}
+
+void Renderer::drawMesh(Ref<Mesh> mesh, Ref<Camera> camera) {
+
+    mesh->bind();
+
+    auto matrix = mesh->getWorldPositionMatrix();
+
+    mesh->m_material->setUniform(
+        "u_modelViewMatrix", 
+        mesh->m_useProjectionMatrix 
+            ? camera->m_viewMatrix * matrix
+            : matrix
+    );
+
+    mesh->m_material->setUniform(
+        "u_modelViewProjectionMatrix", 
+        mesh->m_useProjectionMatrix 
+            ? camera->m_viewProjectionMatrix * matrix
+            : matrix
+    );
+
+    if(mesh->m_material && mesh->m_material->wireframe) {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        glDisable(GL_CULL_FACE);
+    } else {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        glEnable(GL_CULL_FACE);
+    }
+
+    // @TODO add support for instanced meshes using glDrawArraysInstanced and glDrawElementsInstanced
+    if(mesh->m_geometry->hasIndices()) {
+        glDrawElements(GL_TRIANGLES, mesh->m_geometry->m_indexBuffer->getCount(), GL_UNSIGNED_INT, 0);
+    } else {
+        glDrawArrays(GL_TRIANGLES, 0, mesh->m_geometry->m_vertexBuffer->getCount());
+    }
 }
 
 void Renderer::clear() {
