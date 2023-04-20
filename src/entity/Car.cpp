@@ -15,7 +15,7 @@ Car::Car(PhysicsHandler& phys): m_phys(phys) {
     auto car = ref<Geometry>(obj::loadModelFromFile("assets/objects/car/car.obj"));
     auto car_wheel = ref<Geometry>(obj::loadModelFromFile("assets/objects/car/wheel.obj"));
     auto car_collider = ref<Geometry>(obj::loadModelFromFile("assets/objects/car/car_collider.obj"));
-    auto colliderSize = vec3(1.42f, 0.95f, 3.0f); // @TODO update
+    auto colliderSize = vec3(1.62f, 0.84f, 3.2f);
 
     Material shadowMaterial = Material("Basic.vert", "BasicTextured.frag");
     shadowMaterial.assignTexture("assets/objects/car/shadow_body.png", "texture1");
@@ -28,7 +28,9 @@ Car::Car(PhysicsHandler& phys): m_phys(phys) {
             ref<MeshCollider>(car_collider),
             ref<Mesh>(car, Material("Phong", { lightDirection }))
         );
-        m_body->setBox(colliderSize, 222.5f);
+        m_body->staticFriction = 0.1f;
+        m_body->dynamicFriction = 0.1f;
+        m_body->setBox(colliderSize, 210.0f);
         m_body->setPosition({ 4.0f, 2.0f, -3.0f });
         m_phys.add(m_body);
 
@@ -45,8 +47,8 @@ Car::Car(PhysicsHandler& phys): m_phys(phys) {
 
         if (i >= 2) {
             wheel.m_driven = true;
-            // wheel.m_damping = 10.0f;
-            // wheel.m_grip = 15.0f;
+            // wheel.m_damping = 350.0f;
+            // wheel.m_grip = 800.0f;
         }
 
         /* Debugging */
@@ -126,6 +128,6 @@ void Car::update(float dt) {
         float projectionDist = glm::dot(N, hit - body->pose.p);
         vec3 point = hit - N * (projectionDist - 0.01f);
         m_bodyShadow->setPosition(point);
-        // m_bodyShadow->setRotation(m_body->pose.q); // @TODO keep plane normal intact
+        m_bodyShadow->setRotation(m_body->pose.q); // @TODO keep plane normal intact
     }
 }

@@ -107,8 +107,8 @@ void MyScene::init() {
     floorMaterial.assignTexture("assets/texture/asphalt.jpg", "texture1");
 
     auto floor = ref<RigidBody>(
-            ref<PlaneCollider>(vec2(100.0f, 100.0f)),
-            ref<Mesh>(PlaneGeometry(100.0f, true), floorMaterial)
+            ref<PlaneCollider>(vec2(500.0f, 500.0f)),
+            ref<Mesh>(PlaneGeometry(500.0f, true), floorMaterial)
         );
         floor->makeStatic();
         m_world->add(floor);
@@ -155,9 +155,8 @@ void MyScene::bindEvents() {
 
     Events::on(Events::MOUSEUP, [&]() {
         // m_camera->m_autoRotate = !m_camera->m_autoRotate;
-        // SDL_SetRelativeMouseMode(m_camera->m_autoRotate ? SDL_FALSE : SDL_TRUE);
-        SDL_SetRelativeMouseMode(SDL_GetRelativeMouseMode() == SDL_TRUE ? SDL_FALSE : SDL_TRUE);
-        
+        m_camera->m_enableFreeCam = !m_camera->m_enableFreeCam;
+        SDL_SetRelativeMouseMode(m_camera->m_enableFreeCam ? SDL_TRUE : SDL_FALSE);
     });
 
     Events::on(Events::STATE_CHANGE, [&](Ref<State> state) {
@@ -189,8 +188,9 @@ void MyScene::update(float time, float dt) {
     m_camera->update(time);
     
     // if (Keyboard::space) {
-        m_phys.update(dt);
-        m_player->update(dt);
+        m_phys.update(dt, [this](float h){
+            m_player->update(h);
+        });
     // }
     
     /* Update colors */
@@ -221,25 +221,25 @@ void MyScene::update(float time, float dt) {
 
     /* Player controls */
     if (!m_camera->m_enableFreeCam) {
-        m_camera->m_lookAtPos = m_player->m_body->localToWorld(m_player->m_camPos);
-        m_camera->setPosition(m_player->m_body->localToWorld(m_player->m_camLookPos));
+        m_camera->m_lookAtPos = m_player->m_body->localToWorld(m_player->m_camLookPos);
+        m_camera->setPosition(m_player->m_body->localToWorld(m_player->m_camPos));
     
         if (Keyboard::w) {
-            Anim::lerp(m_player->m_throttle, 1.0f, 0.25f);
+            Anim::lerp(m_player->m_throttle, 1.0f, 0.15f);
             // m_player->applyThrottle(1.0f);
         } else if (Keyboard::s) {
-            Anim::lerp(m_player->m_throttle, -1.0f, 0.25f);
+            Anim::lerp(m_player->m_throttle, -1.0f, 0.15f);
             // m_player->applyThrottle(-1.0f);
         } else {
-            Anim::lerp(m_player->m_throttle, 0.0f, 0.25f);
+            Anim::lerp(m_player->m_throttle, 0.0f, 0.15f);
         }
 
         if (Keyboard::a) {
-            Anim::lerp(m_player->m_steering, -1.0f, 0.25f);
+            Anim::lerp(m_player->m_steering, -1.0f, 0.15f);
         } else if (Keyboard::d) {
-            Anim::lerp(m_player->m_steering, 1.0f, 0.25f);
+            Anim::lerp(m_player->m_steering, 1.0f, 0.15f);
         } else {
-            Anim::lerp(m_player->m_steering, 0.0f, 0.25f);
+            Anim::lerp(m_player->m_steering, 0.0f, 0.15f);
         }
 
         // if (Keyboard::a) 

@@ -22,27 +22,29 @@ public:
     vec3 m_right;
 
     vec3 m_worldVelocity;
+    float m_bodyVelocity = 0.0f;
 
     float m_radius = 0.313f;
     float m_springLength = 0.1f;
 
     float m_caster = 0.03f;
     float m_camber = 0.05f;
-    float m_rotation = 0.0f;
+    float m_steerAngle = 0.0f;
 
-    float m_stiffness = 80000.0f;
-    float m_damping = 3000.0f;
+    float m_stiffness = 14000.0f;
+    float m_damping = 370.0f;
 
     bool m_driven = false;
-    float m_torque = 1500.0f;
+    float m_torque = 200.0f;
+    float m_brakeTorque = 300.0f;
 
-    float m_grip = 5000.0f;
+    float m_grip = 1100.0f;
 
     float m_pos; /* Readonly */
     float m_prevPos; /* Readonly */
     float m_slipAngle; /* Readonly */
     float m_springForce; /* Readonly */
-    float m_springVelocity; /* Readonly */
+    float m_damperVelocity; /* Readonly */
     float m_omega;
     float m_theta;
 
@@ -61,33 +63,46 @@ public:
         float dt
     ) {
 
+        m_worldVelocity = body->getVelocityAt(body->localToWorld(m_hardpoint));
+        m_bodyVelocity = glm::length(body->vel);
+
         /* World space */
         m_normal = body->pose.q * Wheel::NORMAL;
         m_right = body->pose.q * Wheel::RIGHT;
         m_forward = body->pose.q * Wheel::FORWARD;
 
-        m_worldVelocity = body->getVelocityAt(body->localToWorld(m_hardpoint));
-        m_rotation = !m_driven 
-            ? steering * 0.75f * (1.0f - min(glm::length(m_worldVelocity) / 35.0f, 0.9f))
+        /* Steering with speed scaling */
+        m_steerAngle = !m_driven 
+            ? steering * 0.65f * (1.0f - min(m_bodyVelocity / 40.0f, 0.90f))
             : 0.0f;
 
+        /* Scale steering with throttle input */
+        // m_steerAngle *= (m_bodyVelocity > 10.0f && throttle < 0) ? (1.0f + throttle) : 1.0f;
+
+        m_right = glm::angleAxis(m_steerAngle, m_normal) * m_right;
+        m_forward = glm::angleAxis(m_steerAngle, m_normal) * m_forward;
+
+        /* Integrate */
         m_prevPos = m_pos;
         m_pos = groundDistance - m_radius;
         m_pos = clamp(m_pos, -m_springLength, m_springLength);
+        m_damperVelocity = (m_pos - m_prevPos) / dt;
 
-        m_springVelocity = (m_pos - m_prevPos) / dt;
-        m_right = glm::angleAxis(m_rotation, m_normal) * m_right;
-        m_forward = glm::angleAxis(m_rotation, m_normal) * m_forward;
-
+        /* Forces */
+        // @TODO braking force should always be in non-steered forward direction?
         vec3 Fy = getSpringForce();
-        vec3 Fsteer = getSteeringForce(body, dt);
         vec3 Fdrive = getDrivingForce(throttle);
+        vec3 Fsteer = getSteeringForce(body, dt);
 
+        /* Constrain 'circle of grip' */
         vec3 Fcircle = Fsteer + Fdrive;
         if (glm::length(Fcircle) > m_grip)
             Fcircle = m_grip * glm::normalize(Fcircle);
         
         vec3 F = Fy + Fcircle;
+
+        if (m_driven)
+            Log(glm::length(Fcircle));
 
         this->updateGeometry(body, dt);
 
@@ -106,12 +121,7 @@ private:
 
     inline vec3 getSpringForce() {
         float Fspring = m_pos * m_stiffness;
-        float Fdamping = m_springVelocity * m_damping;
-
-        // if (m_pos < -m_springLength * 0.75f) {
-        //     Fspring *= 1.5f;
-        //     Fdamping *= 1.5f;
-        // }
+        float Fdamping = m_damperVelocity * m_damping;
 
         m_springForce = Fspring + Fdamping;
 
@@ -125,22 +135,48 @@ private:
         m_slipAngle = abs(vx) > 0.05f ? -atan(vy / abs(vx)) : 0.0f;
 
         /* Loosly based on Pacejka's Magic Formula */
-        const float D = 0.08f;
-        const float E = 2.2f; /* [0.5-2.5] */
+        const float D = 0.025f;
+        const float E = 2.1f; /* [0.5-2.5] */
         float lateralForce = D * m_springForce * sin(E * atan(E * atan(m_slipAngle)));
 
         vec3 F = abs(vx) > 2.0f
-            ? -lateralForce / dt * m_right /* F = ma, but without m LOL */
-            : -100.0f * vy / dt * m_right;
+            ? -lateralForce / dt * m_right /* F = ma */
+            : -0.5f * vy / dt * m_right;
 
         return F;
     }
 
     inline vec3 getDrivingForce(float throttle) {
-        // @TODO check if driving backwards ;)
-        return m_driven 
-            ? (m_torque / m_radius) * m_forward * clamp(throttle, -0.5f, 1.0f) 
-            : (m_torque / m_radius) * m_forward * clamp(throttle, -1.0f, 0.0f);
+
+        float drivingForce = throttle > 0
+            ? throttle * m_torque / m_radius
+            : 0.0f;
+
+        float brakeBias = m_driven ? 0.0f : 1.0f;
+        float brakeSteerScale = 1.0f; //1.0f - min(abs(m_slipAngle) / 0.15f, 0.9f);
+        float brakingForce = throttle < 0 
+            ? throttle * brakeBias * brakeSteerScale * m_brakeTorque / m_radius
+            : 0.0f;
+
+        float engineBraking = m_bodyVelocity > 2.0f 
+            ? -0.15f * m_torque 
+            : 0.0f;
+
+        float totalForce = m_driven 
+            ? brakingForce + drivingForce + engineBraking
+            : brakingForce;
+
+        /* Loosly based on Pacejka's Magic Formula */
+        // const float D = 50.0f;
+        // const float E = 2.9f; /* [0.5-2.5] */ /* Note: there is some relation to E with spring force. */
+        // const float slipRatio = (m_omega*m_radius/m_bodyVelocity - 1.0f) * 100.0f;
+        // float gripForceRatio = abs(D * (m_springForce / m_stiffness) * sin(E * atan(E * atan(slipRatio))));
+        // Log(gripForceRatio);
+
+        // if (m_FORWARD_and_not_body_total_velocity < 0.0f)
+        //     totalForce = -totalForce;
+
+        return totalForce * m_forward;
     }
 
     inline void updateGeometry(Ref<RigidBody> body, float dt) {
@@ -149,7 +185,6 @@ private:
                 m_hardpoint + (m_normal * m_pos)
             )
         );
-        // @TODO incorporate m_right;
         m_mesh->setRotation(body->pose.q);
 
         m_omega = this->isGrounded()
@@ -158,7 +193,7 @@ private:
         m_theta += m_omega * dt;
 
         quat dq = body->pose.q;
-        dq = glm::angleAxis(-m_rotation, vec3(0, 1.0f, 0)) * dq;
+        dq = glm::angleAxis(-m_steerAngle, vec3(0, 1.0f, 0)) * dq;
         dq = dq * glm::angleAxis(m_theta, vec3(1.0f, 0, 0));
 
         m_mesh->setRotation(dq);
@@ -173,16 +208,15 @@ private:
 
         m_line->setPosition(body->localToWorld(m_hardpoint));
         m_line->setRotation(QuatFromTwoVectors(vec3(0, 1.0f, 0), m_normal));
-        m_line->setScale(m_springForce * 0.001f);
-        
+        m_line->setScale(m_springForce * 0.01f);
     }
 };
 
 class Car {
 public:
 
-    vec3 m_camPos = { 0, 1.2f, 0 };
-    vec3 m_camLookPos = { 0, 1.5f, -4.4f };
+    vec3 m_camLookPos = { 0, 1.2f, 0 };
+    vec3 m_camPos = { 0, 1.5f, -4.4f };
     
     float m_throttle;
     float m_steering;
