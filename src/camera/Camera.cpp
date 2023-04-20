@@ -38,10 +38,10 @@ void Camera::update(float time) {
         float posDelta = m_speed; // * time.dt;
     
         if (Keyboard::shift)
-            posDelta *= 3.0f;
+            posDelta *= 5.0f;
 
         if (Keyboard::ctrl)
-            posDelta *= 0.333f;
+            posDelta *= 0.1f;
 
         if (Keyboard::w)
             m_position += front * posDelta;

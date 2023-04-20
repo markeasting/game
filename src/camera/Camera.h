@@ -8,7 +8,7 @@
 class Camera : public Object3D {
 public:
     
-    float m_speed = 0.05; // 3.0f; (with dt)
+    float m_speed = 0.07; // 3.0f; (with dt)
     float m_fov = 70; // g_settings.fov;
     // float zoomspeed = 0.05f;
 
