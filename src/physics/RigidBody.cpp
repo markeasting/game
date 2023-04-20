@@ -90,7 +90,7 @@ void RigidBody::applyRotation(const vec3& rot, float scale) {
     this->pose.q = glm::normalize(this->pose.q);
 }
 
-void RigidBody::integrate(const float &dt) {
+void RigidBody::integrate(const float dt) {
 
     if (glm::all(glm::isnan(this->pose.p)) || glm::all(glm::isnan(this->pose.q))) {
         this->pose = Pose();
@@ -122,7 +122,7 @@ void RigidBody::integrate(const float &dt) {
     this->applyRotation(this->omega, dt);
 }
 
-void RigidBody::update(const double &dt) {
+void RigidBody::update(const float dt) {
     
     // if(!this->isDynamic) 
     //     return;
@@ -130,7 +130,7 @@ void RigidBody::update(const double &dt) {
     this->velPrev = this->vel;
     this->omegaPrev = this->omega;
 
-    this->vel = (this->pose.p - this->prevPose.p) / (float) dt;
+    this->vel = (this->pose.p - this->prevPose.p) / dt;
 
     glm::quat dq = this->pose.q * glm::conjugate(this->prevPose.q);
 
@@ -140,8 +140,8 @@ void RigidBody::update(const double &dt) {
         this->omega = vec3(-this->omega.x, -this->omega.y, -this->omega.z); // @TODO just omega = -omega?
 
     // // Dampening
-    // this->vel = this->vel * (1.0f - 1.0f * (float) dt);
-    // this->omega = this->omega * (1.0f - 1.0f * (float) dt);
+    // this->vel = this->vel * (1.0f - 1.0f * dt);
+    // this->omega = this->omega * (1.0f - 1.0f * dt);
 
     this->updateCollider();
 }

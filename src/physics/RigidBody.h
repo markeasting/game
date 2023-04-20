@@ -43,8 +43,8 @@ public:
     void applyRotation(const vec3& rot, float scale = 1.0);
     void applyCorrection(const vec3& corr, const vec3& pos = vec3(0), bool velocityLevel = false);
 
-    void integrate(const float &deltaTime);
-    void update(const double &deltaTime);
+    void integrate(const float deltaTime);
+    void update(const float deltaTime);
 
     float getInverseMass(const vec3& normal, const vec3& pos = vec3(0)) const; // should also be const
     vec3 getVelocityAt(const vec3& pos, bool beforeSolve = false) const;

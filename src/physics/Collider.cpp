@@ -28,7 +28,7 @@ void PlaneCollider::updateGlobalPose(const Pose& pose) {
     // m_aabb.set(min, max);
 }
 
-SphereCollider::SphereCollider(const float &diameter) {
+SphereCollider::SphereCollider(const float diameter) {
     m_type = ColliderType::cSphere;
     m_radius = diameter/2;
 }

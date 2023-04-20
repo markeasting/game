@@ -54,7 +54,7 @@ struct PlaneCollider : public Collider {
 
 struct SphereCollider : public Collider {
     float m_radius = 1.0f;
-    SphereCollider(const float &diameter = 1.0f);
+    SphereCollider(const float diameter = 1.0f);
 };
 
 struct MeshCollider : public Collider {
