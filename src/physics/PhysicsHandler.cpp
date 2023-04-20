@@ -25,9 +25,9 @@ void PhysicsHandler::add(Ref<RigidBody> body) {
 
 // This entire loop should probably be running on a separate thread.
 // https://medium.com/@cancerian0684/singleton-design-pattern-and-how-to-make-it-thread-safe-b207c0e7e368
-void PhysicsHandler::update(float dt) {
+void PhysicsHandler::update(float dt, std::function<void(float)> customUpdate) {
 
-    XPBDSolver::update(m_bodies, m_constraints, dt);
+    XPBDSolver::update(m_bodies, m_constraints, customUpdate, dt);
 
 }
 

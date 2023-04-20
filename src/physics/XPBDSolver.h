@@ -88,7 +88,7 @@ namespace XPBDSolver {
 
     void init();
 
-    void update(const std::vector<Ref<RigidBody>>& bodies, const std::vector<Ref<Constraint>>& constraints, const float dt);
+    void update(const std::vector<Ref<RigidBody>>& bodies, const std::vector<Ref<Constraint>>& constraints, std::function<void(float)> extraUpdate, const float dt);
 
     std::vector<CollisionPair> collectCollisionPairs(const std::vector<Ref<RigidBody>>& rigidBodies, const float dt);
     std::vector<Ref<ContactSet>> getContacts(const std::vector<CollisionPair>& collisions);

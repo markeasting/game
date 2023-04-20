@@ -12,7 +12,7 @@ void XPBDSolver::init() {
     XPBDSolver::n = ref<Mesh>(ArrowGeometry(1.0f), colorMaterial);
 }
 
-void XPBDSolver::update(const std::vector<Ref<RigidBody>>& bodies, const std::vector<Ref<Constraint>>& constraints, const float dt) {
+void XPBDSolver::update(const std::vector<Ref<RigidBody>>& bodies, const std::vector<Ref<Constraint>>& constraints, std::function<void(float)> customUpdate, const float dt) {
 
     /* XPBD algorithm 2 */
 
@@ -49,6 +49,8 @@ void XPBDSolver::update(const std::vector<Ref<RigidBody>>& bodies, const std::ve
             constraint->solveVel(h);
 
         XPBDSolver::solveVelocities(contacts, h);
+
+        customUpdate(h);
 
     }
 

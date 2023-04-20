@@ -18,7 +18,7 @@ public:
 
     void init();
     
-    void update(float dt);
+    void update(float dt, std::function<void(float)> customUpdate);
 
     std::tuple<vec3, vec3, float, Ref<RigidBody>> raycast(const vec3& ray_origin, const vec3& ray_dir);
 
