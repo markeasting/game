@@ -235,11 +235,11 @@ void MyScene::update(float time, float dt) {
         }
 
         if (Keyboard::a) {
-            Anim::lerp(m_player->m_steering, -1.0f, 0.15f);
+            Anim::lerp(m_player->m_steering, -1.0f, (clamp(glm::length(m_player->m_body->vel) / 50.0f, 0.09f, 0.15f)));
         } else if (Keyboard::d) {
-            Anim::lerp(m_player->m_steering, 1.0f, 0.15f);
+            Anim::lerp(m_player->m_steering, 1.0f, (clamp(glm::length(m_player->m_body->vel) / 50.0f, 0.09f, 0.15f)));
         } else {
-            Anim::lerp(m_player->m_steering, 0.0f, 0.15f);
+            Anim::lerp(m_player->m_steering, 0.0f, (clamp(glm::length(m_player->m_body->vel) / 50.0f, 0.09f, 0.15f)));
         }
 
         // if (Keyboard::a) 

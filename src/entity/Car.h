@@ -31,12 +31,12 @@ public:
     float m_camber = 0.05f;
     float m_steerAngle = 0.0f;
 
-    float m_stiffness = 14000.0f;
-    float m_damping = 370.0f;
+    float m_stiffness = 12000.0f;
+    float m_damping = 470.0f;
 
     bool m_driven = false;
     float m_torque = 200.0f;
-    float m_brakeTorque = 300.0f;
+    float m_brakeTorque = 400.0f;
 
     float m_grip = 1100.0f;
 
@@ -101,8 +101,8 @@ public:
         
         vec3 F = Fy + Fcircle;
 
-        if (m_driven)
-            Log(glm::length(Fcircle));
+        // if (m_driven)
+        //     Log(glm::length(Fcircle));
 
         this->updateGeometry(body, dt);
 
