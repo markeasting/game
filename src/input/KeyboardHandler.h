@@ -10,6 +10,8 @@ public:
     static bool s;
     static bool d;
 
+    static bool b;
+
     static bool ctrl;
     static bool shift;
 

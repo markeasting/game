@@ -242,6 +242,8 @@ void MyScene::update(float time, float dt) {
             Anim::lerp(m_player->m_steering, 0.0f, (clamp(glm::length(m_player->m_body->vel) / 50.0f, 0.09f, 0.15f)));
         }
 
+        m_player->m_handbrake = Keyboard::b;
+
         // if (Keyboard::a) 
         //     m_player->applySteering(-1.0f);
         // if (Keyboard::d) 

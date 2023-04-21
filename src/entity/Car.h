@@ -25,14 +25,14 @@ public:
     float m_bodyVelocity = 0.0f;
 
     float m_radius = 0.313f;
-    float m_springLength = 0.1f;
+    float m_springLength = 0.08f;
 
     float m_caster = 0.03f;
     float m_camber = 0.05f;
     float m_steerAngle = 0.0f;
 
-    float m_stiffness = 12000.0f;
-    float m_damping = 470.0f;
+    float m_stiffness = 25000.0f;
+    float m_damping = 750.0f;
 
     bool m_driven = false;
     float m_torque = 200.0f;
@@ -60,6 +60,7 @@ public:
         float groundDistance, 
         float throttle,
         float steering,
+        bool handbrake,
         float dt
     ) {
 
@@ -91,7 +92,7 @@ public:
         /* Forces */
         // @TODO braking force should always be in non-steered forward direction?
         vec3 Fy = getSpringForce();
-        vec3 Fdrive = getDrivingForce(throttle);
+        vec3 Fdrive = getDrivingForce(throttle, handbrake);
         vec3 Fsteer = getSteeringForce(body, dt);
 
         /* Constrain 'circle of grip' */
@@ -100,9 +101,6 @@ public:
             Fcircle = m_grip * glm::normalize(Fcircle);
         
         vec3 F = Fy + Fcircle;
-
-        // if (m_driven)
-        //     Log(glm::length(Fcircle));
 
         this->updateGeometry(body, dt);
 
@@ -146,9 +144,9 @@ private:
         return F;
     }
 
-    inline vec3 getDrivingForce(float throttle) {
+    inline vec3 getDrivingForce(float throttle, bool handbrake) {
 
-        float drivingForce = throttle > 0
+        float drivingForce = throttle > 0 && !handbrake
             ? throttle * m_torque / m_radius
             : 0.0f;
 
@@ -165,6 +163,9 @@ private:
         float totalForce = m_driven 
             ? brakingForce + drivingForce + engineBraking
             : brakingForce;
+
+        if (handbrake && m_driven)
+            totalForce = -2.0f * m_brakeTorque;
 
         /* Loosly based on Pacejka's Magic Formula */
         // const float D = 50.0f;
@@ -220,6 +221,7 @@ public:
     
     float m_throttle;
     float m_steering;
+    bool m_handbrake;
 
     Car(PhysicsHandler& phys);
     virtual ~Car() = default;

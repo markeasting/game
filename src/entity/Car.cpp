@@ -48,7 +48,7 @@ Car::Car(PhysicsHandler& phys): m_phys(phys) {
         if (i >= 2) {
             wheel.m_driven = true;
             // wheel.m_damping = 350.0f;
-            // wheel.m_grip = 800.0f;
+            // wheel.m_grip = 1000.0f;
         }
 
         /* Debugging */
@@ -109,6 +109,7 @@ void Car::update(float dt) {
             dist,
             m_throttle,
             m_steering,
+            m_handbrake,
             dt
         );
 
