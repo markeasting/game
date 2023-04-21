@@ -72,6 +72,9 @@ public:
         m_right = body->pose.q * Wheel::RIGHT;
         m_forward = body->pose.q * Wheel::FORWARD;
 
+        if (glm::dot(body->vel, m_forward) < 0.0f)
+            m_bodyVelocity = -m_bodyVelocity;
+
         /* Steering with speed scaling */
         m_steerAngle = !m_driven 
             ? steering * 0.65f * (1.0f - min(m_bodyVelocity / 40.0f, 0.90f))
@@ -221,7 +224,7 @@ public:
     
     float m_throttle;
     float m_steering;
-    bool m_handbrake;
+    bool m_handbrake = false;
 
     Car(PhysicsHandler& phys);
     virtual ~Car() = default;

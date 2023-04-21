@@ -30,7 +30,7 @@ Car::Car(PhysicsHandler& phys): m_phys(phys) {
         );
         m_body->staticFriction = 0.1f;
         m_body->dynamicFriction = 0.1f;
-        m_body->bounciness = 0.0f;
+        m_body->bounciness = 0.2f;
         m_body->setBox(colliderSize, 210.0f);
         m_body->setPosition({ 4.0f, 2.0f, -3.0f });
         m_phys.add(m_body);
