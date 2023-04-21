@@ -4,6 +4,11 @@
 quat QuatFromTwoVectors(vec3 vFrom, vec3 vTo) {
     // https://github.com/Mugen87/three.js/blob/master/src/math/Quaternion.js
 
+    if (glm::length(vFrom) < 1e-5 || glm::length(vTo) < 1e-5) {
+        Log("A HUGE MISTAKE HAS BEEN MADE");
+        return quat();
+    }
+
     vFrom = glm::normalize(vFrom);
     vTo = glm::normalize(vTo);
     

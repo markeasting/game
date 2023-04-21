@@ -62,6 +62,10 @@ void Constraint::solvePos(float h) {
 
     // @TODO generalize creating C (constraint error) and it's normal
     const vec3 corr = m_globalPose1.p - m_globalPose0.p;
+    
+    if (glm::length(corr) < 0.0001f)
+        return;
+
     m_normal = glm::normalize(corr);
 
     m_lambda = XPBDSolver::applyBodyPairCorrection(

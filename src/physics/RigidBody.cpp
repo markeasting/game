@@ -97,10 +97,10 @@ void RigidBody::applyRotation(const vec3& rot, float scale) {
 
 void RigidBody::integrate(const float dt) {
 
-    if (glm::all(glm::isnan(this->pose.p)) || glm::all(glm::isnan(this->pose.q))) {
-        this->pose = Pose();
-        this->isDynamic = false;
+    // Safety feature, can be removed later
+    if (glm::all(glm::isnan(this->pose.p)) || glm::all(glm::isnan(this->pose.q)) || glm::all(glm::isnan(this->omega)) || glm::all(glm::isnan(this->vel))) {
         Log("ERR: RigidBody pose contains nan values");
+        std::exit(EXIT_FAILURE);
     }
 
     if(!this->isDynamic) 
@@ -118,10 +118,11 @@ void RigidBody::integrate(const float dt) {
 
     // Euler step (updated)
     this->vel += vec3(0, this->gravity, 0) * dt;
-    this->vel += dt * this->force * this->invMass;
-    this->pose.p += dt * this->vel;
+    this->vel += (this->force * this->invMass) * dt;
+    this->pose.p += this->vel * dt;
 
-    this->omega += dt * this->torque * this->invInertia;
+    this->omega += (this->torque * this->invInertia) * dt;
+
     // this->pose.q += dt * 0.5 * glm::vec4(omega.x, omega.y, omega.z, 0) * this->pose.q;
     // this->pose.q = glm::normalize(this->pose.q);
     this->applyRotation(this->omega, dt);

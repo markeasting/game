@@ -23,8 +23,8 @@ void XPBDSolver::update(const std::vector<Ref<RigidBody>>& bodies, const std::ve
      */
     auto collisions = XPBDSolver::collectCollisionPairs(bodies, dt);
 
-    // const double h = dt / XPBDSolver::numSubSteps;
-    const double h = (1.0f / 60.0f) / XPBDSolver::numSubSteps;
+    // const float h = dt / XPBDSolver::numSubSteps;
+    const float h = (1.0f / 60.0f) / XPBDSolver::numSubSteps;
 
     for(int i = 0; i < XPBDSolver::numSubSteps; i++) {
 
@@ -69,13 +69,14 @@ std::vector<CollisionPair> XPBDSolver::collectCollisionPairs(const std::vector<R
 
     std::vector<CollisionPair> collisions = {};
 
-    std::vector<std::string> pairs = {};
-
-    for (auto const& A: rigidBodies) {
+    for (int i = 0; i < rigidBodies.size(); i++) {
+        auto const& A = rigidBodies[i];
+        
         if (!A->canCollide)
             continue;
 
-        for (auto const& B: rigidBodies) {
+        for (int j = i + 1; j < rigidBodies.size(); j++) {
+            auto const& B = rigidBodies[j];
 
             if (!B->canCollide)
                 continue;
@@ -85,16 +86,6 @@ std::vector<CollisionPair> XPBDSolver::collectCollisionPairs(const std::vector<R
 
             if (A == B)
                 continue;
-
-            std::string pair = (A->id > B->id)
-                ? std::to_string(A->id).append(std::to_string(B->id))
-                : std::to_string(B->id).append(std::to_string(A->id));
-
-            if(std::find(pairs.begin(), pairs.end(), pair) != pairs.end()) {
-                continue; // Pair was already checked
-            }
-
-            pairs.push_back(pair);
 
             /* (3.5) k * dt * vbody */
             const float collisionMargin = 2.0f * dt * glm::length(A->vel - B->vel);
@@ -306,7 +297,6 @@ void XPBDSolver::solveVelocities(const std::vector<Ref<ContactSet>>& contacts, c
     for (auto const& contact: contacts) {
 
         contact->update();
-        contact->n = glm::normalize(contact->p2 - contact->p1);
 
         vec3 dv = vec3(0.0f);
 
@@ -319,13 +309,16 @@ void XPBDSolver::solveVelocities(const std::vector<Ref<ContactSet>>& contacts, c
             contact->A->getVelocityAt(contact->p1) - 
             contact->B->getVelocityAt(contact->p2)
         );
-        float vn = glm::dot(contact->n, v);
+        const float vn = glm::dot(contact->n, v);
         vec3 vt = v - (contact->n * vn);
+        const float vt_len = glm::length(vt);
 
         /* (30) Friction */
-        const float Fn = -contact->lambdaN / (h * h);
-        const float friction = std::min(h * contact->dynamicFriction * Fn, glm::length(vt));
-        dv -= glm::normalize(vt) * friction;
+        if (vt_len > 0.001f) {
+            const float Fn = -contact->lambdaN / (h * h);
+            const float friction = std::min(h * contact->dynamicFriction * Fn, vt_len);
+            dv -= glm::normalize(vt) * friction;
+        }
 
         /* (31, 32) @TODO dampening */
 
@@ -368,7 +361,7 @@ float XPBDSolver::applyBodyPairCorrection(
 
     const float C = glm::length(corr);
 
-    if ( C < 1e-7 )
+    if ( C < 1e-5 )
         return 0.0f;
 
     vec3 n = glm::normalize(corr);
