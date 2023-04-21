@@ -30,6 +30,7 @@ Car::Car(PhysicsHandler& phys): m_phys(phys) {
         );
         m_body->staticFriction = 0.1f;
         m_body->dynamicFriction = 0.1f;
+        m_body->bounciness = 0.0f;
         m_body->setBox(colliderSize, 210.0f);
         m_body->setPosition({ 4.0f, 2.0f, -3.0f });
         m_phys.add(m_body);
@@ -121,6 +122,20 @@ void Car::update(float dt) {
         //     vec3 point = hit - N * projectionDist;
         // }
     }
+    
+    // if (glm::length(m_body->vel) > 0.5f) {
+    //     vec3 localPos = { 0, 1.5f, -4.4f };
+    //     float camDist = 4.4f;
+    //     float camHeight = 1.5f;
+    //     vec3 dir = glm::normalize(m_body->vel);
+    //     vec3 trailer = glm::conjugate(m_body->pose.q) * -dir;
+
+    //     m_camPos = m_body->localToWorld(trailer += localPos);
+    //     m_camLookPos = m_body->localToWorld({ 0, 1.2f, 0 });
+    // }
+
+    m_camPos = m_body->localToWorld({ 0, 1.5f, -4.4f });
+    m_camLookPos = m_body->localToWorld({ 0, 1.2f, 0 });
 
     /* Body shadow -- @TODO maybe use point-to-plane dist */
     auto [hit, N, dist, body] = m_phys.raycast(m_body->pose.p, m_wheels[0].m_normal);

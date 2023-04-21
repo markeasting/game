@@ -87,21 +87,27 @@ void MyScene::init() {
             ref<MeshCollider>(car_collider),
             ref<Mesh>(car, Material("Phong", { lightDirection, ref<Uniform<vec3>>("ambient", vec3(0, 0, 0.2)), ref<Uniform<vec3>>("diffuseAlbedo", vec3(0, 0, 0.7)) }))
         );
-        opponent->setBox(colliderSize);
+        opponent->setBox(colliderSize, 200.0f);
         opponent->setPosition({ -4.0f, 2.0f, -3.0f });
         m_world->add(opponent);
         m_phys.add(opponent);
 
-    // for (size_t i = 0; i < 4; i++) {
-    //     auto box = ref<RigidBody>(
-    //         ref<BoxCollider>(1.0f), 
-    //         ref<Mesh>(BoxGeometry(1.0f), colorMaterial)
-    //     );
-    //     box->setPosition({ 4.0f, 0.5f + i * 1.2f, 0.0f });
-    //     box->setBox(vec3(1.0f));
-    //     m_world->add(box);
-    //     m_phys.add(box);
-    // }
+    for (size_t i = 0; i < 1; i++) {
+        // auto box = ref<RigidBody>(
+        //     ref<BoxCollider>(1.0f), 
+        //     ref<Mesh>(BoxGeometry(1.0f), colorMaterial)
+        // );
+        // box->setPosition({ 4.0f, 0.5f + i * 1.2f, 0.0f });
+        // box->setBox(vec3(1.0f));
+        // m_world->add(box);
+        // m_phys.add(box);
+
+        auto opponent = ref<Car>(m_phys);
+        opponent->m_body->setPosition({ 6.0f + 2.0f * i, 2.0f, -3.0f });
+        opponent->addTo(m_world);
+
+        m_opponents.push_back(opponent);
+    }
 
     Material floorMaterial = Material("Basic.vert", "BasicTextured.frag");
     floorMaterial.assignTexture("assets/texture/asphalt.jpg", "texture1");
@@ -190,6 +196,9 @@ void MyScene::update(float time, float dt) {
     // if (Keyboard::space) {
         m_phys.update(dt, [this](float h){
             m_player->update(h);
+
+            for (auto& o : m_opponents)
+                o->update(h);
         });
     // }
     
@@ -221,8 +230,10 @@ void MyScene::update(float time, float dt) {
 
     /* Player controls */
     if (!m_camera->m_enableFreeCam) {
-        m_camera->m_lookAtPos = m_player->m_body->localToWorld(m_player->m_camLookPos);
-        m_camera->setPosition(m_player->m_body->localToWorld(m_player->m_camPos));
+        // m_camera->m_lookAtPos = m_player->m_body->localToWorld(m_player->m_camLookPos);
+        // m_camera->setPosition(m_player->m_body->localToWorld(m_player->m_camPos));
+        m_camera->m_lookAtPos = m_player->m_camLookPos;
+        m_camera->setPosition(m_player->m_camPos);
     
         if (Keyboard::w) {
             Anim::lerp(m_player->m_throttle, 1.0f, 0.15f);

@@ -36,4 +36,6 @@ private:
     // Ref<RigidBody> m_player = nullptr;
     Ref<Car> m_player = nullptr;
 
+    std::vector<Ref<Car>> m_opponents;
+
 };
