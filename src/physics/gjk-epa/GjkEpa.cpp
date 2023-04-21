@@ -334,7 +334,7 @@ namespace GjkEpa {
             minNormal,
             p1,
             p2,
-            minDistance + 0.005f,
+            minDistance, // + 0.005f,
             true
         };
 

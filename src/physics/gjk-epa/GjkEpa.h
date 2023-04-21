@@ -20,7 +20,7 @@ namespace GjkEpa {
             vec3 p1 = vec3(0),
             vec3 p2 = vec3(0),
             float d = 0.0f,
-            bool exists = true
+            bool exists = false
         ): normal(normal), p1(p1), p2(p2), d(d), exists(exists) {}
     };
 
