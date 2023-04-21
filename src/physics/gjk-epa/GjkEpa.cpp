@@ -3,6 +3,9 @@
 
 namespace GjkEpa {
 
+    size_t MAX_GJK_ITERS = 32;
+    size_t MAX_EPA_ITERS = 16;
+
     Simplex GJK(
         Collider* colliderA,
         Collider* colliderB
@@ -16,7 +19,7 @@ namespace GjkEpa {
          * The search direction for the first vertex doesn’t matter, but you
          * may get less iterations with a smarter choice.
          */
-        Support support = GjkEpa::support(colliderA, colliderB, {0, 1, 0});
+        Support support = GjkEpa::support(colliderA, colliderB, { 0, 1.0f, 0 });
 
         /* Simplex is an array of points, max count is 4 */
         Simplex simplex;
@@ -25,7 +28,7 @@ namespace GjkEpa {
         /* New direction is towards the origin */
         vec3 direction = -support.point;
 
-        while (true) {
+        for (size_t i = 0; i < GjkEpa::MAX_GJK_ITERS; i++) {
 
             /**
              * In a loop, we’ll add another point.
@@ -37,7 +40,7 @@ namespace GjkEpa {
 
             auto support = GjkEpa::support(colliderA, colliderB, direction);
 
-            if (glm::dot(support.point, direction) <= 0)
+            if (glm::dot(support.point, direction) <= 0.0f)
                 return simplex; /* No collision */
 
             simplex.push_front(support);
@@ -47,12 +50,13 @@ namespace GjkEpa {
              * updates the simplex and search direction.
              * It’ll return true or false to signify a collision.
              */
-            if (GjkEpa::nextSimplex(simplex, direction))
-            {
+            if (GjkEpa::nextSimplex(simplex, direction)) {
                 simplex.containsOrigin = true;
                 return simplex;
             }
         }
+
+        return simplex;
     }
 
     /**
@@ -74,14 +78,10 @@ namespace GjkEpa {
         vec3 &direction)
     {
 
-        switch (simplex.size())
-        {
-        case 2:
-            return GjkEpa::Line(simplex, direction);
-        case 3:
-            return GjkEpa::Triangle(simplex, direction);
-        case 4:
-            return GjkEpa::Tetrahedron(simplex, direction);
+        switch (simplex.size()) {
+            case 2: return GjkEpa::Line(simplex, direction);
+            case 3: return GjkEpa::Triangle(simplex, direction);
+            case 4: return GjkEpa::Tetrahedron(simplex, direction);
         }
 
         return false;
@@ -97,12 +97,9 @@ namespace GjkEpa {
         vec3 ab = b.point - a.point;
         vec3 ao = -a.point;
 
-        if (GjkEpa::sameDirection(ab, ao))
-        {
+        if (GjkEpa::sameDirection(ab, ao)) {
             direction = glm::cross(glm::cross(ab, ao), ab);
-        }
-        else
-        {
+        } else {
             simplex.assign({a});
             direction = ao;
         }
@@ -130,13 +127,13 @@ namespace GjkEpa {
                 direction = glm::cross(glm::cross(ac, ao), ac);
             } else {
                 simplex.assign({a, b});
-                return Line(simplex, direction);
+                return GjkEpa::Line(simplex, direction);
             }
         } else {
             if (GjkEpa::sameDirection(glm::cross(ab, abc), ao))
             {
                 simplex.assign({a, b});
-                return Line(simplex, direction);
+                return GjkEpa::Line(simplex, direction);
             } else {
                 if (GjkEpa::sameDirection(abc, ao)) {
                     direction = abc;
@@ -170,17 +167,17 @@ namespace GjkEpa {
 
         if (GjkEpa::sameDirection(abc, ao)) {
             simplex.assign({a, b, c});
-            return Triangle(simplex, direction);
+            return GjkEpa::Triangle(simplex, direction);
         }
 
         if (GjkEpa::sameDirection(acd, ao)) {
             simplex.assign({a, c, d});
-            return Triangle(simplex, direction);
+            return GjkEpa::Triangle(simplex, direction);
         }
 
         if (GjkEpa::sameDirection(adb, ao)) {
             simplex.assign({a, d, b});
-            return Triangle(simplex, direction);
+            return GjkEpa::Triangle(simplex, direction);
         }
 
         return true;
@@ -229,7 +226,7 @@ namespace GjkEpa {
             minNormal.z = normals[minFace].z;
             minDistance = normals[minFace].w;
             
-            if (iterations++ > 16) {
+            if (iterations++ > GjkEpa::MAX_EPA_ITERS) {
                 // Log("Too many EPA iterations");
                 break;
             }
@@ -337,7 +334,7 @@ namespace GjkEpa {
             minNormal,
             p1,
             p2,
-            minDistance,
+            minDistance + 0.005f,
             true
         };
 
@@ -365,7 +362,7 @@ namespace GjkEpa {
         float denom = dot00 * dot11 - dot01 * dot01;
         float v = (dot11 * dot02 - dot01 * dot12) / denom;
         float w = (dot00 * dot12 - dot01 * dot02) / denom;
-        float u = 1.0 - v - w;
+        float u = 1.0f - v - w;
         
         return { u, v, w };
     }
@@ -389,8 +386,8 @@ namespace GjkEpa {
 			float distance = glm::dot(normal, a.point);
 
 			if (distance < 0) {
-				normal   *= -1;
-				distance *= -1;
+				normal   *= -1.0f;
+				distance *= -1.0f;
 			}
 
 			normals.emplace_back(normal, distance);

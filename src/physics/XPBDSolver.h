@@ -70,9 +70,10 @@ struct ContactSet {
     }
 
     inline void update() {
-        // @TODO maybe recalculate N as well
         p1 = A->pose.p + A->pose.q * r1;
         p2 = B->pose.p + B->pose.q * r2;
+
+        // n = glm::normalize(p2 - p1); // BREAKS
     }
 };
 

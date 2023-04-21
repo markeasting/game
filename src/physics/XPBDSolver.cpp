@@ -167,7 +167,7 @@ std::vector<Ref<ContactSet>> XPBDSolver::getContacts(const std::vector<Collision
                             epa.p1,
                             epa.p2,
                             A->worldToLocal(epa.p1),
-                            B->worldToLocal(epa.p1)
+                            B->worldToLocal(epa.p2)
                         );
 
                         contacts.push_back(contact);
@@ -205,7 +205,6 @@ std::vector<Ref<ContactSet>> XPBDSolver::getContacts(const std::vector<Collision
                                 continue;
 
                             auto contact = ref<ContactSet>(A, B, N, d, p1, p2, r1, r2);
-                            contact->d = d;
 
                             contacts.push_back(contact);
                             // XPBDSolver::debugContact(contact);
@@ -236,12 +235,14 @@ void XPBDSolver::_solvePenetration(Ref<ContactSet> contact, const float h) {
     /* (26) - p1 & p2 */
     contact->update();
 
-    // /* (3.5) Penetration depth -- Handled by contact->update() */
+    /* (3.5) Penetration depth */
     // contact->d = - glm::dot((contact->p1 - contact->p2), contact->n);
 
     /* (3.5) if d ≤ 0 we skip the contact */
     if(contact->d <= 0.0f)
         return;
+
+    // contact->n = glm::normalize(contact->p2 - contact->p1);
 
     /* (3.5) Resolve penetration (Δx = dn using a = 0 and λn) */
     const vec3 dx = contact->d * contact->n;
@@ -275,7 +276,7 @@ void XPBDSolver::_solveFriction(Ref<ContactSet> contact, const float h) {
 
     /* (27) (28) Relative motion and tangential component */
     const vec3 dp = (contact->p1 - p1prev) - (contact->p2 - p2prev);
-    const vec3 dp_t = dp - glm::dot(dp, contact->n) * contact->n;
+    const vec3 dp_t = dp - (contact->n * glm::dot(dp, contact->n));
 
     /* (3.5)
      * To enforce static friction, we apply Δx = Δp_t
@@ -305,6 +306,7 @@ void XPBDSolver::solveVelocities(const std::vector<Ref<ContactSet>>& contacts, c
     for (auto const& contact: contacts) {
 
         contact->update();
+        contact->n = glm::normalize(contact->p2 - contact->p1);
 
         vec3 dv = vec3(0.0f);
 

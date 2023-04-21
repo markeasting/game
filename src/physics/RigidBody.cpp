@@ -72,20 +72,25 @@ void RigidBody::applyRotation(const vec3& rot, float scale) {
     // wants to turn the body by more than 30 degrees in the
     // orders of milliseconds
 
-    const float maxPhi = 0.5;
+    const float maxPhi = 0.5f;
     const float phi = glm::length(rot);
 
     if (phi * scale > maxPhi)
         scale = maxPhi / phi;
 
-    glm::quat dq = glm::quat(0.0f, rot.x * scale, rot.y * scale, rot.z * scale);
+    glm::quat dq = glm::quat(
+        0.0f, 
+        rot.x * scale, 
+        rot.y * scale, 
+        rot.z * scale
+    );
     dq = dq * this->pose.q;
 
     this->pose.q = glm::quat(
-        this->pose.q.w + 0.5 * dq.w,
-        this->pose.q.x + 0.5 * dq.x,
-        this->pose.q.y + 0.5 * dq.y,
-        this->pose.q.z + 0.5 * dq.z
+        this->pose.q.w + 0.5f * dq.w,
+        this->pose.q.x + 0.5f * dq.x,
+        this->pose.q.y + 0.5f * dq.y,
+        this->pose.q.z + 0.5f * dq.z
     );
     this->pose.q = glm::normalize(this->pose.q);
 }
@@ -124,8 +129,8 @@ void RigidBody::integrate(const float dt) {
 
 void RigidBody::update(const float dt) {
     
-    // if(!this->isDynamic) 
-    //     return;
+    if(!this->isDynamic) 
+        return;
 
     this->velPrev = this->vel;
     this->omegaPrev = this->omega;
@@ -134,7 +139,11 @@ void RigidBody::update(const float dt) {
 
     glm::quat dq = this->pose.q * glm::conjugate(this->prevPose.q);
 
-    this->omega = vec3(dq.x * 2.0 / dt, dq.y * 2.0 / dt, dq.z * 2.0 / dt);
+    this->omega = vec3(
+        dq.x * 2.0f / dt, 
+        dq.y * 2.0f / dt, 
+        dq.z * 2.0f / dt
+    );
 
     if (dq.w < 0.0f)
         this->omega = vec3(-this->omega.x, -this->omega.y, -this->omega.z); // @TODO just omega = -omega?
@@ -166,28 +175,28 @@ void RigidBody::applyCorrection(const vec3& corr, const vec3& pos, bool velocity
     }
 
     this->pose.invRotate(dq);
-    vec3 dq2 = vec3(
+    dq = vec3(
         this->invInertia.x * dq.x,
         this->invInertia.y * dq.y,
         this->invInertia.z * dq.z
     );
-    this->pose.rotate(dq2);
+    this->pose.rotate(dq);
 
     if (velocityLevel)
-        this->omega += dq2;
+        this->omega += dq;
     else
-        this->applyRotation(dq2);
+        this->applyRotation(dq);
 }
 
 RigidBody RigidBody::setBox(const vec3& size, float density) {
 
     float mass = size.x * size.y * size.z * density;
-    this->invMass = 1.0 / mass;
+    this->invMass = 1.0f / mass;
 
-    mass /= 12.0;
-    this->invInertia.x = 1.0 / (size.y * size.y + size.z * size.z) / mass;
-    this->invInertia.y = 1.0 / (size.z * size.z + size.x * size.x) / mass;
-    this->invInertia.z = 1.0 / (size.x * size.x + size.y * size.y) / mass;
+    mass /= 12.0f;
+    this->invInertia.x = 1.0f / (size.y * size.y + size.z * size.z) / mass;
+    this->invInertia.y = 1.0f / (size.z * size.z + size.x * size.x) / mass;
+    this->invInertia.z = 1.0f / (size.x * size.x + size.y * size.y) / mass;
 
     return *this;
 }
