@@ -182,8 +182,8 @@ private:
     inline void updateGeometry(Ref<RigidBody> body, float dt) {
         m_mesh->setPosition(
             body->localToWorld(
-                m_hardpoint + (m_normal * m_pos)
-            )
+                m_hardpoint
+            ) + (m_normal * m_pos)
         );
         m_mesh->setRotation(body->pose.q);
 
