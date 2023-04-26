@@ -90,21 +90,28 @@ void Car::applySteering(float steering) {
 
 void Car::update(float dt) {
 
-    // for (auto& c : m_tempConstraints) {
-    //     m_phys.m_constraints.erase(m_phys.m_constraints.begin() + c);
-    // }
+    /* Calculate (forward) velocity */
+    m_forward = m_body->pose.q * vec3(0, 0, 1.0f);
+    m_velocity = glm::length(m_body->vel);
 
-    // m_phys.m_constraints.clear();
+    if (glm::dot(m_body->vel, m_forward) < 0.0f)
+        m_velocity = -m_velocity;
 
+    /* Air resistance */
+    const float Cd = 0.25f;
+    const float A = 0.55f;
+    float Fd = 0.5f * 1.293f * Cd * A * powf(m_velocity, 2.0f);
+
+    m_body->applyForce(m_forward * -Fd, m_body->localToWorld(vec3(0)));
+
+    /* Update wheels */
     for (size_t i = 0; i < 4; i++) {
 
         auto& wheel = m_wheels[i];
 
         vec3 hardpointW = m_body->localToWorld(wheel.m_hardpoint);
-        // vec3 rayDir = m_body->pose.q * vec3(0, -1.0f, 0);
 
         auto [hit, N, dist, body] = m_phys.raycast(hardpointW, wheel.m_normal);
-        vec3 localHitPos = m_body->worldToLocal(hit);
 
         vec3 F = wheel.update(
             m_body, 
@@ -112,16 +119,11 @@ void Car::update(float dt) {
             m_throttle,
             m_steering,
             m_handbrake,
+            m_velocity,
             dt
         );
 
         m_body->applyForce(F, hardpointW);
-
-        // if (body) {
-        //     /* Could be useful for static shadows */
-        //     float projectionDist = glm::dot(N, hit - body->pose.p);
-        //     vec3 point = hit - N * projectionDist;
-        // }
     }
     
     // if (glm::length(m_body->vel) > 0.5f) {

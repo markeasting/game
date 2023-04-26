@@ -61,19 +61,17 @@ public:
         float throttle,
         float steering,
         bool handbrake,
+        float bodyVelocity,
         float dt
     ) {
 
         m_worldVelocity = body->getVelocityAt(body->localToWorld(m_hardpoint));
-        m_bodyVelocity = glm::length(body->vel);
+        m_bodyVelocity = bodyVelocity;
 
         /* World space */
         m_normal = body->pose.q * Wheel::NORMAL;
         m_right = body->pose.q * Wheel::RIGHT;
         m_forward = body->pose.q * Wheel::FORWARD;
-
-        if (glm::dot(body->vel, m_forward) < 0.0f)
-            m_bodyVelocity = -m_bodyVelocity;
 
         /* Steering with speed scaling */
         m_steerAngle = !m_driven 
@@ -149,6 +147,8 @@ private:
 
     inline vec3 getDrivingForce(float throttle, bool handbrake) {
 
+        bool isGoingForward = m_bodyVelocity > 0.0f;
+
         float drivingForce = throttle > 0 && !handbrake
             ? throttle * m_torque / m_radius
             : 0.0f;
@@ -159,15 +159,15 @@ private:
             ? throttle * brakeBias * brakeSteerScale * m_brakeTorque / m_radius
             : 0.0f;
 
-        float engineBraking = m_bodyVelocity > 2.0f 
+        float engineBraking = isGoingForward 
             ? -0.15f * m_torque 
-            : 0.0f;
+            : 0.15f * m_torque;
 
         float totalForce = m_driven 
             ? brakingForce + drivingForce + engineBraking
             : brakingForce;
 
-        if (handbrake && m_driven)
+        if (handbrake && m_driven && isGoingForward)
             totalForce = -2.0f * m_brakeTorque;
 
         /* Loosly based on Pacejka's Magic Formula */
@@ -221,10 +221,14 @@ public:
 
     vec3 m_camLookPos = { 0, 1.2f, 0 };
     vec3 m_camPos = { 0, 1.5f, -4.4f };
+
+    vec3 m_forward;
     
-    float m_throttle;
-    float m_steering;
+    float m_throttle = 0.0f;
+    float m_steering = 0.0f;
     bool m_handbrake = false;
+
+    float m_velocity;
 
     Car(PhysicsHandler& phys);
     virtual ~Car() = default;
