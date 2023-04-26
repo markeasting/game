@@ -27,6 +27,7 @@ Car::Car(PhysicsHandler& phys): m_phys(phys) {
     m_body = ref<RigidBody>(
             ref<MeshCollider>(car_collider),
             ref<Mesh>(car, Material("Phong", { lightDirection }))
+            // ref<Mesh>(car, Material("Phong", { lightDirection, ref<Uniform<vec3>>("ambient", vec3(0, 0, 0.2)), ref<Uniform<vec3>>("diffuseAlbedo", vec3(0, 0, 0.7)) }))
         );
         m_body->staticFriction = 0.1f;
         m_body->dynamicFriction = 0.1f;

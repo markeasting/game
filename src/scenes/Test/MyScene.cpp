@@ -109,6 +109,17 @@ void MyScene::init() {
         m_opponents.push_back(opponent);
     }
 
+    for (size_t i = 0; i < 6; i++) {
+        auto box = ref<RigidBody>(
+                ref<BoxCollider>(1.0f), 
+                ref<Mesh>(BoxGeometry(1.0f), colorMaterial)
+            );
+            box->setPosition({ 4.0f, 0.5f + i * 1.01f, 0.0f });
+            box->setBox(vec3(1.0f), 33.0f);
+            m_world->add(box);
+            m_phys.add(box);
+    }
+
     Material floorMaterial = Material("Basic.vert", "BasicTextured.frag");
     floorMaterial.assignTexture("assets/texture/asphalt.jpg", "texture1");
 
