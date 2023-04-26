@@ -226,14 +226,10 @@ void XPBDSolver::_solvePenetration(Ref<ContactSet> contact, const float h) {
     /* (26) - p1 & p2 */
     contact->update();
 
-    /* (3.5) Penetration depth */
-    // contact->d = - glm::dot((contact->p1 - contact->p2), contact->n);
-
     /* (3.5) if d ≤ 0 we skip the contact */
+    /* The penetration depth is recalculated in contact->update() */
     if(contact->d <= 0.0f)
         return;
-
-    // contact->n = glm::normalize(contact->p2 - contact->p1);
 
     /* (3.5) Resolve penetration (Δx = dn using a = 0 and λn) */
     const vec3 dx = contact->d * contact->n;
@@ -261,13 +257,17 @@ void XPBDSolver::_solveFriction(Ref<ContactSet> contact, const float h) {
      */
 
     /* (26) Positions in current state and before the substep integration */
-    const vec3 p1prev = vec3(contact->p1); // A->prevPose.p + A->prevPose.q * contact->r1;
-    const vec3 p2prev = vec3(contact->p2); // B->prevPose.p + B->prevPose.q * contact->r2;
+    // const vec3 p1prev = vec3(contact->p1); // A->prevPose.p + A->prevPose.q * contact->r1;
+    // const vec3 p2prev = vec3(contact->p2); // B->prevPose.p + B->prevPose.q * contact->r2;
+    const vec3 p1prev = contact->A->prevPose.p + contact->A->prevPose.q * contact->r1;
+    const vec3 p2prev = contact->B->prevPose.p + contact->B->prevPose.q * contact->r2;
+    // contact->p1 = contact->A->pose.p + contact->A->pose.q * contact->r1;
+    // contact->p2 = contact->B->pose.p + contact->B->pose.q * contact->r2;
     contact->update();
 
     /* (27) (28) Relative motion and tangential component */
     const vec3 dp = (contact->p1 - p1prev) - (contact->p2 - p2prev);
-    const vec3 dp_t = dp - (contact->n * glm::dot(dp, contact->n));
+    const vec3 dp_t = dp - glm::dot(dp, contact->n) * contact->n;
 
     /* (3.5)
      * To enforce static friction, we apply Δx = Δp_t
@@ -275,12 +275,14 @@ void XPBDSolver::_solveFriction(Ref<ContactSet> contact, const float h) {
      * λ_t < μ_s * λ_n.
      *
      * Note: with 1 position iteration, lambdaT is always zero!
+     *       Also, lambdaN is always negative. 
+     *       Therefore, this inequation was flipped. 
      */
-    if (contact->lambdaT < contact->staticFriction * contact->lambdaN) {
+    if (contact->lambdaT > contact->staticFriction * contact->lambdaN) {
         XPBDSolver::applyBodyPairCorrection(
             contact->A,
             contact->B,
-            dp_t,
+            -dp_t, /* Sign was flipped here (?) */
             0.0f,
             h,
             contact->p1,
@@ -325,6 +327,8 @@ void XPBDSolver::solveVelocities(const std::vector<Ref<ContactSet>>& contacts, c
         /* (34) Restitution
          *
          * To avoid jittering we set e = 0 if vn is small (`threshold`).
+         * 
+         * min() was replaced with max() due to the flipped sign convention.
          *
          * Note:
          * `vn_tilde` was already calculated before the position solve (Eq. 29)

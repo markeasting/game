@@ -74,6 +74,13 @@ struct ContactSet {
         p2 = B->pose.p + B->pose.q * r2;
 
         // n = glm::normalize(p2 - p1); // BREAKS
+
+        // if (glm::distance(p2, p1) > 0.001f) {
+        //     n = glm::normalize(p2 - p1);
+        // }
+
+        /* (3.5) Penetration depth */
+        d = - glm::dot((p1 - p2), n);
     }
 };
 
