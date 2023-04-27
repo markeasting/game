@@ -57,11 +57,15 @@ RigidBody RigidBody::applyForce(const vec3& force, const vec3& position) {
     this->force += force;
     this->torque += glm::cross(force, (this->pose.p - position));
 
+    this->wake();
+
     return *this;
 }
 
 RigidBody RigidBody::applyTorque(const vec3& torque) {
     this->torque += torque;
+
+    this->wake();
 
     return *this;
 }
@@ -103,20 +107,22 @@ void RigidBody::integrate(const float dt) {
         std::exit(EXIT_FAILURE);
     }
 
-    if(!this->isDynamic) 
+    if(!this->isDynamic || this->isSleeping) 
         return;
+
+    if (this->canSleep && glm::length2(this->vel) < 0.1f && glm::length2(this->omega) < 0.1f) {
+        this->sleepTimer += dt;
+
+        if (this->sleepTimer > (3.0f / 60.0f))
+            this->isSleeping = true;
+    } else {
+        this->wake();
+    }
 
     this->prevPose.p = pose.p;
     this->prevPose.q = pose.q;
 
     // Euler step
-    // this->vel += vec3(0, this->gravity, 0) * dt;
-    // this->vel += this->force * this->invMass * dt;
-    // this->omega += this->torque * this->invInertia * dt;
-    // this->pose.p += this->vel * dt;
-    // this->applyRotation(this->omega, dt);
-
-    // Euler step (updated)
     this->vel += vec3(0, this->gravity, 0) * dt;
     this->vel += (this->force * this->invMass) * dt;
     this->pose.p += this->vel * dt;
@@ -152,6 +158,8 @@ void RigidBody::update(const float dt) {
     // // Dampening
     // this->vel = this->vel * (1.0f - 1.0f * dt);
     // this->omega = this->omega * (1.0f - 1.0f * dt);
+
+    this->velocity = glm::length(this->vel);
 
     this->updateCollider();
 }
@@ -270,6 +278,10 @@ vec3 RigidBody::worldToLocal(const vec3& v) {
 }
 
 void RigidBody::updateGeometry() {
+
+    if (this->isSleeping)
+        return;
+
     if(this->mesh) {
         this->mesh->setPosition(this->pose.p);
         this->mesh->setRotation(this->pose.q);
@@ -283,4 +295,13 @@ void RigidBody::updateGeometry() {
 
 void RigidBody::updateCollider() {
     this->collider->updateGlobalPose(this->pose);
+    
+    /* (3.5) k * dt * vbody */
+    this->collider->m_expanded_aabb = AABB(this->collider->m_aabb);
+    this->collider->m_expanded_aabb.expandByScalar(this->velocity);
+}
+
+void RigidBody::wake() {
+    this->isSleeping = false;
+    this->sleepTimer = 0.0f;
 }

@@ -10,6 +10,7 @@ void PhysicsHandler::init() {
     m_debugMeshes.push_back(XPBDSolver::r1);
     m_debugMeshes.push_back(XPBDSolver::r2);
     m_debugMeshes.push_back(XPBDSolver::n);
+    m_debugMeshes.push_back(XPBDSolver::debugArrow);
 }
 
 void PhysicsHandler::add(Ref<RigidBody> body) {

@@ -10,6 +10,8 @@ void XPBDSolver::init() {
     XPBDSolver::r1 = ref<Mesh>(ArrowGeometry(1.0f), colorMaterial);
     XPBDSolver::r2 = ref<Mesh>(ArrowGeometry(1.0f), colorMaterial);
     XPBDSolver::n = ref<Mesh>(ArrowGeometry(1.0f), colorMaterial);
+
+    XPBDSolver::debugArrow = ref<Mesh>(ArrowGeometry(1.0f), colorMaterial);
 }
 
 void XPBDSolver::update(const std::vector<Ref<RigidBody>>& bodies, const std::vector<Ref<Constraint>>& constraints, std::function<void(float)> customUpdate, const float dt) {
@@ -88,12 +90,23 @@ std::vector<CollisionPair> XPBDSolver::collectCollisionPairs(const std::vector<R
                 continue;
 
             /* (3.5) k * dt * vbody */
-            const float collisionMargin = 2.0f * dt * glm::length(A->vel - B->vel);
+            const float vrel = glm::length(A->vel - B->vel);
+            // const float collisionMargin = 2.0f * dt * vrel;
 
-            AABB aabb1(A->collider->m_aabb);
-            AABB aabb2(B->collider->m_aabb);
-            aabb1.expandByScalar(collisionMargin);
-            aabb2.expandByScalar(collisionMargin);
+            // // @TODO use vbody to expand AABBs once per timestep instead of here
+            // AABB aabb1(A->collider->m_aabb);
+            // AABB aabb2(B->collider->m_aabb);
+            // aabb1.expandByScalar(collisionMargin);
+            // aabb2.expandByScalar(collisionMargin);
+
+            auto& aabb1 = A->collider->m_expanded_aabb;
+            auto& aabb2 = B->collider->m_expanded_aabb;
+
+            /* Wake sleeping bodies if a collision could occur */
+            if (vrel > 0.1f) {
+                A->wake();
+                B->wake();
+            }
 
             switch(A->collider->m_type) {
                 case ColliderType::cMesh :
@@ -175,6 +188,7 @@ std::vector<Ref<ContactSet>> XPBDSolver::getContacts(const std::vector<Collision
                         // @TODO check if vertex is actually inside plane size :)
                         // @TODO incorporate plane constant (dist from origin)
                         const vec3 N = PC->m_plane.normal;
+                        const float C = PC->m_plane.constant;
 
                         for(int i = 0; i < MC->m_uniqueIndices.size(); i++) {
 
@@ -216,6 +230,7 @@ void XPBDSolver::solvePositions(const std::vector<Ref<ContactSet>>& contacts, co
 
     for (auto const& contact: contacts) {
         /* (3.5) Handling contacts and friction */
+        XPBDSolver::debugContact(contact);
         XPBDSolver::_solvePenetration(contact, h);
         XPBDSolver::_solveFriction(contact, h);
     }
@@ -257,18 +272,20 @@ void XPBDSolver::_solveFriction(Ref<ContactSet> contact, const float h) {
      */
 
     /* (26) Positions in current state and before the substep integration */
-    // const vec3 p1prev = vec3(contact->p1); // A->prevPose.p + A->prevPose.q * contact->r1;
-    // const vec3 p2prev = vec3(contact->p2); // B->prevPose.p + B->prevPose.q * contact->r2;
-    const vec3 p1prev = contact->A->prevPose.p + contact->A->prevPose.q * contact->r1;
-    const vec3 p2prev = contact->B->prevPose.p + contact->B->prevPose.q * contact->r2;
-    // contact->p1 = contact->A->pose.p + contact->A->pose.q * contact->r1;
-    // contact->p2 = contact->B->pose.p + contact->B->pose.q * contact->r2;
+    const vec3 p1prev = contact->p1; // A->prevPose.p + A->prevPose.q * contact->r1;
+    const vec3 p2prev = contact->p2; // B->prevPose.p + B->prevPose.q * contact->r2;
+    // const vec3 p1prev = contact->A->prevPose.p + contact->A->prevPose.q * contact->r1;
+    // const vec3 p2prev = contact->B->prevPose.p + contact->B->prevPose.q * contact->r2;
     contact->update();
 
     /* (27) (28) Relative motion and tangential component */
     const vec3 dp = (contact->p1 - p1prev) - (contact->p2 - p2prev);
     const vec3 dp_t = dp - glm::dot(dp, contact->n) * contact->n;
 
+    // XPBDSolver::debugArrow->setPosition(contact->p1);
+    // XPBDSolver::debugArrow->setScale(glm::length(dp));
+    // XPBDSolver::debugArrow->setRotation(QuatFromTwoVectors(vec3(0, 1.0f, 0), dp));
+    
     /* (3.5)
      * To enforce static friction, we apply Δx = Δp_t
      * at the contact points with a = 0 but only if
@@ -282,7 +299,7 @@ void XPBDSolver::_solveFriction(Ref<ContactSet> contact, const float h) {
         XPBDSolver::applyBodyPairCorrection(
             contact->A,
             contact->B,
-            -dp_t, /* Sign was flipped here (?) */
+            dp_t,
             0.0f,
             h,
             contact->p1,
@@ -316,13 +333,11 @@ void XPBDSolver::solveVelocities(const std::vector<Ref<ContactSet>>& contacts, c
         const float vt_len = glm::length(vt);
 
         /* (30) Friction */
-        if (vt_len > 0.001f) {
+        if (vt_len > 1e-5) {
             const float Fn = -contact->lambdaN / (h * h);
             const float friction = std::min(h * contact->dynamicFriction * Fn, vt_len);
             dv -= glm::normalize(vt) * friction;
         }
-
-        /* (31, 32) @TODO dampening */
 
         /* (34) Restitution
          *

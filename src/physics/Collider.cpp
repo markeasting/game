@@ -9,6 +9,8 @@ PlaneCollider::PlaneCollider(const glm::vec2 &size, const glm::vec3 &normal) {
 
     m_plane.normal = glm::normalize(normal);
     m_plane.constant = 0.0f; // @TODO set plane constant
+
+    m_normalRef = m_plane.normal;
 }
 
 // void PlaneCollider::updateGlobalPose(const Pose& pose) {
@@ -22,7 +24,7 @@ void PlaneCollider::updateGlobalPose(const Pose& pose) {
 
     m_relativePosW = (pose.q * m_relativePos) + pose.p;
 
-    m_plane.normal = pose.q * m_plane.normal;
+    m_plane.normal = pose.q * m_normalRef;
     m_plane.constant = glm::length(m_relativePosW);
 
     // m_aabb.set(min, max);

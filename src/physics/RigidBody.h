@@ -14,7 +14,11 @@ public:
     Pose prevPose = Pose();
 
     bool isDynamic = true;              // Whether physics applies to this body
-    bool canCollide = true;             
+    bool canCollide = true;    
+    
+    bool isSleeping = false;
+    bool canSleep = true;
+    float sleepTimer = 0.0f;
 
     Ref<Mesh> mesh = nullptr;
     Ref<Collider> collider = nullptr;   // Physics representation of shape. https://en.m.wikipedia.org/wiki/Convex_hull
@@ -24,6 +28,8 @@ public:
     vec3 velPrev = vec3(0);
     vec3 omegaPrev = vec3(0);
 
+    float velocity = 0.0f;
+
     float invMass = 1.0f;
     vec3 invInertia = vec3(1.0f);       // https://en.m.wikipedia.org/wiki/Moment_of_inertia Tetrahedron of unit size with unit mass = 0.1331712
 
@@ -31,8 +37,8 @@ public:
     vec3 torque = vec3(0);              // https://en.m.wikipedia.org/wiki/Torque
 
     float gravity = -9.81f;
-    float staticFriction = 0.50f;       // https://en.m.wikipedia.org/wiki/Friction
-    float dynamicFriction = 0.30f;      // https://en.m.wikipedia.org/wiki/Friction
+    float staticFriction = 0.99f;       // https://en.m.wikipedia.org/wiki/Friction
+    float dynamicFriction = 0.99f;      // https://en.m.wikipedia.org/wiki/Friction
     float bounciness = 0.4f;            // https://en.m.wikipedia.org/wiki/Coefficient_of_restitution
 
     RigidBody() = default;
@@ -63,6 +69,8 @@ public:
 
     void updateGeometry();
     
+    void wake();
+
 private:
     void updateCollider();
 };

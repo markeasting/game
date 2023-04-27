@@ -23,6 +23,7 @@ public:
     Ref<Mesh> m_mesh = nullptr; // Debug mesh
 
     AABB m_aabb;
+    AABB m_expanded_aabb;
 
     // m_sdf; // @TODO distance function?
 
@@ -45,6 +46,7 @@ public:
 struct PlaneCollider : public Collider {
     
     vec2 m_size = vec2(1.0f, 1.0f);
+    vec3 m_normalRef;
 
     Plane m_plane;
 

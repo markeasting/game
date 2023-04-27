@@ -94,6 +94,8 @@ namespace XPBDSolver {
     inline Ref<Mesh> r2;
     inline Ref<Mesh> n;
 
+    inline Ref<Mesh> debugArrow;
+
     void init();
 
     void update(const std::vector<Ref<RigidBody>>& bodies, const std::vector<Ref<Constraint>>& constraints, std::function<void(float)> extraUpdate, const float dt);
