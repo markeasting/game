@@ -89,24 +89,16 @@ std::vector<CollisionPair> XPBDSolver::collectCollisionPairs(const std::vector<R
             if (A == B)
                 continue;
 
-            /* (3.5) k * dt * vbody */
             const float vrel = glm::length(A->vel - B->vel);
-            // const float collisionMargin = 2.0f * dt * vrel;
-
-            // // @TODO use vbody to expand AABBs once per timestep instead of here
-            // AABB aabb1(A->collider->m_aabb);
-            // AABB aabb2(B->collider->m_aabb);
-            // aabb1.expandByScalar(collisionMargin);
-            // aabb2.expandByScalar(collisionMargin);
-
-            auto& aabb1 = A->collider->m_expanded_aabb;
-            auto& aabb2 = B->collider->m_expanded_aabb;
 
             /* Wake sleeping bodies if a collision could occur */
             if (vrel > 0.1f) {
                 A->wake();
                 B->wake();
             }
+
+            auto& aabb1 = A->collider->m_expanded_aabb;
+            auto& aabb2 = B->collider->m_expanded_aabb;
 
             switch(A->collider->m_type) {
                 case ColliderType::cMesh :
