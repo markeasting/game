@@ -55,9 +55,9 @@ struct ContactSet {
         vrel = A->getVelocityAt(p1) - B->getVelocityAt(p2);
         vn = glm::dot(n, vrel);
 
-        e = 0.5f * (A->bounciness + B->bounciness);
-        staticFriction = 0.5f * (A->staticFriction + B->staticFriction);
-        dynamicFriction = 0.5f * (A->dynamicFriction + B->dynamicFriction);
+        e = A->bounciness * B->bounciness;
+        staticFriction = A->staticFriction * B->staticFriction;
+        dynamicFriction = A->dynamicFriction * B->dynamicFriction;
 
         /* (3.5) Penetration depth -- Note: sign was flipped! 
          * 
