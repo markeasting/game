@@ -153,13 +153,13 @@ void Renderer::drawMesh(Ref<Mesh> mesh, Ref<Camera> camera) {
             : matrix
     );
 
-    // if(mesh->m_material && mesh->m_material->wireframe) {
+    if(mesh->m_material && mesh->m_material->wireframe) {
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         glDisable(GL_CULL_FACE);
-    // } else {
-    //     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    //     glEnable(GL_CULL_FACE);
-    // }
+    } else {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        glEnable(GL_CULL_FACE);
+    }
 
     // @TODO add support for instanced meshes using glDrawArraysInstanced and glDrawElementsInstanced
     if(mesh->m_geometry->hasIndices()) {
