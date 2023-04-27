@@ -83,39 +83,40 @@ void MyScene::init() {
     m_player = ref<Car>(m_phys);
     m_player->addTo(m_world);
 
-    auto opponent = ref<RigidBody>(
-            ref<MeshCollider>(car_collider),
-            ref<Mesh>(car, Material("Phong", { lightDirection, ref<Uniform<vec3>>("ambient", vec3(0, 0, 0.2)), ref<Uniform<vec3>>("diffuseAlbedo", vec3(0, 0, 0.7)) }))
-        );
-        opponent->setBox(colliderSize, 200.0f);
-        opponent->setPosition({ -4.0f, 2.0f, -3.0f });
-        m_world->add(opponent);
-        m_phys.add(opponent);
+    // auto opponent = ref<RigidBody>(
+    //         ref<MeshCollider>(car_collider),
+    //         ref<Mesh>(car, Material("Phong", { lightDirection, ref<Uniform<vec3>>("ambient", vec3(0, 0, 0.2)), ref<Uniform<vec3>>("diffuseAlbedo", vec3(0, 0, 0.7)) }))
+    //     );
+    //     opponent->setBox(colliderSize, 200.0f);
+    //     opponent->setPosition({ -4.0f, 2.0f, -3.0f });
+    //     m_world->add(opponent);
+    //     m_phys.add(opponent);
 
-    for (size_t i = 0; i < 1; i++) {
-        // auto box = ref<RigidBody>(
-        //     ref<BoxCollider>(1.0f), 
-        //     ref<Mesh>(BoxGeometry(1.0f), colorMaterial)
-        // );
-        // box->setPosition({ 4.0f, 0.5f + i * 1.2f, 0.0f });
-        // box->setBox(vec3(1.0f));
-        // m_world->add(box);
-        // m_phys.add(box);
+    // for (size_t i = 0; i < 1; i++) {
+    //     auto opponent = ref<Car>(m_phys);
+    //     opponent->m_body->setPosition({ 6.0f + 2.0f * i, 2.0f, -3.0f });
+    //     opponent->addTo(m_world);
 
-        auto opponent = ref<Car>(m_phys);
-        opponent->m_body->setPosition({ 6.0f + 2.0f * i, 2.0f, -3.0f });
-        opponent->addTo(m_world);
+    //     m_opponents.push_back(opponent);
+    // }
 
-        m_opponents.push_back(opponent);
-    }
-
-    for (size_t i = 0; i < 6; i++) {
+    // auto sphere = ref<RigidBody>(
+    //         ref<Mesh>(SphereGeometry(1.0f, 22), colorMaterial)
+    //     );
+    //     sphere->setPosition({ -4.0f, 10.0f, 0.0f });
+    //     sphere->setBox(vec3(1.0f), 55.0f);
+    //     sphere->canSleep = false;
+    //     m_world->add(sphere);
+    //     m_phys.add(sphere);
+        
+    for (size_t i = 0; i < 5; i++) {
         auto box = ref<RigidBody>(
                 ref<BoxCollider>(1.0f), 
                 ref<Mesh>(BoxGeometry(1.0f), colorMaterial)
             );
-            box->setPosition({ 4.0f, 0.5f + i * 1.01f, 0.0f });
-            box->setBox(vec3(1.0f), 33.0f);
+            box->setPosition({ 4.0f, 3.5f + i * 1.02f, 0.0f });
+            box->setBox(vec3(1.0f), 55.0f);
+            // box->canSleep = false;
             m_world->add(box);
             m_phys.add(box);
     }
@@ -124,17 +125,29 @@ void MyScene::init() {
     floorMaterial.assignTexture("assets/texture/asphalt.jpg", "texture1");
 
     auto floor = ref<RigidBody>(
-            ref<PlaneCollider>(vec2(500.0f, 500.0f)),
-            ref<Mesh>(PlaneGeometry(500.0f, true), floorMaterial)
+            ref<PlaneCollider>(vec2(200.0f, 200.0f)),
+            ref<Mesh>(PlaneGeometry(200.0f, true), floorMaterial)
         );
+        floor->setPosition({ 0, 0, -75.0f });
         floor->makeStatic();
         m_world->add(floor);
-        m_phys.add(floor); // idk, but order seems to matter here :P
+        m_phys.add(floor);
+
+    auto floor2 = ref<RigidBody>(
+            ref<PlaneCollider>(vec2(200.0f, 200.0f)),
+            ref<Mesh>(PlaneGeometry(200.0f, true), floorMaterial)
+        );
+        floor2->setPosition({ 0, 11.0f, 124.0f });
+        floor2->setRotation(QuatFromTwoVectors({0, 1.0f, 0}, {0, 0.9f, -0.1f}));
+        floor2->makeStatic();
+        m_world->add(floor2);
+        m_phys.add(floor2);
 
     // auto floor = ref<RigidBody>(
     //         ref<Mesh>(PlaneGeometry(30.0f, true), floorMaterial)
     //     );
     //     floor->makeStatic();
+    //     floor->setRotation(QuatFromTwoVectors({0, 1.0f, 0}, {0, 1.0f, 0.1f}));
     //     m_world->add(floor);
     //     m_phys.add(floor);
 
@@ -165,11 +178,13 @@ void MyScene::bindEvents() {
     Events::on(Events::KEYUP, [&](SDL_KeyCode key) {
         switch (key) {
             case SDLK_SPACE:
-                m_state.next();
+                // m_state.next();
+                m_phys.update(0.016f, [this](float h){});
             break;
         }
     });
 
+    SDL_SetRelativeMouseMode(SDL_TRUE);
     Events::on(Events::MOUSEUP, [&]() {
         // m_camera->m_autoRotate = !m_camera->m_autoRotate;
         m_camera->m_enableFreeCam = !m_camera->m_enableFreeCam;
