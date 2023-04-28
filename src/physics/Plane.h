@@ -8,7 +8,6 @@ class Plane {
 public:
     
 	vec2 size;
-	vec2 sizeWorldSpace;
 
     vec3 normal = { 0, 1.0f, 0 };
 	vec3 center = { 0, 0, 0};
@@ -24,7 +23,7 @@ public:
 		this->normal = rotation * this->normalReference;
 		this->constant = -glm::dot(position, this->normal);
 		
-		this->sizeWorldSpace = rotateVec2(this->size, glm::mat3_cast(rotation));
+		this->halfExtentsWorldSpace = 0.5f * rotateVec2(this->size, glm::mat3_cast(rotation));
 
 		this->xAxis = normalize(cross(rotation * vec3(1, 0, 0), this->normal));
 		this->yAxis = normalize(cross(this->normal, xAxis));
@@ -46,15 +45,11 @@ public:
 			glm::dot(projected, yAxis)
 		);
 
-		const vec2 halfExtents = sizeWorldSpace * 0.5f;
-		Log(localPoint.x);
-		Log(halfExtents.x);
-
 		return (
-			localPoint.x >= -halfExtents.x &&
-			localPoint.x <= halfExtents.x &&
-			localPoint.y >= -halfExtents.y && 
-			localPoint.y <= halfExtents.y
+			localPoint.x >= -halfExtentsWorldSpace.x &&
+			localPoint.x <= halfExtentsWorldSpace.x &&
+			localPoint.y >= -halfExtentsWorldSpace.y && 
+			localPoint.y <= halfExtentsWorldSpace.y
 		);
 	}
 
@@ -62,8 +57,9 @@ public:
 	// 	return distanceToPoint( sphere.center ) - sphere.radius;
 	// }
 
-// private:
+private:
 	vec3 normalReference = vec3(0, 1.0f, 0);
+	vec2 halfExtentsWorldSpace;
 
 	vec3 xAxis;
 	vec3 yAxis;
