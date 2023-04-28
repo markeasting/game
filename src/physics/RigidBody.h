@@ -37,9 +37,9 @@ public:
     vec3 torque = vec3(0);              // https://en.m.wikipedia.org/wiki/Torque
 
     float gravity = -9.81f;
-    float staticFriction = 0.99f;       // https://en.m.wikipedia.org/wiki/Friction
-    float dynamicFriction = 0.99f;      // https://en.m.wikipedia.org/wiki/Friction
-    float bounciness = 0.4f;            // https://en.m.wikipedia.org/wiki/Coefficient_of_restitution
+    float staticFriction = 0.7f;       // https://en.m.wikipedia.org/wiki/Friction
+    float dynamicFriction = 0.5f;      // https://en.m.wikipedia.org/wiki/Friction
+    float bounciness = 0.7f;            // https://en.m.wikipedia.org/wiki/Coefficient_of_restitution
 
     RigidBody() = default;
     RigidBody(Ref<Mesh> mesh);
