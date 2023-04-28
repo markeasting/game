@@ -15,6 +15,7 @@ public:
     ~PhysicsHandler() = default;
 
     void add(Ref<RigidBody> body);
+    // void addStaticMesh(Ref<Mesh> mesh);
 
     void init();
     
@@ -23,5 +24,6 @@ public:
     std::tuple<vec3, vec3, float, Ref<RigidBody>> raycast(const vec3& ray_origin, const vec3& ray_dir);
 
 private:
+	// std::vector<Ref<Mesh>> m_staticMeshes = {};
 
 };

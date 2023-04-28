@@ -154,6 +154,7 @@ void MyScene::init() {
     auto track = ref<Geometry>(obj::loadModelFromFile("assets/objects/track.obj"));
     auto trackMesh = ref<Mesh>(track, floorMaterial);
     m_world->add(trackMesh);
+    // m_phys.addStaticMesh(trackMesh);
 
     m_phys.init();
     for (auto const& mesh : m_phys.m_debugMeshes) 
@@ -188,7 +189,6 @@ void MyScene::bindEvents() {
         }
     });
 
-    SDL_SetRelativeMouseMode(SDL_TRUE);
     Events::on(Events::MOUSEUP, [&]() {
         // m_camera->m_autoRotate = !m_camera->m_autoRotate;
         m_camera->m_enableFreeCam = !m_camera->m_enableFreeCam;
@@ -220,6 +220,9 @@ void MyScene::bindEvents() {
 }
 
 void MyScene::update(float time, float dt) {
+
+    if (time > 1.0f)
+        SDL_SetRelativeMouseMode(SDL_TRUE);
     
     m_camera->update(time);
     

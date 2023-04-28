@@ -10,16 +10,16 @@ public:
 	vec2 size;
 
     vec3 normal = { 0, 1.0f, 0 };
-	vec3 center = { 0, 0, 0};
+	vec3 origin = { 0, 0, 0};
 
     float constant = 0.0f;
 
 	Plane() = default;
-    Plane(vec3 normal, float constant, vec2 size = { FLT_MAX, FLT_MAX }, vec3 center = { 0, 0, 0 })
-        : normal(normal), normalReference(normal), constant(constant), size(size), center(center) {};
+    Plane(vec3 normal, float constant, vec2 size = { FLT_MAX, FLT_MAX }, vec3 origin = { 0, 0, 0 })
+        : normal(normal), normalReference(normal), constant(constant), size(size), origin(origin) {};
 
 	void transform(const vec3& position, const quat& rotation) {
-		this->center = position;
+		this->origin = position;
 		this->normal = rotation * this->normalReference;
 		this->constant = -glm::dot(position, this->normal);
 		
@@ -38,7 +38,7 @@ public:
 	}
 
 	bool containsPoint(const vec3& point) const {
-		const vec3 projected = this->projectPoint(point - this->center);
+		const vec3 projected = this->projectPoint(point - this->origin);
 
 		vec2 localPoint = vec2(
 			glm::dot(projected, xAxis),
@@ -53,8 +53,24 @@ public:
 		);
 	}
 
+	void setFromNormalAndCoplanarPoint(const vec3& normal,const vec3& point) {
+		this->normal = normal;
+		this->constant = -glm::dot(point, this->normal);
+
+		this->origin = this->normal * -this->constant;
+
+	}
+
+	void setFromCoplanarPoints(const vec3& a, const vec3& b, const vec3& c) {
+
+		// const vec3 normal = _vector1.subVectors( c, b ).cross( _vector2.subVectors( a, b ) ).normalize();
+		const vec3 normal = glm::normalize(glm::cross(c - b, a - b));
+		this->setFromNormalAndCoplanarPoint( normal, a );
+
+	}
+
     // float distanceToSphere( sphere ) {
-	// 	return distanceToPoint( sphere.center ) - sphere.radius;
+	// 	return distanceToPoint( sphere.origin ) - sphere.radius;
 	// }
 
 private:
