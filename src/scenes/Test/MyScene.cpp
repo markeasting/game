@@ -151,6 +151,10 @@ void MyScene::init() {
     //     m_world->add(floor);
     //     m_phys.add(floor);
 
+    auto track = ref<Geometry>(obj::loadModelFromFile("assets/objects/track.obj"));
+    auto trackMesh = ref<Mesh>(track, floorMaterial);
+    m_world->add(trackMesh);
+
     m_phys.init();
     for (auto const& mesh : m_phys.m_debugMeshes) 
         m_world->add(mesh);
