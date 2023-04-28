@@ -185,6 +185,11 @@ std::vector<Ref<ContactSet>> XPBDSolver::getContacts(const std::vector<Collision
                             const vec3 r1 = MC->m_vertices[MC->m_uniqueIndices[i]];
                             const vec3 p1 = MC->m_verticesWorldSpace[MC->m_uniqueIndices[i]];
 
+                            /**
+                             * @TODO return some kind of 'hitinfo' from Plane class, 
+                             * since most of these projection / distance functions
+                             * use the same methods internally.
+                             */
                             if (!PC->m_plane.containsPoint(p1))
                                 continue;
 
