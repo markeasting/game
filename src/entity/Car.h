@@ -31,7 +31,7 @@ public:
     float m_camber = 0.05f;
     float m_steerAngle = 0.0f;
 
-    float m_stiffness = 25000.0f;
+    float m_stiffness = 12500.0f;
     float m_damping = 750.0f;
 
     bool m_driven = false;
