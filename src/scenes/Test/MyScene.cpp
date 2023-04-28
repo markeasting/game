@@ -137,8 +137,8 @@ void MyScene::init() {
             ref<PlaneCollider>(vec2(200.0f, 200.0f)),
             ref<Mesh>(PlaneGeometry(200.0f, true), floorMaterial)
         );
-        floor2->setPosition({ 0, 11.0f, 124.0f });
-        floor2->setRotation(QuatFromTwoVectors({0, 1.0f, 0}, {0, 0.9f, -0.1f}));
+        floor2->setPosition({ 0, 5.2f, 124.0f });
+        floor2->setRotation(QuatFromTwoVectors({0, 1.0f, 0}, {0, 0.95f, -0.05f}));
         floor2->makeStatic();
         m_world->add(floor2);
         m_phys.add(floor2);
