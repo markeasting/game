@@ -177,16 +177,20 @@ std::vector<Ref<ContactSet>> XPBDSolver::getContacts(const std::vector<Collision
                         const auto& MC = static_cast<MeshCollider*>(A->collider.get());
                         const auto& PC = static_cast<PlaneCollider*>(B->collider.get());
 
-                        // @TODO check if vertex is actually inside plane size :)
-                        // @TODO incorporate plane constant (dist from origin)
                         const vec3 N = PC->m_plane.normal;
-                        const float C = PC->m_plane.constant;
 
                         for(int i = 0; i < MC->m_uniqueIndices.size(); i++) {
 
                             /* (26) - p1 */
                             const vec3 r1 = MC->m_vertices[MC->m_uniqueIndices[i]];
                             const vec3 p1 = MC->m_verticesWorldSpace[MC->m_uniqueIndices[i]];
+
+                            if (!PC->m_plane.containsPoint(p1))
+                                continue;
+
+                            // XPBDSolver::debugArrow->setPosition(B->pose.p);
+                            // XPBDSolver::debugArrow->setScale(1.0f);
+                            // XPBDSolver::debugArrow->setRotation(QuatFromTwoVectors(vec3(0, 1.0f, 0), PC->m_plane.xAxis));
 
                             /* (26) - p2 */
                             const vec3 p2 = PC->m_plane.projectPoint(p1);
@@ -272,10 +276,6 @@ void XPBDSolver::_solveFriction(Ref<ContactSet> contact, const float h) {
     /* (27) (28) Relative motion and tangential component */
     const vec3 dp = (contact->p1 - p1prev) - (contact->p2 - p2prev);
     const vec3 dp_t = dp - glm::dot(dp, contact->n) * contact->n;
-
-    // XPBDSolver::debugArrow->setPosition(contact->p1);
-    // XPBDSolver::debugArrow->setScale(glm::length(dp));
-    // XPBDSolver::debugArrow->setRotation(QuatFromTwoVectors(vec3(0, 1.0f, 0), dp));
     
     /* (3.5)
      * To enforce static friction, we apply Δx = Δp_t

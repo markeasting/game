@@ -5,11 +5,10 @@ void Collider::updateGlobalPose(const Pose& pose) { }
 
 PlaneCollider::PlaneCollider(const glm::vec2 &size, const glm::vec3 &normal) {
     m_type = ColliderType::cPlane;
-    m_size = size;
-    m_normalRef = normal;
 
     m_plane.normal = glm::normalize(normal);
     m_plane.constant = 0.0f; // Plane constant will be set in updateGlobalPose()
+    m_plane.size = size;
 
 }
 
@@ -21,8 +20,7 @@ void PlaneCollider::updateGlobalPose(const Pose& pose) {
 
     m_relativePosW = (pose.q * m_relativePos) + pose.p;
 
-    m_plane.normal = pose.q * m_normalRef;
-    m_plane.constant = -glm::dot(m_relativePosW, m_plane.normal);
+    m_plane.transform(m_relativePosW, pose.q);
 
     // m_aabb.set(min, max);
 }

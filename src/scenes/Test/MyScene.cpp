@@ -83,22 +83,22 @@ void MyScene::init() {
     m_player = ref<Car>(m_phys);
     m_player->addTo(m_world);
 
-    auto opponent = ref<RigidBody>(
-            ref<MeshCollider>(car_collider),
-            ref<Mesh>(car, Material("Phong", { lightDirection, ref<Uniform<vec3>>("ambient", vec3(0, 0, 0.2)), ref<Uniform<vec3>>("diffuseAlbedo", vec3(0, 0, 0.7)) }))
-        );
-        opponent->setBox(colliderSize, 200.0f);
-        opponent->setPosition({ -4.0f, 2.0f, -3.0f });
-        m_world->add(opponent);
-        m_phys.add(opponent);
+    // auto opponent = ref<RigidBody>(
+    //         ref<MeshCollider>(car_collider),
+    //         ref<Mesh>(car, Material("Phong", { lightDirection, ref<Uniform<vec3>>("ambient", vec3(0, 0, 0.2)), ref<Uniform<vec3>>("diffuseAlbedo", vec3(0, 0, 0.7)) }))
+    //     );
+    //     opponent->setBox(colliderSize, 200.0f);
+    //     opponent->setPosition({ -4.0f, 2.0f, -3.0f });
+    //     m_world->add(opponent);
+    //     m_phys.add(opponent);
 
-    for (size_t i = 0; i < 6; i++) {
-        auto opponent = ref<Car>(m_phys);
-        opponent->m_body->setPosition({ 6.0f + 2.0f * i, 2.0f, -3.0f });
-        opponent->addTo(m_world);
+    // for (size_t i = 0; i < 6; i++) {
+    //     auto opponent = ref<Car>(m_phys);
+    //     opponent->m_body->setPosition({ 6.0f + 2.0f * i, 2.0f, -3.0f });
+    //     opponent->addTo(m_world);
 
-        m_opponents.push_back(opponent);
-    }
+    //     m_opponents.push_back(opponent);
+    // }
 
     // auto sphere = ref<RigidBody>(
     //         ref<Mesh>(SphereGeometry(1.0f, 22), colorMaterial)

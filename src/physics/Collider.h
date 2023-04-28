@@ -45,9 +45,6 @@ public:
 
 struct PlaneCollider : public Collider {
     
-    vec2 m_size = vec2(1.0f, 1.0f);
-    vec3 m_normalRef;
-
     Plane m_plane;
 
     PlaneCollider(const vec2 &size = { 1.0f, 1.0f }, const vec3 &normal = vec3(0.0f, 1.0f, 0.0f));

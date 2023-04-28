@@ -56,9 +56,13 @@ std::tuple<vec3, vec3, float, Ref<RigidBody>> PhysicsHandler::raycast(const vec3
             continue;
             
         float distance = glm::dot(ray_origin - body->pose.p, normal) / d;
+        vec3 hit = ray_origin + ray_dir * distance;
+
+        if (!PC->m_plane.containsPoint(hit))
+            continue;
 
         if (distance < hitDistance) {
-            hitPoint = ray_origin + ray_dir * distance;
+            hitPoint = hit;
             hitDistance = distance;
             hitNormal = normal;
             hitBody = body;
