@@ -189,13 +189,12 @@ std::vector<Ref<ContactSet>> XPBDSolver::getContacts(const std::vector<Collision
                             const vec3 p1 = MC->m_verticesWorldSpace[MC->m_uniqueIndices[i]];
 
                             /* (26) - p2 */
-                            const float signedDistance = glm::dot(N, p1 - B->pose.p);
-                            const vec3 p2 = p1 - (N * signedDistance);
+                            const vec3 p2 = PC->m_plane.projectPoint(p1);
                             const vec3 r2 = B->worldToLocal(p2);
 
                             /* (3.5) Penetration depth -- Note: sign was flipped! */
                             // const float d = - glm::dot((p1 - p2), N);
-                            const float d = -signedDistance; // This matches the calculation above!
+                            const float d = -PC->m_plane.distanceToPoint(p1); // This matches the calculation above!
 
                             /* (3.5) if d ≤ 0 we skip the contact */
                             if (d <= 0.0f)
@@ -204,7 +203,7 @@ std::vector<Ref<ContactSet>> XPBDSolver::getContacts(const std::vector<Collision
                             auto contact = ref<ContactSet>(A, B, N, d, p1, p2, r1, r2);
 
                             contacts.push_back(contact);
-                            // XPBDSolver::debugContact(contact);
+                            XPBDSolver::debugContact(contact);
                         }
 
                         break;
@@ -287,18 +286,18 @@ void XPBDSolver::_solveFriction(Ref<ContactSet> contact, const float h) {
      *       Also, lambdaN is always negative. 
      *       Therefore, this inequation was flipped. 
      */
-    if (contact->lambdaT > contact->staticFriction * contact->lambdaN) {
-        XPBDSolver::applyBodyPairCorrection(
-            contact->A,
-            contact->B,
-            dp_t,
-            0.0f,
-            h,
-            contact->p1,
-            contact->p2,
-            false
-        );
-    }
+    // if (contact->lambdaT > contact->staticFriction * contact->lambdaN) {
+    //     XPBDSolver::applyBodyPairCorrection(
+    //         contact->A,
+    //         contact->B,
+    //         dp_t,
+    //         0.0f,
+    //         h,
+    //         contact->p1,
+    //         contact->p2,
+    //         false
+    //     );
+    // }
 }
 
 void XPBDSolver::solveVelocities(const std::vector<Ref<ContactSet>>& contacts, const float h) {
@@ -372,7 +371,7 @@ float XPBDSolver::applyBodyPairCorrection(
 
     const float C = glm::length(corr);
 
-    if ( C < 1e-5 )
+    if ( C < 1e-6 )
         return 0.0f;
 
     vec3 n = glm::normalize(corr);
