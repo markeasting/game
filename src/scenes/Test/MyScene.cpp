@@ -92,31 +92,45 @@ void MyScene::init() {
     //     m_world->add(opponent);
     //     m_phys.add(opponent);
 
-    // for (size_t i = 0; i < 6; i++) {
-    //     auto opponent = ref<Car>(m_phys);
-    //     opponent->m_body->setPosition({ 6.0f + 2.0f * i, 2.0f, -3.0f });
-    //     opponent->addTo(m_world);
+    for (size_t i = 0; i < 2; i++) {
+        auto opponent = ref<Car>(m_phys);
+        opponent->m_body->setPosition({ 6.0f + 2.0f * i, 2.0f, -3.0f });
+        opponent->addTo(m_world);
 
-    //     m_opponents.push_back(opponent);
-    // }
+        m_opponents.push_back(opponent);
+    }
 
     // auto sphere = ref<RigidBody>(
-    //         ref<Mesh>(SphereGeometry(1.0f, 22), colorMaterial)
+    //         ref<Mesh>(SphereGeometry(1.0f, 3), colorMaterial)
     //     );
-    //     sphere->setPosition({ -4.0f, 10.0f, 0.0f });
-    //     sphere->setBox(vec3(1.0f), 55.0f);
+    //     sphere->setPosition({ -4.0f, 2.0f, 0.0f });
+    //     sphere->setBox(vec3(1.0f), 1.0f);
     //     sphere->canSleep = false;
+    //     sphere->restitution = 1.0f;
     //     m_world->add(sphere);
     //     m_phys.add(sphere);
-        
+
+    /* Dominos */
+    // for (size_t i = 0; i < 50; i++) {
+    //     auto box = ref<RigidBody>(
+    //             ref<BoxCollider>(vec3(2.5f, 5.0f, 0.5f)), 
+    //             ref<Mesh>(BoxGeometry(2.5f, 5.0f, 0.5f), colorMaterial)
+    //         );
+    //         box->setPosition({ -4.0f, 2.5f, 0.0f + i * -2.5f });
+    //         box->setBox(vec3(2.5f, 5.0f, 0.5f), 2.0f);
+    //         m_world->add(box);
+    //         m_phys.add(box);
+    // }
+
+    /* Tall stack */
     for (size_t i = 0; i < 4; i++) {
         auto box = ref<RigidBody>(
                 ref<BoxCollider>(1.0f), 
                 ref<Mesh>(BoxGeometry(1.0f), colorMaterial)
             );
             box->setPosition({ 4.0f, 0.5f + i * 1.01f, 0.0f });
-            box->setBox(vec3(1.0f), 33.0f);
-            // box->canSleep = false;
+            box->setBox(vec3(1.0f), 133.0f);
+            box->canSleep = false;
             m_world->add(box);
             m_phys.add(box);
     }
@@ -142,14 +156,6 @@ void MyScene::init() {
         floor2->makeStatic();
         m_world->add(floor2);
         m_phys.add(floor2);
-
-    // auto floor = ref<RigidBody>(
-    //         ref<Mesh>(PlaneGeometry(30.0f, true), floorMaterial)
-    //     );
-    //     floor->makeStatic();
-    //     floor->setRotation(QuatFromTwoVectors({0, 1.0f, 0}, {0, 1.0f, 0.1f}));
-    //     m_world->add(floor);
-    //     m_phys.add(floor);
 
     auto track = ref<Geometry>(obj::loadModelFromFile("assets/objects/track.obj"));
     auto trackMesh = ref<Mesh>(track, floorMaterial);
@@ -233,7 +239,6 @@ void MyScene::update(float time, float dt) {
             for (auto& o : m_opponents)
                 o->update(h);
         });
-    // }
     
     /* Update colors */
     float osc = sin(time * 1.5f) / 2.0f + 0.5f;

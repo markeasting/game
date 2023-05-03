@@ -30,9 +30,9 @@ Car::Car(PhysicsHandler& phys): m_phys(phys) {
             // ref<Mesh>(car, Material("Phong", { lightDirection, ref<Uniform<vec3>>("ambient", vec3(0, 0, 0.2)), ref<Uniform<vec3>>("diffuseAlbedo", vec3(0, 0, 0.7)) }))
         );
         m_body->canSleep = false;
-        m_body->staticFriction = 0.3f;
-        m_body->dynamicFriction = 0.01f;
-        m_body->bounciness = 0.2f;
+        m_body->staticFriction = 0.1f;
+        m_body->dynamicFriction = 0.005f;
+        m_body->restitution = 0.2f;
         m_body->setBox(colliderSize, 210.0f);
         m_body->setPosition({ 4.0f, 2.0f, -3.0f });
 
