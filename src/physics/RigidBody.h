@@ -10,52 +10,38 @@ public:
 
     unsigned int id = 0;
 
-    Pose pose = Pose();
-    Pose prevPose = Pose();
+    Pose pose = Pose();                 /* Holds the current position and rotation */
 
-    bool isDynamic = true;              // Whether physics applies to this body
-    bool canCollide = true;    
+    bool isDynamic = true;              /* Whether or not physics applies to this body */
+    bool canCollide = true;             /* Whether or not this body can collide with other bodies */
     
     bool isSleeping = false;
     bool canSleep = true;
     float sleepTimer = 0.0f;
 
-    Ref<Mesh> mesh = nullptr;
-    Ref<Collider> collider = nullptr;   // Physics representation of shape. https://en.m.wikipedia.org/wiki/Convex_hull
+    Ref<Mesh> mesh = nullptr;           /* Visual representation of the body */
+    Ref<Collider> collider = nullptr;   /* Physics representation of the body */
 
-    vec3 vel = vec3(0);
-    vec3 omega = vec3(0);               // https://en.m.wikipedia.org/wiki/Angular_velocity
-    vec3 velPrev = vec3(0);
-    vec3 omegaPrev = vec3(0);
+    vec3 vel = vec3(0);                 /* https://en.m.wikipedia.org/wiki/Velocity */
+    vec3 omega = vec3(0);               /* https://en.m.wikipedia.org/wiki/Angular_velocity */
 
     float velocity = 0.0f;
 
-    float invMass = 1.0f;
-    vec3 invInertia = vec3(1.0f);       // https://en.m.wikipedia.org/wiki/Moment_of_inertia Tetrahedron of unit size with unit mass = 0.1331712
+    float invMass = 1.0f;               /* https://en.m.wikipedia.org/wiki/Mass */
+    vec3 invInertia = vec3(1.0f);       /* https://en.m.wikipedia.org/wiki/Moment_of_inertia */
 
-    vec3 force = vec3(0);
-    vec3 torque = vec3(0);              // https://en.m.wikipedia.org/wiki/Torque
+    vec3 force = vec3(0);               /* https://en.m.wikipedia.org/wiki/Force */
+    vec3 torque = vec3(0);              /* https://en.m.wikipedia.org/wiki/Torque */
+    float gravity = -9.81f;             /* https://en.m.wikipedia.org/wiki/Gravity */
 
-    float gravity = -9.81f;
-    float staticFriction = 0.7f;       // https://en.m.wikipedia.org/wiki/Friction
-    float dynamicFriction = 0.5f;      // https://en.m.wikipedia.org/wiki/Friction
-    float bounciness = 0.7f;            // https://en.m.wikipedia.org/wiki/Coefficient_of_restitution
+    float staticFriction = 0.5f;        /* https://en.m.wikipedia.org/wiki/Friction */
+    float dynamicFriction = 0.4f;       /* https://en.m.wikipedia.org/wiki/Friction */
+    float restitution = 0.4f;           /* https://en.m.wikipedia.org/wiki/Coefficient_of_restitution */
 
     RigidBody() = default;
     RigidBody(Ref<Mesh> mesh);
     RigidBody(Ref<Collider> collider, Ref<Mesh> mesh = nullptr);
     ~RigidBody() = default;
-
-    void applyRotation(const vec3& rot, float scale = 1.0);
-    void applyCorrection(const vec3& corr, const vec3& pos = vec3(0), bool velocityLevel = false);
-
-    void integrate(const float deltaTime);
-    void update(const float deltaTime);
-
-    float getInverseMass(const vec3& normal, const vec3& pos = vec3(0)) const; // should also be const
-    vec3 getVelocityAt(const vec3& pos, bool beforeSolve = false) const;
-    vec3 localToWorld(const vec3& v);
-    vec3 worldToLocal(const vec3& v);
 
     RigidBody setBox(const vec3& size, float density = 1.0);
     RigidBody setPosition(const vec3& pos);
@@ -67,10 +53,25 @@ public:
     RigidBody applyForce(const vec3& force, const vec3& position = vec3(0));
     RigidBody applyTorque(const vec3& torque);
 
-    void updateGeometry();
-    
+    float getInverseMass(const vec3& normal, const vec3& pos = vec3(0)) const; // should also be const
+    vec3 getVelocityAt(const vec3& pos, bool beforeSolve = false) const;
+    vec3 localToWorld(const vec3& v);
+    vec3 worldToLocal(const vec3& v);
+
+    void integrate(const float deltaTime);
+    void update(const float deltaTime);
     void wake();
 
-private:
+    void updateGeometry();
     void updateCollider();
+
+    void applyRotation(const vec3& rot, float scale = 1.0);
+    void applyCorrection(const vec3& corr, const vec3& pos = vec3(0), bool velocityLevel = false);
+
+// private:
+
+    // @TODO make private with friend class at some point
+    vec3 velPrev = vec3(0);
+    vec3 omegaPrev = vec3(0);
+    Pose prevPose = Pose();
 };
