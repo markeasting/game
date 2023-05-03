@@ -4,40 +4,35 @@ Pose::Pose(glm::vec3 p, glm::quat q)
     :p(p), q(q) {}
 
 void Pose::copy(Pose pose) {
-    // this.p.copy(pose.p);
-    // this.q.copy(pose.q);
     this->p = pose.p;
     this->q = pose.q;
 }
 
 Pose Pose::clone() {
-    // var newPose = new Pose();
-    // newPose.p = this.p.clone();
-    // newPose.q = this.q.clone();
     Pose newPose = Pose(this->p, this->q);
     return newPose;
 }
 
 void Pose::translate(glm::vec3& v) const {
-    // v.add(this.p);
     v += this->p;
 }
 
 void Pose::invTranslate(glm::vec3& v) const {
-    // v.sub(this.p);
     v -= this->p;
 }
 
 void Pose::rotate(glm::vec3& v) const {
     // v.applyQuaternion(this.q);
-    v = v * this->q;
+    v = this->q * v;
 }
 
 void Pose::invRotate(glm::vec3& v) const {
     // let inv = this.q.clone();
     // inv.conjugate();
     // v.applyQuaternion(inv);
-    v = v * glm::conjugate(this->q);
+    
+    // v = v * glm::conjugate(this->q);
+    v = glm::conjugate(this->q) * v;
 }
 
 void Pose::transform(glm::vec3& v) const {

@@ -41,6 +41,8 @@ RigidBody RigidBody::makeStatic() {
     this->invMass = 0.0f;
     this->invInertia = vec3(0.0f);
 
+    this->prevPose.copy(this->pose);
+    
     this->updateGeometry();
     this->updateCollider();
 
@@ -212,6 +214,7 @@ RigidBody RigidBody::setBox(const vec3& size, float density) {
 
 RigidBody RigidBody::setPosition(const vec3& position) {
     this->pose.p = position;
+    this->prevPose.copy(this->pose);
 
     this->updateCollider();
 
@@ -220,6 +223,7 @@ RigidBody RigidBody::setPosition(const vec3& position) {
 
 RigidBody RigidBody::setRotation(const quat& rotation) {
     this->pose.q = rotation;
+    this->prevPose.copy(this->pose);
 
     this->updateCollider();
 
