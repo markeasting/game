@@ -29,8 +29,8 @@ struct ContactSet {
     float e = 0.5f;
     float staticFriction = 0.0f;
     float dynamicFriction = 0.0f;
-    float lambdaN = 0.0f;
-    float lambdaT = 0.0f;
+    float lambda_n = 0.0f;
+    float lambda_t = 0.0f;
 
     ContactSet(
         RigidBody* A, 
@@ -55,9 +55,15 @@ struct ContactSet {
         vrel = A->getVelocityAt(p1) - B->getVelocityAt(p2);
         vn = glm::dot(n, vrel);
 
-        e = A->bounciness * B->bounciness;
+        /* Option 1: Multiply surface properties */
+        e = A->restitution * B->restitution;
         staticFriction = A->staticFriction * B->staticFriction;
         dynamicFriction = A->dynamicFriction * B->dynamicFriction;
+
+        /* Option 2: Average surface properties */
+        // e = (A->restitution + B->restitution) / 2.0f;
+        // staticFriction = (A->staticFriction + B->staticFriction) / 2.0f;
+        // dynamicFriction = (A->dynamicFriction + B->dynamicFriction) / 2.0f;
 
         /* (3.5) Penetration depth -- Note: sign was flipped! 
          * 
@@ -73,8 +79,7 @@ struct ContactSet {
         p1 = A->pose.p + A->pose.q * r1;
         p2 = B->pose.p + B->pose.q * r2;
 
-        // n = glm::normalize(p2 - p1); // BREAKS
-
+        /* Recalculate N -- Not really required */
         // if (glm::distance(p2, p1) > 0.001f) {
         //     n = glm::normalize(p2 - p1);
         // }
@@ -117,9 +122,11 @@ namespace XPBDSolver {
         const float dt,
         const glm::vec3& pos0 = glm::vec3(0.0f),
         const glm::vec3& pos1 = glm::vec3(0.0f),
-        const bool velocityLevel = false
+        const bool velocityLevel = false,
+        const bool precalculateDeltaLambda = false
     );
 
     void debugContact(Ref<ContactSet> contact);
+    void setDebugVector(const vec3& vector, const vec3& position);
 
 }
