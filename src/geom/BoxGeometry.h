@@ -5,8 +5,8 @@
 class BoxGeometry : public Geometry {
 public:
 
-    BoxGeometry(float size = 1.0f) {
-        this->generate(size, size, size);
+    BoxGeometry(float size = 1.0f, bool invert = false) {
+        this->generate(size, size, size, invert);
     }
     
     BoxGeometry(float width, float height, float depth) {
@@ -15,11 +15,17 @@ public:
     
 
 private:
-    void generate(float width, float height, float depth) {
+    void generate(float width, float height, float depth, bool invert = false) {
         
-        const float x_dist = 0.5f * width;
-        const float y_dist = 0.5f * height;
-        const float z_dist = 0.5f * depth;
+        float x_dist = 0.5f * width;
+        float y_dist = 0.5f * height;
+        float z_dist = 0.5f * depth;
+
+        if (invert) {
+            x_dist = -x_dist;
+            y_dist = -y_dist;
+            z_dist = -z_dist;
+        }
 
         std::vector<Vertex> vertices {
             Vertex(vec3(-x_dist, -y_dist, -z_dist)), // Front
