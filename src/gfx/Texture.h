@@ -12,7 +12,7 @@ public:
     Texture();
 
     void load(const char* source);
-    void bind() const;
+    virtual void bind() const;
 
 // private:
 
