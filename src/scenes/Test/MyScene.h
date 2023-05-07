@@ -33,7 +33,8 @@ private:
     Ref<UI> m_overlay = ref<UI>();
 
     Ref<Mesh> m_tetra = nullptr;
-    // Ref<RigidBody> m_player = nullptr;
+    Ref<Mesh> m_skybox = nullptr;
+
     Ref<Car> m_player = nullptr;
 
     std::vector<Ref<Car>> m_opponents;

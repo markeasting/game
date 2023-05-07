@@ -3,6 +3,7 @@
 #include "physics/Collider.h"
 #include "scene/SceneManager.h"
 #include "util/Anim.h"
+#include "gfx/CubeMapTexture.h"
 
 MyScene::MyScene() {
 
@@ -63,6 +64,22 @@ void MyScene::init() {
         m_tetra->setPosition({ 0.0f, 1.0f, 0.0f });
         m_world->add(m_tetra);
         m_tetra->add(cube);
+
+    Material skyMaterial = Material("SkyBox", {
+        ref<Uniform<vec4>>("u_color", vec4(0.0f, 0.0f, 0.8f, 1.0f)),
+    });
+    Ref<CubeMapTexture> skyTexture = ref<CubeMapTexture>();
+    skyTexture->loadCubemap({
+        "assets/texture/skybox/right.jpg",
+        "assets/texture/skybox/left.jpg",
+        "assets/texture/skybox/bottom.jpg",
+        "assets/texture/skybox/top.jpg",
+        "assets/texture/skybox/front.jpg",
+        "assets/texture/skybox/back.jpg"
+    });
+    skyMaterial.assignTexture(skyTexture, "texture1");
+    m_skybox = ref<Mesh>(BoxGeometry(1.0f, true), skyMaterial);
+        m_world->add(m_skybox);
 
     /* Physics world */
 

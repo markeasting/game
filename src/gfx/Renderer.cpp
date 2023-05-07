@@ -17,7 +17,7 @@ Renderer::Renderer() {
 	glEnable(GL_CULL_FACE);
 
 	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LESS);
+	glDepthFunc(GL_LEQUAL);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -138,6 +138,18 @@ void Renderer::drawMesh(Ref<Mesh> mesh, Ref<Camera> camera) {
     mesh->bind();
 
     auto matrix = mesh->getWorldPositionMatrix();
+
+    // @TODO only used for skybox
+    mesh->m_material->setUniform(
+        "u_viewRotationMatrix", 
+        glm::mat4(glm::mat3(camera->m_viewMatrix))
+    );
+
+    // @TODO clean this up - maybe go back to separate m * v * p
+    mesh->m_material->setUniform(
+        "u_projectionMatrix", 
+        camera->m_projectionMatrix
+    );
 
     mesh->m_material->setUniform(
         "u_modelViewMatrix", 
