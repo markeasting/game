@@ -299,10 +299,6 @@ void RigidBody::updateGeometry() {
 
 void RigidBody::updateCollider() {
     this->collider->updateGlobalPose(this->pose);
-    
-    /* (3.5) k * dt * vbody */
-    this->collider->m_expanded_aabb = AABB(this->collider->m_aabb);
-    this->collider->m_expanded_aabb.expandByScalar(this->velocity);
 }
 
 void RigidBody::wake() {

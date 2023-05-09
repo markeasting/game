@@ -25,6 +25,8 @@ void XPBDSolver::update(const std::vector<Ref<RigidBody>>& bodies, const std::ve
      */
     auto collisions = XPBDSolver::collectCollisionPairs(bodies, dt);
 
+    Log(collisions.size());
+
     // const float h = dt / XPBDSolver::numSubSteps;
     const float h = (1.0f / 60.0f) / XPBDSolver::numSubSteps;
 
@@ -57,6 +59,11 @@ void XPBDSolver::update(const std::vector<Ref<RigidBody>>& bodies, const std::ve
     }
 
     for (auto const& body: bodies) {
+
+        /* (3.5) k * dt * vbody */
+        body->collider->m_expanded_aabb = AABB(body->collider->m_aabb);
+        body->collider->m_expanded_aabb.expandByScalar(2.0f * dt * body->velocity);
+        
         body->force = vec3(0.0f);
         body->torque = vec3(0.0f);
         body->updateGeometry();
