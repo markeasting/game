@@ -43,6 +43,8 @@ public:
     RigidBody(Ref<Collider> collider, Ref<Mesh> mesh = nullptr);
     ~RigidBody() = default;
 
+    // @TODO setPos, setRotation, setVel, setOmega, etc.
+    RigidBody setMesh(Ref<Mesh> mesh, bool applyTransform = true);
     RigidBody setBox(const vec3& size, float density = 1.0);
     RigidBody setPosition(const vec3& pos);
     RigidBody setRotation(const quat& rot);
@@ -60,6 +62,9 @@ public:
 
     void integrate(const float deltaTime);
     void update(const float deltaTime);
+
+    void checkSleepState(float dt);
+    void sleep();
     void wake();
 
     void updateGeometry();

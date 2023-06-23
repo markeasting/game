@@ -9,13 +9,29 @@
 #include "gfx/Mesh.h"
 
 struct CollisionPair {
-    RigidBody* A = NULL;
-    RigidBody* B = NULL;
+    RigidBody* A = nullptr;
+    RigidBody* B = nullptr;
+
+    CollisionPair(RigidBody* A, RigidBody* B)
+        : A(A), B(B) 
+    {
+
+        assert(A != nullptr);
+        assert(B != nullptr);
+
+        const float vrel = glm::length2(A->vel - B->vel);
+        
+        /* Wake sleeping bodies if a collision could occur */
+        if (vrel > 0.01f) {
+            A->wake();
+            B->wake();
+        }
+    }
 };
 
 struct ContactSet {
-    RigidBody* A = NULL;
-    RigidBody* B = NULL;
+    RigidBody* A = nullptr;
+    RigidBody* B = nullptr;
     glm::vec3 p1 = glm::vec3(0.0f);
     glm::vec3 p2 = glm::vec3(0.0f);
     glm::vec3 r1 = glm::vec3(0.0f);

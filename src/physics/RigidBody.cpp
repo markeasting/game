@@ -6,7 +6,7 @@ RigidBody::RigidBody(Ref<Mesh> mesh)
 
     assert(mesh != nullptr);
 
-    if(this->collider == nullptr) {
+    if (this->collider == nullptr) {
         this->collider = ref<MeshCollider>(mesh->m_geometry);
     }
 
@@ -18,21 +18,36 @@ RigidBody::RigidBody(Ref<Mesh> mesh)
 }
 
 RigidBody::RigidBody(Ref<Collider> collider, Ref<Mesh> mesh)
-    : collider(collider), mesh(mesh) 
+    : collider(collider) 
 {
 
-    // if(this->collider == nullptr) {
+    // if (this->collider == nullptr) {
     //     this->collider = ref<MeshCollider>(mesh->m_geometry);
     // }
     assert(collider != nullptr);
 
-    if(mesh) {
-        this->mesh->m_managedByRigidBody = true;
-        this->pose.p = mesh->getPosition();
-        this->pose.q = mesh->getRotation();
+    if (mesh) {
+        // this->mesh->m_managedByRigidBody = true;
+        // this->pose.p = mesh->getPosition();
+        // this->pose.q = mesh->getRotation();
+        this->setMesh(mesh);
     }
 
     this->updateCollider();
+}
+
+RigidBody RigidBody::setMesh(Ref<Mesh> mesh, bool applyTransform) {
+    this->mesh = mesh;
+
+    if (applyTransform) {
+        this->mesh->m_managedByRigidBody = true;
+        this->pose.p = mesh->getPosition();
+        this->pose.q = mesh->getRotation();
+
+        this->prevPose.copy(this->pose);
+    }
+
+    return *this;
 }
 
 RigidBody RigidBody::makeStatic() {
@@ -41,7 +56,7 @@ RigidBody RigidBody::makeStatic() {
     this->invMass = 0.0f;
     this->invInertia = vec3(0.0f);
 
-    this->prevPose.copy(this->pose);
+    this->prevPose.copy(this->pose); // Just in case pose was changed directly after setting static
     
     this->updateGeometry();
     this->updateCollider();
@@ -56,6 +71,8 @@ RigidBody RigidBody::disableCollision() {
 }
 
 RigidBody RigidBody::applyForce(const vec3& force, const vec3& position) {
+    this->wake();
+
     this->force += force;
     this->torque += glm::cross(force, (this->pose.p - position));
 
@@ -77,7 +94,6 @@ void RigidBody::applyRotation(const vec3& rot, float scale) {
     // Safety clamping. This happens very rarely if the solver
     // wants to turn the body by more than 30 degrees in the
     // orders of milliseconds
-
     const float maxPhi = 0.5f;
     const float phi = glm::length(rot);
 
@@ -109,22 +125,16 @@ void RigidBody::integrate(const float dt) {
         std::exit(EXIT_FAILURE);
     }
 
-    if(!this->isDynamic || this->isSleeping) 
+    if (!this->isDynamic) 
         return;
-
-    if (this->canSleep && glm::length2(this->vel) < 0.1f && glm::length2(this->omega) < 0.1f) {
-        this->sleepTimer += dt;
-
-        if (this->sleepTimer > (3.0f / 60.0f))
-            this->isSleeping = true;
-    } else {
-        this->wake();
-    }
 
     this->prevPose.p = pose.p;
     this->prevPose.q = pose.q;
 
-    // Euler step
+    if (this->isSleeping)
+        return;
+
+    /* Euler step */
     this->vel += vec3(0, this->gravity, 0) * dt;
     this->vel += (this->force * this->invMass) * dt;
     this->pose.p += this->vel * dt;
@@ -138,12 +148,14 @@ void RigidBody::integrate(const float dt) {
 
 void RigidBody::update(const float dt) {
     
-    if(!this->isDynamic) 
+    if (!this->isDynamic)
         return;
 
+    /* Store the current velocities (required for the velocity solver) */
     this->velPrev = this->vel;
     this->omegaPrev = this->omega;
 
+    /* Calculate velocity based on position change */
     this->vel = (this->pose.p - this->prevPose.p) / dt;
 
     glm::quat dq = this->pose.q * glm::conjugate(this->prevPose.q);
@@ -157,10 +169,6 @@ void RigidBody::update(const float dt) {
     if (dq.w < 0.0f)
         this->omega = vec3(-this->omega.x, -this->omega.y, -this->omega.z); // @TODO just omega = -omega?
 
-    // // Dampening
-    // this->vel = this->vel * (1.0f - 1.0f * dt);
-    // this->omega = this->omega * (1.0f - 1.0f * dt);
-
     this->velocity = glm::length(this->vel);
 
     this->updateCollider();
@@ -168,7 +176,7 @@ void RigidBody::update(const float dt) {
 
 void RigidBody::applyCorrection(const vec3& corr, const vec3& pos, bool velocityLevel) {
 
-    if(!this->isDynamic) 
+    if (!this->isDynamic) 
         return;
 
     vec3 dq = vec3(0.0f);
@@ -267,7 +275,7 @@ float RigidBody::getInverseMass(const vec3& normal, const vec3& pos) const {
 
 vec3 RigidBody::getVelocityAt(const vec3& pos, bool beforeSolve) const {
 
-    if(!this->isDynamic)
+    if (!this->isDynamic)
         return vec3(0.0f);
 
     return this->vel + glm::cross(this->omega, (pos - this->pose.p));
@@ -283,10 +291,10 @@ vec3 RigidBody::worldToLocal(const vec3& v) {
 
 void RigidBody::updateGeometry() {
 
-    if (this->isSleeping)
-        return;
+    // if (this->isSleeping)
+    //     return;
 
-    if(this->mesh) {
+    if (this->mesh) {
         this->mesh->setPosition(this->pose.p);
         this->mesh->setRotation(this->pose.q);
     }
@@ -301,7 +309,55 @@ void RigidBody::updateCollider() {
     this->collider->updateGlobalPose(this->pose);
 }
 
+void RigidBody::sleep() {
+    if (this->isSleeping)
+        return;
+
+    this->vel = vec3(0, 0, 0);
+    this->omega = vec3(0, 0, 0);
+    this->velPrev = vec3(0, 0, 0);
+    this->omegaPrev = vec3(0, 0, 0);
+    
+    this->isSleeping = true;
+}
+
 void RigidBody::wake() {
+    if (!this->isSleeping)
+        return;
+
     this->isSleeping = false;
     this->sleepTimer = 0.0f;
+}
+
+void RigidBody::checkSleepState(float dt) {
+
+    if (!this->canSleep)
+        return;
+
+    const float velLen = glm::length2(this->vel);
+    const float omegaLen = glm::length2(this->omega);
+
+    const float thresh = 0.001f;
+
+    if (this->isSleeping) {
+        if (velLen > thresh || omegaLen > thresh)
+            this->wake();
+    } else {
+
+        // @TODO this->hasStableContact
+
+        if (velLen < 5 * thresh)
+            this->vel *= (1.0 - 10.0 * dt);
+
+        if (omegaLen < 5 * thresh)
+            this->omega *= (1.0 - 10.0 * dt);
+
+        if (velLen < thresh && omegaLen < thresh) {
+            if (this->sleepTimer > 0.6666f) {
+                this->sleep();
+            } else {
+                this->sleepTimer += dt;
+            }
+        }
+    }
 }

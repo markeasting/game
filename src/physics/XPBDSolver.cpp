@@ -25,8 +25,6 @@ void XPBDSolver::update(const std::vector<Ref<RigidBody>>& bodies, const std::ve
      */
     auto collisions = XPBDSolver::collectCollisionPairs(bodies, dt);
 
-    Log(collisions.size());
-
     // const float h = dt / XPBDSolver::numSubSteps;
     const float h = (1.0f / 60.0f) / XPBDSolver::numSubSteps;
 
@@ -58,12 +56,21 @@ void XPBDSolver::update(const std::vector<Ref<RigidBody>>& bodies, const std::ve
 
     }
 
+    /* Slower update (non-substepped) */
     for (auto const& body: bodies) {
 
+        if (!body->isDynamic)
+            continue;
+
+        body->checkSleepState(dt);
+
+        if (body->isSleeping)
+            continue;
+                
         /* (3.5) k * dt * vbody */
         body->collider->m_expanded_aabb = AABB(body->collider->m_aabb);
         body->collider->m_expanded_aabb.expandByScalar(2.0f * dt * body->velocity);
-        
+
         body->force = vec3(0.0f);
         body->torque = vec3(0.0f);
         body->updateGeometry();
@@ -89,19 +96,11 @@ std::vector<CollisionPair> XPBDSolver::collectCollisionPairs(const std::vector<R
             if (!B->canCollide)
                 continue;
 
-            if (!A->isDynamic && !B->isDynamic)
-                continue;
-
             if (A == B)
                 continue;
 
-            const float vrel = glm::length(A->vel - B->vel);
-
-            /* Wake sleeping bodies if a collision could occur */
-            if (vrel > 0.1f) {
-                A->wake();
-                B->wake();
-            }
+            if ((!A->isDynamic || A->isSleeping) && (!B->isDynamic || B->isSleeping))
+                continue;
 
             auto const& aabb1 = A->collider->m_expanded_aabb;
             auto const& aabb2 = B->collider->m_expanded_aabb;
@@ -112,7 +111,7 @@ std::vector<CollisionPair> XPBDSolver::collectCollisionPairs(const std::vector<R
                         case ColliderType::cMesh : {
 
                             if (aabb1.intersects(aabb2))
-                                collisions.push_back({ A.get(), B.get() });
+                                collisions.push_back(CollisionPair(A.get(), B.get()));
 
                             break;
                         }
@@ -121,7 +120,7 @@ std::vector<CollisionPair> XPBDSolver::collectCollisionPairs(const std::vector<R
                             const auto& PC = static_cast<PlaneCollider*>(B->collider.get());
 
                             if (aabb1.intersectsPlane(PC->m_plane))
-                                collisions.push_back({ A.get(), B.get() });
+                                collisions.push_back(CollisionPair(A.get(), B.get()));
 
                             break;
                         }
