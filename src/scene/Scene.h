@@ -9,11 +9,14 @@
 #include "audio/Audio.h"
 #include "event/Events.h"
 #include "input/KeyboardHandler.h"
+#include "event/EventEmitter.h"
 
 // class SceneManager;
 
 class Scene {
 public:
+
+    // EventEmitter m_events;
 
     StateManager m_state;
     LayerManager m_layers;
@@ -37,6 +40,10 @@ public:
     virtual void destroy() = 0; // @TODO handle with destructor?
 
     virtual void bindEvents() {};
+    
+    void unBindEvents() {
+        // m_events.off();
+    };
 
     virtual void update(float time, float dt){};
 

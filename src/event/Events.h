@@ -6,6 +6,9 @@
 class Events {
 public:
 
+    /**
+     * @todo convert to enum?
+     */
     static constexpr const char* KEYDOWN = "KEYDOWN";
     static constexpr const char* KEYUP = "KEYUP";
     static constexpr const char* MOUSEDOWN = "MOUSEDOWN";

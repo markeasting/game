@@ -186,9 +186,8 @@ void MyScene::init() {
 }
 
 /**
- * @TODO look into bindEvents()
- * These listeners are currently bound for the entire lifetime of the game
- * Maybe make the event listeners specific per scene / unbind everything on changing scenes
+ * @TODO these listeners are currently bound for the entire lifetime of the game
+ * Should encapsulate each scene to have their own event bus
  */
 void MyScene::bindEvents() {
 

@@ -53,33 +53,11 @@ void Renderer::setSize(int width, int height) {
 
 }
 
-// @TODO move to scene!
-// void Renderer::add(Ref<Mesh> mesh) {
-
-//     if (mesh->m_material == nullptr)
-//         mesh->setMaterial(m_defaultShader);
-
-//     if (mesh->m_material->m_shader->m_program == 0) {
-//         Log("Shader failed to compile, using default shader");
-//         mesh->setMaterial(m_defaultShader);
-//     }
-
-//     m_meshes.push_back(mesh);
-// }
-
 void Renderer::draw(Ref<Scene> scene, Ref<Camera> camera) {
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-    // if(g_settings.wireframe) {
-    //     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    //     glDisable(GL_CULL_FACE);
-    // } else {
-    //     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    //     glEnable(GL_CULL_FACE);
-    // }
-
-    if (m_useRenderpass) {
+    if (m_config.useRenderpass) {
         camera->m_frameBuffer.bind();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // we're not using the stencil buffer now
         glEnable(GL_DEPTH_TEST);
@@ -115,7 +93,7 @@ void Renderer::draw(Ref<Scene> scene, Ref<Camera> camera) {
         }
     }
 
-    if (m_useRenderpass) {
+    if (m_config.useRenderpass) {
     
         /* Final render pass */
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -165,7 +143,7 @@ void Renderer::drawMesh(Ref<Mesh> mesh, Ref<Camera> camera) {
             : matrix
     );
 
-    if(mesh->m_material && mesh->m_material->wireframe) {
+    if(m_config.wireframe || mesh->m_material && mesh->m_material->wireframe) {
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         glDisable(GL_CULL_FACE);
     } else {

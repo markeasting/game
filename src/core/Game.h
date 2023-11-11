@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common.h"
-#include "app/Window.h"
+#include "core/Window.h"
 #include "scene/SceneManager.h"
 #include "camera/Camera.h"
 #include "gfx/Renderer.h"
@@ -18,15 +18,16 @@ public:
 	Window m_window;
 
     Renderer m_renderer;
+
+    SceneManager m_sceneManager;
     
     Game();
     ~Game();
 
+    void initialize();
     void update();
     bool isRunning() const;
     void quit();
-
-    void registerScenes();
 
     float getTime() const { return m_time; }
 
@@ -40,6 +41,4 @@ private:
 
     SDL_Event m_event;
     bool m_isRunning = true;
-
-    SceneManager m_sceneManager;
 };

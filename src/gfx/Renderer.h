@@ -2,7 +2,6 @@
 
 #include "common.h"
 
-
 #include "gfx/Shader.h"
 #include "gfx/Uniforms.h"
 #include "gfx/Mesh.h"
@@ -10,8 +9,15 @@
 #include "scene/Scene.h"
 #include "camera/Camera.h"
 
+struct RendererConfig {
+	bool wireframe = false;
+	bool useRenderpass = true;
+};
+
 class Renderer {
 public:
+
+ 	RendererConfig m_config;
 
 	Renderer();
 	Renderer(const Renderer&) = delete;
@@ -28,7 +34,9 @@ public:
 
 private:
 
-	bool m_useRenderpass = true;
+	/**
+	 * @todo make FullSceenQuad class for other render passes
+	 */
 	Mesh m_fullscreenQuad;
 
 	// std::vector<Ref<Mesh>> m_meshes = {};

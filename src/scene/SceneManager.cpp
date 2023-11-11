@@ -12,9 +12,9 @@ void SceneManager::update(float time, float dt) {
     m_currentScene->update(time, dt);
 }
 
-unsigned int SceneManager::add(Ref<Scene> scene) {
+void SceneManager::add(std::string key, Ref<Scene> scene) {
 
-    auto inserted = m_scenes.insert(std::make_pair(m_insertedSceneIdx, scene));
+    auto inserted = m_scenes.insert(std::make_pair(key, scene));
 
     scene->m_audio = m_audio; /* Inject audio manager / could also do singleton? */
     // scene->m_sceneManager = ref<SceneManager>(*this); /* Inject SceneManager / could also do singleton? */
@@ -23,15 +23,9 @@ unsigned int SceneManager::add(Ref<Scene> scene) {
     scene->_init();
     scene->init();
     scene->bindEvents();
-
-    // for (auto const& pair : scene->m_layers.all()) {
-    //     pair.second->init();
-    // }
-
-    return m_insertedSceneIdx++;
 }
 
-void SceneManager::remove(unsigned int id) {
+void SceneManager::remove(std::string id) {
     auto it = m_scenes.find(id);
 
     if(it != m_scenes.end()) {
@@ -40,12 +34,14 @@ void SceneManager::remove(unsigned int id) {
     }
 }
 
-void SceneManager::switchTo(unsigned int id) {
+void SceneManager::switchTo(std::string id) {
     auto it = m_scenes.find(id);
 
     if(it != m_scenes.end()) {
-        if(m_currentScene)
+        if(m_currentScene) {
+            m_currentScene->unBindEvents();
             m_currentScene->onDeactivate();
+        }
 
         m_currentScene = it->second;
         m_currentScene->onActivate();

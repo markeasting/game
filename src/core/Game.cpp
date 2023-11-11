@@ -1,32 +1,26 @@
-#include "app/Game.h"
+#include "core/Game.h"
 #include "scenes/Test/MyScene.h"
 
 #include "input/KeyboardHandler.h"
 #include "event/Events.h"
 
-Game::Game() {
-    this->registerScenes();
+Game::Game() {}
 
-    Game::setSize(m_window.m_frameBufferWidth, m_window.m_frameBufferHeight);
-
-}
-
-Game::~Game() {
-    
-}
+Game::~Game() {}
 
 void Game::setSize(int width, int height) {
     m_renderer.setSize(width, height);
-    m_sceneManager.getCurrentScene()->getCamera()->setSize(width, height);
+
+    auto currentScene = m_sceneManager.getCurrentScene();
+
+    if (currentScene) {
+        currentScene->getCamera()->setSize(width, height);
+    }
 }
 
-void Game::registerScenes()
-{
-    Ref<MyScene> gameScene = ref<MyScene>();
+void Game::initialize() {
 
-    unsigned int gameSceneID = m_sceneManager.add(gameScene);
-
-    m_sceneManager.switchTo(gameSceneID);
+    Game::setSize(m_window.m_frameBufferWidth, m_window.m_frameBufferHeight);
 
 }
 
@@ -40,14 +34,22 @@ void Game::update()
         if (e == SDL_QUIT)
             m_isRunning = false;
 
+        /** @todo change Keyboard class to be non-static / singleton / injected */
         if (e == SDL_KEYDOWN || e == SDL_KEYUP) 
             Keyboard::handle(m_event);
 
+        /** @todo change Events class to be non-static / singleton / injected */
         if (e == SDL_MOUSEBUTTONDOWN)
             Events::emit(Events::MOUSEDOWN);
 
         if (e == SDL_MOUSEBUTTONUP)
             Events::emit(Events::MOUSEUP);
+
+        if (e == SDL_KEYUP) {
+            if (m_event.key.keysym.sym == SDLK_F1) {
+                m_renderer.m_config.wireframe = !m_renderer.m_config.wireframe;
+            }
+        }
     }
 
     m_prevTime = m_time;

@@ -1,7 +1,8 @@
 
 #include "common.h"
 
-#include "app/Game.h"
+#include "core/Game.h"
+#include "scenes/Test/MyScene.h"
 
 /**
  * What’s the "static initialization order 'fiasco' (problem)"?
@@ -17,6 +18,12 @@ EventEmitter Events::_emitter;
 int main() {
 
     Game game;
+
+    Ref<MyScene> gameScene = ref<MyScene>();
+
+    game.m_sceneManager.add("myScene", gameScene);
+    game.m_sceneManager.switchTo("myScene");
+    game.initialize();
     
     while (game.isRunning()) {
         game.update();

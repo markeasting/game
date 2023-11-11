@@ -11,19 +11,21 @@ public:
 
     void update(float time, float dt);
 
-    unsigned int add(Ref<Scene> scene);
+    /**
+     * @TODO maybe return a WeakRef here, instead of having to pass strings around
+     */
+    void add(std::string key, Ref<Scene> scene);
 
-    void remove(unsigned int id);
+    void remove(std::string key);
 
-    void switchTo(unsigned int id);
+    void switchTo(std::string key);
 
     Ref<Scene> getCurrentScene() const { return m_currentScene; };
 
     void destroy();
     
 private:
-    std::unordered_map<unsigned int, Ref<Scene>> m_scenes = {};
-    unsigned int m_insertedSceneIdx = 0;
+    std::unordered_map<std::string, Ref<Scene>> m_scenes = {};
 
     Ref<Scene> m_currentScene = nullptr;
 
