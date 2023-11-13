@@ -105,9 +105,9 @@ public:
 
         this->updateGeometry(body, dt);
 
-        #ifndef NDEBUG
-            this->debug(body);
-        #endif
+        // #ifndef NDEBUG
+        //     this->debug(body);
+        // #endif
 
         return this->isGrounded() ? F : vec3(0.0f);
     }
