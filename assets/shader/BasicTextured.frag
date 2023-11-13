@@ -6,9 +6,12 @@ in vec2 uv;
 uniform sampler2D texture1;
 uniform sampler2D texture2;
 
+uniform float u_opacity = 1.0;
+
 void main() {
 
-	FragColor = texture(texture1, uv);
+	vec4 textureColor = texture(texture1, uv);
+	FragColor = vec4(textureColor.rgb, textureColor.a * u_opacity);
 
 	// FragColor = mix(
 	// 	texture(texture1, uv), 
