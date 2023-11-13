@@ -4,6 +4,13 @@
 #include "physics/Constraint.h"
 #include "gfx/Mesh.h"
 
+struct RaycastInfo {
+    bool exists = false;
+    vec3 point = vec3();
+    vec3 normal = vec3();
+    float dist = 0.0f;
+};
+
 class PhysicsHandler {
 public:
 
@@ -21,7 +28,7 @@ public:
     
     void update(float dt, std::function<void(float)> customUpdate);
 
-    std::tuple<vec3, vec3, float, Ref<RigidBody>> raycast(const vec3& ray_origin, const vec3& ray_dir);
+    RaycastInfo raycast(const vec3& ray_origin, const vec3& ray_dir);
 
 private:
 	// std::vector<Ref<Mesh>> m_staticMeshes = {};

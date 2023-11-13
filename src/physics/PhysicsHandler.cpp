@@ -21,9 +21,9 @@ void PhysicsHandler::add(Ref<RigidBody> body) {
 }
 
 // void PhysicsHandler::addStaticMesh(Ref<Mesh> mesh) {
-//     assert(mesh != nullptr);
+    //     assert(mesh != nullptr);
 
-//     m_staticMeshes.push_back(mesh);
+    //     m_staticMeshes.push_back(mesh);
 // }
 
 // This entire loop should probably be running on a separate thread.
@@ -34,121 +34,124 @@ void PhysicsHandler::update(float dt, std::function<void(float)> customUpdate) {
 
 }
 
-static std::tuple<bool, vec3, float, vec3> _raycastPlane(const Plane& plane, const vec3& ray_origin, const vec3& ray_dir, bool usePlaneSize = true) {
+// static std::tuple<bool, vec3, float, vec3> _raycastPlane(const Plane& plane, const vec3& ray_origin, const vec3& ray_dir, bool usePlaneSize = true) {
     
-    float d = -glm::dot(ray_dir, plane.normal);
+//     float d = -glm::dot(ray_dir, plane.normal);
     
-    // Skip if ray is parallel or pointing away from the plane
-    if (d < 0.001f)
-        return std::make_tuple(
-            false,
-            vec3(),
-            0.0f,
-            vec3()
-        );
+//     // Skip if ray is parallel or pointing away from the plane
+//     if (d < 0.001f)
+//         return std::make_tuple(
+//             false,
+//             vec3(),
+//             0.0f,
+//             vec3()
+//         );
     
-    // @TODO get rid of plane.origin at some point?
-    float distance = glm::dot(ray_origin - plane.origin, plane.normal) / d;
-    vec3 hit = ray_origin + ray_dir * distance;
+//     // @TODO get rid of plane.origin at some point?
+//     float distance = glm::dot(ray_origin - plane.origin, plane.normal) / d;
+//     vec3 hit = ray_origin + ray_dir * distance;
 
-    return std::make_tuple(
-        usePlaneSize ? plane.containsPoint(hit) : true,
-        hit,
-        distance,
-        plane.normal
-    );
-}
-
-// bool isPointInsidePolygon(const vec3& point, const vec3& p0, const vec3& p1, const vec3& p2, vec3 n = vec3(0)) {
-//     // Step 1: Compute the normal vector
-//     glm::vec3 u = p1 - p0;
-//     glm::vec3 v = p2 - p0;
-//     // glm::vec3 n = glm::cross(u, v);
-
-//     // Step 2: Check if the point is on the same side of the plane as the triangle
-//     glm::vec3 w = point - p0;
-//     if (glm::dot(n, w) < 0) {
-//         return false;
-//     }
-
-//     // Step 3: Compute barycentric coordinates
-//     float uu = glm::dot(u, u);
-//     float uv = glm::dot(u, v);
-//     float vv = glm::dot(v, v);
-//     glm::vec3 wu = point - p0;
-//     float wuv = glm::dot(wu, v);
-//     float wuu = glm::dot(wu, u);
-//     float den = uv * uv - uu * vv;
-
-//     // Step 4: Compute s and t
-//     float s = (uv * wuv - vv * wuu) / den;
-//     float t = (uv * wuu - uu * wuv) / den;
-
-//     // Step 5: Check if the point is within the triangle
-//     return s >= 0 && t >= 0 && s + t <= 1;
+//     return std::make_tuple(
+//         usePlaneSize ? plane.containsPoint(hit) : true,
+//         hit,
+//         distance,
+//         plane.normal
+//     );
 // }
 
-std::tuple<vec3, vec3, float, Ref<RigidBody>> PhysicsHandler::raycast(const vec3& ray_origin, const vec3& ray_dir) {
+/** Moller–Trumbore algorithm */
+static bool rayTriangleIntersect(
+    const vec3 &ro,
+    const vec3 &rd,
+    const std::array<vec3, 3> &triangle,
+    float &d
+) { 
 
-    vec3 hitPoint;
-    vec3 hitNormal;
-    float hitDistance = FLT_MAX;
-    Ref<RigidBody> hitBody = nullptr;
+    const float EPS = 0.000001f;
+
+    const vec3& vertex0 = triangle[0];
+    const vec3& vertex1 = triangle[1];
+    const vec3& vertex2 = triangle[2];
+
+    vec3 edge1, edge2, h, s, q;
+    float a, f, u, v;
+
+    edge1 = vertex1 - vertex0;
+    edge2 = vertex2 - vertex0;
+    h = glm::cross(rd, edge2);
+    a = glm::dot(edge1, h);
+
+    if (a > -EPS && a < EPS)
+        return false;
+
+    f = 1.0f / a;
+    s = ro - vertex0;
+    u = f * glm::dot(s, h);
+
+    if (u < 0.0f || u > 1.0f)
+        return false;
+
+    q = glm::cross(s, edge1);
+    v = f * glm::dot(rd, q);
+
+    if (v < 0.0f || u + v > 1.0f)
+        return false;
+
+    d = f * glm::dot(edge2, q);
+
+    if (d > EPS)
+        return true;
+
+    return false;
+}
+
+RaycastInfo PhysicsHandler::raycast(const vec3& ray_origin, const vec3& ray_dir) {
+
+    RaycastInfo result;
+    float d;
+    float minDistance = FLT_MAX;
+    std::array<vec3, 3> tempTriangle;
 
     for (const auto& body: m_bodies) {
 
-        if (body->collider->m_type != cPlane)
+        /* Quick hack, need some kind of masking / filtering system */ 
+        if (body->name == "CarBody")
             continue;
-    
-        const auto& PC = static_cast<PlaneCollider*>(body->collider.get());
 
-        auto [exists, hit, dist, normal] = _raycastPlane(PC->m_plane, ray_origin, ray_dir);
+        if (body->collider->m_type == cMesh) {
+            const auto& MC = std::static_pointer_cast<MeshCollider>(body->collider);
+            
+            for (const auto& triangle : MC->m_triangles) {
 
-        if (exists && dist < hitDistance) {
-            hitPoint = hit;
-            hitDistance = dist;
-            hitNormal = normal;
-            hitBody = body;
+                if (rayTriangleIntersect(ray_origin, ray_dir, triangle, d)) {
+                    if (d < minDistance) {
+                        result.exists = true;
+                        result.dist = d;
+                        result.point = ray_origin + d * ray_dir;
+
+                        tempTriangle = triangle;
+                    }
+                };
+            }
         }
 
+        if (minDistance < FLT_MAX) {
+            /* Calculate normal */
+            vec3 edge1 = tempTriangle[1] - tempTriangle[0];
+            vec3 edge2 = tempTriangle[2] - tempTriangle[0];
+            result.normal = glm::normalize(glm::cross(edge1, edge2));
+        }
+
+        // if (body->collider->m_type == cPlane) {
+        //     const auto& PC = static_cast<PlaneCollider*>(body->collider.get());
+        //     auto [exists, hit, dist, normal] = _raycastPlane(PC->m_plane, ray_origin, ray_dir);
+
+        //     if (exists && dist < minDistance) {
+        //         // ...
+        //     }
+        // }
     }
 
-    // for (const auto& mesh : m_staticMeshes) {
-    //     const auto& vertices = mesh->m_geometry->m_vertexBuffer->m_data;
-    //     const auto& indices = mesh->m_geometry->m_indexBuffer->m_data;
-
-    //     // const auto& matrix = mesh->getWorldPositionMatrix();
-
-    //     int it = 0;
-    //     for (size_t i = 0; i < indices.size(); i += 3) {
-    //         // @TODO precompute since the meshes are static anyways...
-    //         // @TODO use matrix instead of this mess
-    //         const vec3 v1 = mesh->getPosition() + mesh->getRotation() * vertices[indices[i]].position;
-    //         const vec3 v2 = mesh->getPosition() + mesh->getRotation() * vertices[indices[i + 1]].position;
-    //         const vec3 v3 = mesh->getPosition() + mesh->getRotation() * vertices[indices[i + 2]].position;
-
-    //         Plane plane;
-    //         plane.setFromCoplanarPoints(v1, v2, v3);
-
-    //         auto [exists, hit, dist, normal] = _raycastPlane(plane, ray_origin, ray_dir, false);
-
-    //         if (!exists || !isPointInsidePolygon(hit, v1, v2, v3, normal))
-    //             continue;
-
-    //         if (dist < hitDistance) {
-    //             hitPoint = hit;
-    //             hitDistance = dist;
-    //             hitNormal = normal;
-    //             hitBody = nullptr;
-    //         }
-    //     }
-    // }
-
-    return std::make_tuple(
-        hitPoint,
-        hitNormal,
-        hitDistance,
-        hitBody
-    );
+    return result;
 
 }
