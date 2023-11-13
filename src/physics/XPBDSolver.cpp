@@ -117,7 +117,7 @@ std::vector<CollisionPair> XPBDSolver::collectCollisionPairs(const std::vector<R
                         }
                         case ColliderType::cPlane : {
 
-                            const auto& PC = static_cast<PlaneCollider*>(B->collider.get());
+                            const auto& PC = std::static_pointer_cast<PlaneCollider>(B->collider);
 
                             if (aabb1.intersectsPlane(PC->m_plane))
                                 collisions.push_back(CollisionPair(A.get(), B.get()));
@@ -177,8 +177,8 @@ std::vector<Ref<ContactSet>> XPBDSolver::getContacts(const std::vector<Collision
 
                     case ColliderType::cPlane : {
 
-                        const auto& MC = static_cast<MeshCollider*>(A->collider.get());
-                        const auto& PC = static_cast<PlaneCollider*>(B->collider.get());
+                        const auto& MC = std::static_pointer_cast<MeshCollider>(A->collider);
+                        const auto& PC = std::static_pointer_cast<PlaneCollider>(B->collider);
 
                         const vec3 N = PC->m_plane.normal;
 

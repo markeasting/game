@@ -30,7 +30,7 @@ void Layer::add(Ref<RigidBody> body) {
     this->add(body->mesh);
 
     if (body->collider->m_type == ColliderType::cMesh) {
-        const auto MC = static_cast<MeshCollider*>(body->collider.get());
+        const auto MC = std::static_pointer_cast<MeshCollider>(body->collider);
 
         this->add(MC->m_mesh);
 
