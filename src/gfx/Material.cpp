@@ -32,6 +32,8 @@ void Material::assignUniform(Ref<IUniform> uniform) {
 void Material::assignTexture(Ref<Texture> texture, const std::string& uniform) {
     this->setUniform(uniform, (int) textures.size());
 
+    /** @TODO this doesn't seem to work, most textures have alpha data but aren't actually transparent. */
+    /** Maybe just set `transparent` manually. */
     if (texture->m_format == GL_RGBA)
         transparent = true;
 
