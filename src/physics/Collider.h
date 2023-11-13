@@ -63,6 +63,8 @@ struct MeshCollider : public Collider {
     std::vector<unsigned int> m_indices;
     std::vector<unsigned int> m_uniqueIndices;
 
+    std::vector<std::array<vec3, 3>> m_triangles;
+
     // @TODO convexHull;
 
     MeshCollider(Ref<Geometry> convexGeometry);
