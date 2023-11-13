@@ -27,7 +27,7 @@ public:
 
         // @TODO cache find() indices
         if (uniforms.find(name) != uniforms.end()) {
-            auto uni = std::dynamic_pointer_cast<Uniform<T>>(uniforms.at(name));
+            auto uni = std::static_pointer_cast<Uniform<T>>(uniforms.at(name));
             uni->set(value);
         } else {
             assignUniform(ref<Uniform<T>>(name, value));
