@@ -9,6 +9,7 @@ class RigidBody {
 public:
 
     unsigned int id = 0;
+    std::string name = "body";
 
     Pose pose = Pose();                 /* Holds the current position and rotation */
 
