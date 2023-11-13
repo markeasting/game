@@ -8,17 +8,17 @@ void World::init() {
 
     // @TODO share this stuff with the parent scene / other layers. 
     // E.g. using the same lights
-    auto lightDirection = ref<Uniform<vec3>>("u_lightDirection", normalize(vec3(0.5f, 0.0f, 1.0f)));
+    auto lightDirection = uniform("u_lightDirection", normalize(vec3(0.5f, 0.0f, 1.0f)));
 
     Material phongMaterial = Material("Phong", { lightDirection });
     Material phongMaterial2 = Material("Phong", {
-        ref<Uniform<vec3>>("ambient", vec3(0.2f, 0.3f, 0.3f)),
-        ref<Uniform<vec3>>("diffuseAlbedo", vec3(0.2f, 0.3f, 0.3f)),
-        ref<Uniform<vec3>>("specularAlbedo", vec3(0.2f, 0.2f, 0.2f)),
-        ref<Uniform<vec3>>("rimColor", vec3(0.2f, 0.3f, 0.3f)),
-        ref<Uniform<int>>("rimLightOn", 1),
-        ref<Uniform<float>>("shininess", 20.0f),
-        ref<Uniform<float>>("rimPower", 200.0f),
+        uniform("ambient", vec3(0.2f, 0.3f, 0.3f)),
+        uniform("diffuseAlbedo", vec3(0.2f, 0.3f, 0.3f)),
+        uniform("specularAlbedo", vec3(0.2f, 0.2f, 0.2f)),
+        uniform("rimColor", vec3(0.2f, 0.3f, 0.3f)),
+        uniform("rimLightOn", 1),
+        uniform("shininess", 20.0f),
+        uniform("rimPower", 200.0f),
         lightDirection
     });
 

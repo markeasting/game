@@ -49,11 +49,11 @@ void MyScene::init() {
     m_camera->setPosition(vec3(0.0f, 2.0f, 8.0f));
     m_camera->m_camRadius = 8.0f;
 
-    auto lightDirection = ref<Uniform<vec3>>("u_lightDirection", vec3(0.5f, 0.0f, 2.0f));
+    auto lightDirection = uniform("u_lightDirection", vec3(0.5f, 0.0f, 2.0f));
 
     // Material phongMaterial = Material("Phong", { lightDirection });
     Material colorMaterial = Material("Color", {
-        ref<Uniform<vec4>>("u_color", vec4(0.0f, 0.0f, 0.8f, 1.0f)),
+        uniform("u_color", vec4(0.0f, 0.0f, 0.8f, 1.0f)),
     });
 
     auto cube = ref<Mesh>(BoxGeometry(0.5f), colorMaterial);
@@ -66,7 +66,7 @@ void MyScene::init() {
         m_tetra->add(cube);
 
     Material skyMaterial = Material("SkyBox", {
-        ref<Uniform<vec4>>("u_color", vec4(0.0f, 0.0f, 0.8f, 1.0f)),
+        uniform("u_color", vec4(0.0f, 0.0f, 0.8f, 1.0f)),
     });
     Ref<CubeMapTexture> skyTexture = ref<CubeMapTexture>();
     skyTexture->loadCubemap({
@@ -102,7 +102,7 @@ void MyScene::init() {
 
     // auto opponent = ref<RigidBody>(
     //         ref<MeshCollider>(car_collider),
-    //         ref<Mesh>(car, Material("Phong", { lightDirection, ref<Uniform<vec3>>("ambient", vec3(0, 0, 0.2)), ref<Uniform<vec3>>("diffuseAlbedo", vec3(0, 0, 0.7)) }))
+    //         ref<Mesh>(car, Material("Phong", { lightDirection, uniform("ambient", vec3(0, 0, 0.2)), uniform("diffuseAlbedo", vec3(0, 0, 0.7)) }))
     //     );
     //     opponent->setBox(colliderSize, 200.0f);
     //     opponent->setPosition({ -4.0f, 2.0f, -3.0f });
@@ -140,44 +140,70 @@ void MyScene::init() {
     // }
 
     /* Tall stack */
-    for (size_t i = 0; i < 4; i++) {
-        auto box = ref<RigidBody>(
-                ref<BoxCollider>(1.0f), 
-                ref<Mesh>(BoxGeometry(1.0f), colorMaterial)
-            );
-            box->setPosition({ 4.0f, 0.5f + i * 1.01f, 0.0f });
-            box->setBox(vec3(1.0f), 133.0f);
-            box->canSleep = false;
-            m_world->add(box);
-            m_phys.add(box);
-    }
+    // for (size_t i = 0; i < 4; i++) {
+    //     auto box = ref<RigidBody>(
+    //             ref<BoxCollider>(1.0f), 
+    //             ref<Mesh>(BoxGeometry(1.0f), colorMaterial)
+    //         );
+    //         box->setPosition({ 4.0f, 0.5f + i * 1.01f, 0.0f });
+    //         box->setBox(vec3(1.0f), 133.0f);
+    //         box->canSleep = false;
+    //         m_world->add(box);
+    //         m_phys.add(box);
+    // }
 
     Material floorMaterial = Material("Basic.vert", "BasicTextured.frag");
     floorMaterial.assignTexture("assets/texture/asphalt.jpg", "texture1");
 
-    auto floor = ref<RigidBody>(
-            ref<PlaneCollider>(vec2(200.0f, 200.0f)),
-            ref<Mesh>(PlaneGeometry(200.0f, true), floorMaterial)
-        );
+    auto floorMesh = ref<Mesh>(PlaneGeometry(200.0f, true), floorMaterial);
+    auto floor = ref<RigidBody>(floorMesh);
+        floor->name = "Floor1";
         floor->setPosition({ 0, 0, -75.0f });
         floor->makeStatic();
         m_world->add(floor);
         m_phys.add(floor);
 
-    auto floor2 = ref<RigidBody>(
-            ref<PlaneCollider>(vec2(200.0f, 200.0f)),
-            ref<Mesh>(PlaneGeometry(200.0f, true), floorMaterial)
-        );
+    auto floorMesh2 = ref<Mesh>(PlaneGeometry(200.0f, true), floorMaterial);
+    auto floor2 = ref<RigidBody>(floorMesh2);
+        floor2->name = "Floor2";
         floor2->setPosition({ 0, 5.2f, 124.0f });
         floor2->setRotation(QuatFromTwoVectors({0, 1.0f, 0}, {0, 0.95f, -0.05f}));
         floor2->makeStatic();
         m_world->add(floor2);
         m_phys.add(floor2);
 
+    // auto floor = ref<RigidBody>(
+    //         ref<PlaneCollider>(vec2(200.0f, 200.0f)),
+    //         ref<Mesh>(PlaneGeometry(200.0f, true), floorMaterial)
+    //     );
+    //     floor->name = "Floor1";
+    //     floor->setPosition({ 0, 0, -75.0f });
+    //     floor->makeStatic();
+    //     m_world->add(floor);
+    //     m_phys.add(floor);
+
+    // auto floor2 = ref<RigidBody>(
+    //         ref<PlaneCollider>(vec2(200.0f, 200.0f)),
+    //         ref<Mesh>(PlaneGeometry(200.0f, true), floorMaterial)
+    //     );
+    //     floor2->name = "Floor2";
+    //     floor2->setPosition({ 0, 5.2f, 124.0f });
+    //     floor2->setRotation(QuatFromTwoVectors({0, 1.0f, 0}, {0, 0.95f, -0.05f}));
+    //     floor2->makeStatic();
+    //     m_world->add(floor2);
+    //     m_phys.add(floor2);
+
     auto track = ref<Geometry>(obj::loadModelFromFile("assets/objects/track.obj"));
     auto trackMesh = ref<Mesh>(track, floorMaterial);
-    m_world->add(trackMesh);
+    // m_world->add(trackMesh);
     // m_phys.addStaticMesh(trackMesh);
+
+    auto trackBody = ref<RigidBody>(trackMesh);
+        trackBody->name = "TrackBody";
+        trackBody->makeStatic();
+        trackBody->canCollide = false;
+        m_world->add(trackBody);
+        m_phys.add(trackBody);
 
     m_phys.init();
     for (auto const& mesh : m_phys.m_debugMeshes) 
