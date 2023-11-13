@@ -38,3 +38,8 @@ public:
     virtual void bind() {};
 
 };
+
+template <typename T>
+Ref<Uniform<T>> uniform(const std::string& name, T value = {}) {
+    return ref<Uniform<T>>(name, value);
+}
