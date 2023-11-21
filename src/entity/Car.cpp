@@ -8,6 +8,161 @@ vec3 Wheel::NORMAL = vec3(0, -1.0f, 0);
 vec3 Wheel::FORWARD = vec3(0, 0, 1.0f);
 vec3 Wheel::RIGHT = vec3(-1.0f, 0, 0);
 
+vec3 Wheel::getSpringForce() {
+    float Fspring = m_pos * m_stiffness;
+    float Fdamping = m_damperVelocity * m_damping;
+
+    m_springForce = Fspring + Fdamping;
+
+    return m_springForce * m_normal;
+}
+
+vec3 Wheel::getSteeringForce(Ref<RigidBody> body, float dt) {
+
+    float vx = glm::dot(m_worldVelocity, m_forward);
+    float vy = glm::dot(m_worldVelocity, m_right);
+    m_slipAngle = abs(vx) > 0.05f ? -atan(vy / abs(vx)) : 0.0f;
+
+    /* Loosly based on Pacejka's Magic Formula */
+    const float D = 0.025f;
+    const float E = 2.1f; /* [0.5-2.5] */
+    float lateralForce = D * m_springForce * sin(E * atan(E * atan(m_slipAngle)));
+
+    vec3 F = abs(vx) > 2.0f
+        ? -lateralForce / dt * m_right /* F = ma */
+        : -0.5f * vy / dt * m_right;
+
+    return F;
+}
+
+vec3 Wheel::getDrivingForce(float throttle, bool handbrake) {
+
+    bool isGoingForward = m_bodyVelocity > 0.0f;
+
+    float drivingForce = throttle > 0 && !handbrake
+        ? throttle * m_torque / m_radius
+        : 0.0f;
+
+    float brakeBias = m_driven ? 0.0f : 1.0f;
+    float brakeSteerScale = 1.0f; //1.0f - min(abs(m_slipAngle) / 0.15f, 0.9f);
+    float brakingForce = throttle < 0 
+        ? throttle * brakeBias * brakeSteerScale * m_brakeTorque / m_radius
+        : 0.0f;
+
+    float engineBraking = isGoingForward 
+        ? -0.15f * m_torque 
+        : 0.15f * m_torque;
+
+    float totalForce = m_driven 
+        ? brakingForce + drivingForce + engineBraking
+        : brakingForce;
+
+    if (handbrake && m_driven && isGoingForward)
+        totalForce = -2.0f * m_brakeTorque;
+
+    /* Loosly based on Pacejka's Magic Formula */
+    // const float D = 50.0f;
+    // const float E = 2.9f; /* [0.5-2.5] */ /* Note: there is some relation to E with spring force. */
+    // const float slipRatio = (m_omega*m_radius/m_bodyVelocity - 1.0f) * 100.0f;
+    // float gripForceRatio = abs(D * (m_springForce / m_stiffness) * sin(E * atan(E * atan(slipRatio))));
+    // Log(gripForceRatio);
+
+    // if (m_FORWARD_and_not_body_total_velocity < 0.0f)
+    //     totalForce = -totalForce;
+
+    return totalForce * m_forward;
+}
+
+void Wheel::updateGeometry(Ref<RigidBody> body, float dt) {
+    m_mesh->setPosition(
+        body->localToWorld(
+            m_hardpoint
+        ) + (m_normal * m_pos)
+    );
+    m_mesh->setRotation(body->pose.q);
+
+    m_omega = this->isGrounded()
+        ? glm::dot(m_worldVelocity, m_forward) / m_radius // @TODO already calculated forward vel in slip angle equation
+        : m_omega *= 0.95;
+    m_theta += m_omega * dt;
+
+    quat dq = body->pose.q;
+    dq = glm::angleAxis(-m_steerAngle, vec3(0, 1.0f, 0)) * dq;
+    dq = dq * glm::angleAxis(m_theta, vec3(1.0f, 0, 0));
+
+    m_mesh->setRotation(dq);
+}
+
+void Wheel::debug(Ref<RigidBody> body) {
+    m_origin->setPosition(body->localToWorld(m_hardpoint));
+    m_origin->setRotation(body->pose.q);
+
+    m_line2->setPosition(body->localToWorld(m_hardpoint));
+    m_line2->setRotation(QuatFromTwoVectors(vec3(0, 1.0f, 0), m_right));
+
+    m_line->setPosition(body->localToWorld(m_hardpoint));
+    m_line->setRotation(QuatFromTwoVectors(vec3(0, 1.0f, 0), m_normal));
+    m_line->setScale(m_springForce * 0.01f);
+}
+
+vec3 Wheel::update(
+    Ref<RigidBody> body, 
+    float groundDistance, 
+    float throttle,
+    float steering,
+    bool handbrake,
+    float bodyVelocity,
+    float dt
+) {
+
+    m_worldVelocity = body->getVelocityAt(body->localToWorld(m_hardpoint));
+    m_bodyVelocity = bodyVelocity;
+
+    /* World space */
+    m_normal = body->pose.q * Wheel::NORMAL;
+    m_right = body->pose.q * Wheel::RIGHT;
+    m_forward = body->pose.q * Wheel::FORWARD;
+
+    /* Steering with speed scaling */
+    m_steerAngle = !m_driven 
+        ? steering * 0.65f * (1.0f - min(m_bodyVelocity / 40.0f, 0.90f))
+        : 0.0f;
+
+    /* Scale steering with throttle input */
+    // m_steerAngle *= (m_bodyVelocity > 10.0f && throttle < 0) ? (1.0f + throttle) : 1.0f;
+
+    m_right = glm::angleAxis(m_steerAngle, m_normal) * m_right;
+    m_forward = glm::angleAxis(m_steerAngle, m_normal) * m_forward;
+
+    /* Integrate */
+    m_prevPos = m_pos;
+    m_pos = groundDistance - m_radius;
+    m_pos = clamp(m_pos, -m_springLength, m_springLength);
+    m_damperVelocity = (m_pos - m_prevPos) / dt;
+
+    /* Forces */
+    // @TODO braking force should always be in non-steered forward direction?
+    vec3 Fy = getSpringForce();
+    vec3 Fdrive = getDrivingForce(throttle, handbrake);
+    vec3 Fsteer = getSteeringForce(body, dt);
+
+    /* Constrain 'circle of grip' */
+    vec3 Fcircle = Fsteer + Fdrive;
+    if (glm::length(Fcircle) > m_grip)
+        Fcircle = m_grip * glm::normalize(Fcircle);
+    
+    vec3 F = Fy + Fcircle;
+
+    this->updateGeometry(body, dt);
+
+    // #ifndef NDEBUG
+    //     this->debug(body);
+    // #endif
+
+    return this->isGrounded() ? F : vec3(0.0f);
+}
+
+
 Car::Car(PhysicsHandler& phys): m_phys(phys) {
 
     auto lightDirection = uniform("u_lightDirection", vec3(0.5f, 0.0f, 2.0f));
