@@ -8,14 +8,18 @@
 #include "physics/AABB.h"
 #include "physics/Plane.h"
 
-enum ColliderType {
-    cBox, cPlane, cSphere, cMesh
+enum class ColliderType {
+    BOX, 
+    PLANE, 
+    SPHERE, 
+    MESH,
+    CONVEX_MESH
 };
 
 struct Collider {
 public:
 
-    ColliderType m_type = cSphere;
+    ColliderType m_type = ColliderType::SPHERE;
 
     vec3 m_relativePos = vec3(0.0f);
     vec3 m_relativePosW = vec3(0.0f);

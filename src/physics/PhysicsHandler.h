@@ -22,7 +22,7 @@ public:
     ~PhysicsHandler() = default;
 
     void add(Ref<RigidBody> body);
-    // void addStaticMesh(Ref<Mesh> mesh);
+    // void addStatiCONVEX_MESH(Ref<Mesh> mesh);
 
     void init();
     
@@ -31,6 +31,6 @@ public:
     RaycastInfo raycast(const vec3& ray_origin, const vec3& ray_dir);
 
 private:
-	// std::vector<Ref<Mesh>> m_staticMeshes = {};
+	// std::vector<Ref<Mesh>> m_statiCONVEX_MESHes = {};
 
 };

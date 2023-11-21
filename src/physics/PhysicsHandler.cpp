@@ -20,10 +20,10 @@ void PhysicsHandler::add(Ref<RigidBody> body) {
     m_bodies.push_back(body);
 }
 
-// void PhysicsHandler::addStaticMesh(Ref<Mesh> mesh) {
+// void PhysicsHandler::addStatiCONVEX_MESH(Ref<Mesh> mesh) {
     //     assert(mesh != nullptr);
 
-    //     m_staticMeshes.push_back(mesh);
+    //     m_statiCONVEX_MESHes.push_back(mesh);
 // }
 
 // This entire loop should probably be running on a separate thread.
@@ -118,7 +118,7 @@ RaycastInfo PhysicsHandler::raycast(const vec3& ray_origin, const vec3& ray_dir)
         if (body->name == "CarBody")
             continue;
 
-        if (body->collider->m_type == cMesh) {
+        if (body->collider->m_type == ColliderType::CONVEX_MESH) {
             const auto& MC = std::static_pointer_cast<MeshCollider>(body->collider);
             
             for (const auto& triangle : MC->m_triangles) {
@@ -142,7 +142,7 @@ RaycastInfo PhysicsHandler::raycast(const vec3& ray_origin, const vec3& ray_dir)
             result.normal = glm::normalize(glm::cross(edge1, edge2));
         }
 
-        // if (body->collider->m_type == cPlane) {
+        // if (body->collider->m_type == ColliderType::PLANE) {
         //     const auto& PC = static_cast<PlaneCollider*>(body->collider.get());
         //     auto [exists, hit, dist, normal] = _raycastPlane(PC->m_plane, ray_origin, ray_dir);
 

@@ -4,7 +4,7 @@
 void Collider::updateGlobalPose(const Pose& pose) { }
 
 PlaneCollider::PlaneCollider(const glm::vec2 &size, const glm::vec3 &normal) {
-    m_type = ColliderType::cPlane;
+    m_type = ColliderType::PLANE;
 
     m_plane.normal = glm::normalize(normal);
     m_plane.constant = 0.0f; // Plane constant will be set in updateGlobalPose()
@@ -26,12 +26,12 @@ void PlaneCollider::updateGlobalPose(const Pose& pose) {
 }
 
 SphereCollider::SphereCollider(const float diameter) {
-    m_type = ColliderType::cSphere;
+    m_type = ColliderType::SPHERE;
     m_radius = diameter/2;
 }
 
 MeshCollider::MeshCollider(Ref<Geometry> convexGeometry) {
-    m_type = ColliderType::cMesh;
+    m_type = ColliderType::CONVEX_MESH;
     setGeometry(convexGeometry);
 }
 
@@ -145,13 +145,13 @@ vec3 MeshCollider::findFurthestPoint(const vec3& dir) const {
 BoxCollider::BoxCollider(float size) 
 : MeshCollider(ref<BoxGeometry>(size, size, size)) 
 {
-    m_type = ColliderType::cMesh;
+    m_type = ColliderType::CONVEX_MESH;
 }
 
 
 BoxCollider::BoxCollider(const glm::vec3 &size) 
 : MeshCollider(ref<BoxGeometry>(size.x, size.y, size.z)) 
 {
-    // colliderType = ColliderType::cBox;
-    m_type = ColliderType::cMesh;
+    // colliderType = ColliderType::BOX;
+    m_type = ColliderType::CONVEX_MESH;
 }

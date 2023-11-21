@@ -29,7 +29,7 @@ void Layer::add(Ref<RigidBody> body) {
 
     this->add(body->mesh);
 
-    if (body->collider->m_type == ColliderType::cMesh) {
+    if (body->collider->m_type == ColliderType::CONVEX_MESH) {
         const auto MC = std::static_pointer_cast<MeshCollider>(body->collider);
 
         this->add(MC->m_mesh);

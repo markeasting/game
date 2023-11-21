@@ -106,16 +106,16 @@ std::vector<CollisionPair> XPBDSolver::collectCollisionPairs(const std::vector<R
             auto const& aabb2 = B->collider->m_expanded_aabb;
 
             switch(A->collider->m_type) {
-                case ColliderType::cMesh :
+                case ColliderType::CONVEX_MESH :
                     switch(B->collider->m_type) {
-                        case ColliderType::cMesh : {
+                        case ColliderType::CONVEX_MESH : {
 
                             if (aabb1.intersects(aabb2))
                                 collisions.push_back(CollisionPair(A.get(), B.get()));
 
                             break;
                         }
-                        case ColliderType::cPlane : {
+                        case ColliderType::PLANE : {
 
                             const auto& PC = std::static_pointer_cast<PlaneCollider>(B->collider);
 
@@ -144,9 +144,9 @@ std::vector<Ref<ContactSet>> XPBDSolver::getContacts(const std::vector<Collision
         RigidBody* B = collision.B;
 
         switch(A->collider->m_type) {
-            case ColliderType::cMesh :
+            case ColliderType::CONVEX_MESH :
                 switch(B->collider->m_type) {
-                    case ColliderType::cMesh : {
+                    case ColliderType::CONVEX_MESH : {
 
                         Simplex simplex = GjkEpa::GJK(A->collider.get(), B->collider.get());
 
@@ -175,7 +175,7 @@ std::vector<Ref<ContactSet>> XPBDSolver::getContacts(const std::vector<Collision
                         break;
                     }
 
-                    case ColliderType::cPlane : {
+                    case ColliderType::PLANE : {
 
                         const auto& MC = std::static_pointer_cast<MeshCollider>(A->collider);
                         const auto& PC = std::static_pointer_cast<PlaneCollider>(B->collider);
