@@ -1,6 +1,7 @@
 
 #include "physics/PhysicsHandler.h"
 #include "physics/XPBDSolver.h"
+#include <glm/gtx/intersect.hpp>
 
 void PhysicsHandler::init() {
     XPBDSolver::init();
@@ -67,42 +68,46 @@ static bool rayTriangleIntersect(
     float &d
 ) { 
 
-    const float EPS = 0.000001f;
+    vec2 bary;
 
-    const vec3& vertex0 = triangle[0];
-    const vec3& vertex1 = triangle[1];
-    const vec3& vertex2 = triangle[2];
+    return glm::intersectRayTriangle(ro, rd, triangle[0], triangle[1], triangle[2], bary, d);
 
-    vec3 edge1, edge2, h, s, q;
-    float a, f, u, v;
+    // const float EPS = 0.000001f;
 
-    edge1 = vertex1 - vertex0;
-    edge2 = vertex2 - vertex0;
-    h = glm::cross(rd, edge2);
-    a = glm::dot(edge1, h);
+    // const vec3& vertex0 = triangle[0];
+    // const vec3& vertex1 = triangle[1];
+    // const vec3& vertex2 = triangle[2];
 
-    if (a > -EPS && a < EPS)
-        return false;
+    // vec3 edge1, edge2, h, s, q;
+    // float a, f, u, v;
 
-    f = 1.0f / a;
-    s = ro - vertex0;
-    u = f * glm::dot(s, h);
+    // edge1 = vertex1 - vertex0;
+    // edge2 = vertex2 - vertex0;
+    // h = glm::cross(rd, edge2);
+    // a = glm::dot(edge1, h);
 
-    if (u < 0.0f || u > 1.0f)
-        return false;
+    // if (a > -EPS && a < EPS)
+    //     return false;
 
-    q = glm::cross(s, edge1);
-    v = f * glm::dot(rd, q);
+    // f = 1.0f / a;
+    // s = ro - vertex0;
+    // u = f * glm::dot(s, h);
 
-    if (v < 0.0f || u + v > 1.0f)
-        return false;
+    // if (u < 0.0f || u > 1.0f)
+    //     return false;
 
-    d = f * glm::dot(edge2, q);
+    // q = glm::cross(s, edge1);
+    // v = f * glm::dot(rd, q);
 
-    if (d > EPS)
-        return true;
+    // if (v < 0.0f || u + v > 1.0f)
+    //     return false;
 
-    return false;
+    // d = f * glm::dot(edge2, q);
+
+    // if (d > EPS)
+    //     return true;
+
+    // return false;
 }
 
 RaycastInfo PhysicsHandler::raycast(const vec3& ray_origin, const vec3& ray_dir) {
