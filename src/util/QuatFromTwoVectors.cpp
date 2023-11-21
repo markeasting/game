@@ -2,38 +2,41 @@
 #include "util/QuatFromTwoVectors.h"
 
 quat QuatFromTwoVectors(vec3 vFrom, vec3 vTo) {
-    // https://github.com/Mugen87/three.js/blob/master/src/math/Quaternion.js
 
-    if (glm::length(vFrom) < 1e-5 || glm::length(vTo) < 1e-5) {
-        return quat();
-    }
+    return glm::rotation(glm::normalize(vFrom), glm::normalize(vTo));
 
-    vFrom = glm::normalize(vFrom);
-    vTo = glm::normalize(vTo);
+    // // https://github.com/Mugen87/three.js/blob/master/src/math/Quaternion.js
+
+    // if (glm::length(vFrom) < 1e-5 || glm::length(vTo) < 1e-5) {
+    //     return quat();
+    // }
+
+    // vFrom = glm::normalize(vFrom);
+    // vTo = glm::normalize(vTo);
     
-    float r;
-    float EPS = 0.000001;
-    glm::vec3 v1 = glm::vec3();
+    // float r;
+    // float EPS = 0.000001;
+    // glm::vec3 v1 = glm::vec3();
 
-    r = glm::dot(vFrom, vTo ) + 1.0f;
+    // r = glm::dot(vFrom, vTo ) + 1.0f;
 
-    if ( r < EPS ) {
-        r = 0;
-        if ( abs( vFrom.x ) > abs( vFrom.z ) ) {
-            v1 = { -vFrom.y, vFrom.x, 0 };
-        } else {
-            v1 = { 0, - vFrom.z, vFrom.y };
-        }
-    } else {
-        v1 = glm::cross( vFrom, vTo );
-    }
+    // if ( r < EPS ) {
+    //     r = 0;
+    //     if ( abs( vFrom.x ) > abs( vFrom.z ) ) {
+    //         v1 = { -vFrom.y, vFrom.x, 0 };
+    //     } else {
+    //         v1 = { 0, - vFrom.z, vFrom.y };
+    //     }
+    // } else {
+    //     v1 = glm::cross( vFrom, vTo );
+    // }
 
-    glm::quat result;
+    // glm::quat result;
 
-    result.x = v1.x;
-    result.y = v1.y;
-    result.z = v1.z;
-    result.w = r;
+    // result.x = v1.x;
+    // result.y = v1.y;
+    // result.z = v1.z;
+    // result.w = r;
 
-    return glm::normalize(result);    
+    // return glm::normalize(result);    
 }
