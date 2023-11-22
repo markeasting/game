@@ -155,9 +155,9 @@ vec3 Wheel::update(
 
     this->updateGeometry(body, dt);
 
-    // #ifndef NDEBUG
-    //     this->debug(body);
-    // #endif
+    #ifdef DEBUG_MODE
+        this->debug(body);
+    #endif
 
     return this->isGrounded() ? F : vec3(0.0f);
 }
@@ -274,9 +274,9 @@ void Car::update(float dt) {
 
         auto [exists, point, normal, dist] = m_phys.raycast(hardpointW, wheel.m_normal);
 
-        if (i == 0) XPBDSolver::p1->setPosition(point);
-        if (i == 1) XPBDSolver::p2->setPosition(point);
-        if (i == 0) XPBDSolver::setDebugVector(wheel.m_normal, hardpointW);
+        // if (i == 0) XPBDSolver::p1->setPosition(point);
+        // if (i == 1) XPBDSolver::p2->setPosition(point);
+        // if (i == 0) XPBDSolver::setDebugVector(wheel.m_normal, hardpointW);
 
         vec3 F = wheel.update(
             m_body, 
