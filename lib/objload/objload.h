@@ -40,7 +40,7 @@ struct Model {
     std::vector<float> texCoord; //< 2 * N entries
     std::vector<float> normal; //< 3 * N entries
     
-    std::map<std::string, std::vector<unsigned short> > faces; //< assume triangels and uniform indexing
+    std::map<std::string, std::vector<unsigned short>> faces; // assumes triangles and uniform indexing
 };
 
 struct ObjModel {
