@@ -109,13 +109,13 @@ void MyScene::init() {
     //     m_world->add(opponent);
     //     m_phys.add(opponent);
 
-    for (size_t i = 0; i < 2; i++) {
-        auto opponent = ref<Car>(m_phys);
-        opponent->m_body->setPosition({ 6.0f + 2.0f * i, 2.0f, -3.0f });
-        opponent->addTo(m_world);
+    // for (size_t i = 0; i < 2; i++) {
+    //     auto opponent = ref<Car>(m_phys);
+    //     opponent->m_body->setPosition({ 6.0f + 2.0f * i, 2.0f, -3.0f });
+    //     opponent->addTo(m_world);
 
-        m_opponents.push_back(opponent);
-    }
+    //     m_opponents.push_back(opponent);
+    // }
 
     // auto sphere = ref<RigidBody>(
     //         ref<Mesh>(SphereGeometry(1.0f, 3), colorMaterial)
@@ -193,13 +193,12 @@ void MyScene::init() {
     //     m_world->add(floor2);
     //     m_phys.add(floor2);
 
-    auto track = ref<Geometry>(obj::loadModelFromFile("assets/objects/track.obj"));
+    auto track = ref<Geometry>(obj::loadModelFromFile("assets/track/track.obj"));
     auto trackMesh = ref<Mesh>(track, floorMaterial);
-    // m_world->add(trackMesh);
-    // m_phys.addStatiCONVEX_MESH(trackMesh);
 
-    auto trackBody = ref<RigidBody>(trackMesh);
+    auto trackBody = ref<RigidBody>(trackMesh, true);
         trackBody->name = "TrackBody";
+        trackBody->setPosition({ -10.0f, 0, 0 });
         trackBody->makeStatic();
         trackBody->canCollide = false;
         m_world->add(trackBody);
@@ -223,7 +222,7 @@ void MyScene::bindEvents() {
                 m_player->m_body->applyForce(vec3(0, 25000.0f, 0), m_player->m_body->localToWorld({ 0, 0, 0 }));
                 break;
             case SDLK_l:
-                m_player->m_body->applyForce(vec3(0, 10000.0f, 0));
+                m_player->m_body->applyTorque(vec3(0, 0, 10000.0f));
                 break;
         }
     });
