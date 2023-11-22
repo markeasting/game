@@ -196,7 +196,7 @@ void MyScene::init() {
     auto track = ref<Geometry>(obj::loadModelFromFile("assets/track/track.obj"));
     auto trackMesh = ref<Mesh>(track, floorMaterial);
 
-    auto trackBody = ref<RigidBody>(trackMesh, true);
+    auto trackBody = ref<RigidBody>(trackMesh, false);
         trackBody->name = "TrackBody";
         trackBody->setPosition({ -10.0f, 0, 0 });
         trackBody->makeStatic();
