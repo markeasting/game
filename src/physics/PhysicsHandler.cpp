@@ -64,7 +64,7 @@ void PhysicsHandler::update(float dt, std::function<void(float)> customUpdate) {
 static bool rayTriangleIntersect(
     const vec3 &ro,
     const vec3 &rd,
-    const std::array<vec3, 3> &triangle,
+    const std::array<vec3, 4> &triangle,
     float &d
 ) { 
 
@@ -115,7 +115,7 @@ RaycastInfo PhysicsHandler::raycast(const vec3& ray_origin, const vec3& ray_dir)
     RaycastInfo result;
     float d;
     float minDistance = FLT_MAX;
-    std::array<vec3, 3> tempTriangle;
+    std::array<vec3, 4> tempTriangle;
 
     for (const auto& body: m_bodies) {
 
@@ -123,13 +123,13 @@ RaycastInfo PhysicsHandler::raycast(const vec3& ray_origin, const vec3& ray_dir)
         if (body->name == "CarBody")
             continue;
 
-        if (body->collider->m_type == ColliderType::CONVEX_MESH) {
+        if (body->collider->m_type == ColliderType::CONVEX_MESH || body->collider->m_type == ColliderType::INEFFICIENT_MESH) {
             const auto& MC = std::static_pointer_cast<MeshCollider>(body->collider);
             
             for (const auto& triangle : MC->m_triangles) {
 
                 if (rayTriangleIntersect(ray_origin, ray_dir, triangle, d)) {
-                    if (d < minDistance) {
+                    if (d > 0.0f && d < minDistance) {
                         result.exists = true;
                         result.dist = d;
                         result.point = ray_origin + d * ray_dir;
@@ -145,6 +145,8 @@ RaycastInfo PhysicsHandler::raycast(const vec3& ray_origin, const vec3& ray_dir)
             vec3 edge1 = tempTriangle[1] - tempTriangle[0];
             vec3 edge2 = tempTriangle[2] - tempTriangle[0];
             result.normal = glm::normalize(glm::cross(edge1, edge2));
+
+            // result.normal = tempTriangle[3];
         }
 
         // if (body->collider->m_type == ColliderType::PLANE) {
