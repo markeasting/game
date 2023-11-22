@@ -1,5 +1,9 @@
 #pragma once
 
+#ifndef NDEBUG
+    #define DEBUG_MODE
+#endif
+
 #define _USE_MATH_DEFINES
 #include <cstdlib>
 #include <cmath>
