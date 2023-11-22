@@ -58,8 +58,8 @@ void Material::bind() const {
         textures[i]->bind();
     }
 
-    for (const auto &nameUniformPair : uniforms) {
-        nameUniformPair.second->bind();
+    for (const auto &[key, uniform] : uniforms) {
+        uniform->bind();
     }
 }
 
@@ -71,7 +71,7 @@ void Material::bind() const {
 //         textures[i]->bind();
 //     }
 
-//     for (const auto &nameUniformPair : uniforms) {
-//         nameUniformPair.second->bind();
+//     for (const auto &[key, uniform] : uniforms) {
+//         uniform->bind();
 //     }
 // }

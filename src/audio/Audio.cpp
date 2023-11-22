@@ -92,12 +92,12 @@ void Audio::updateListener(vec3 pos, vec3 dir, vec3 up) {
 // @TODO this is currently never called
 void Audio::destroy() {
 
-    for (auto& pair : m_sources) {
-        pair.second->source.destroy();
+    for (auto& [key, audioSource] : m_sources) {
+        audioSource->source.destroy();
 
         // @TODO clean up buffers -- isn't this also done by deleting the context?
-        // if (pair.second->isBuffer) {
-        //     auto buff = dynamic_cast<BufferAudioSource>(pair.second);
+        // if (audioSource->isBuffer) {
+        //     auto buff = dynamic_cast<BufferAudioSource>(audioSource);
         // }
     }
 

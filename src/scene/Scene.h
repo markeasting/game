@@ -29,8 +29,8 @@ public:
 
     /* Called by SceneManager */
     inline void _init() {
-        for (auto const& pair : m_layers.all()) {
-            pair.second->init();
+        for (auto const& [name, layer] : m_layers.all()) {
+            layer->init();
         }
     }
 
