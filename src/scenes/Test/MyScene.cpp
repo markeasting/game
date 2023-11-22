@@ -82,45 +82,21 @@ void MyScene::init() {
         m_world->add(m_skybox);
 
     /* Physics world */
-
-    auto car = ref<Geometry>(obj::loadModelFromFile("assets/objects/car/car.obj"));
-    auto car_collider = ref<Geometry>(obj::loadModelFromFile("assets/objects/car/car_collider.obj"));
-    auto colliderSize = vec3(1.42f, 0.95f, 3.0f);
-
-    // m_player = ref<RigidBody>(
-    //         ref<MeshCollider>(car_collider),
-    //         ref<Mesh>(car, Material("Phong", { lightDirection }))
-    //     );
-    //     m_player->setBox(colliderSize);
-    //     m_player->setPosition({ 4.0f, 2.0f, -3.0f });
-    //     // m_player->makeStatic();
-    //     m_world->add(m_player);
-    //     m_phys.add(m_player);
-
     m_player = ref<Car>(m_phys);
     m_player->addTo(m_world);
 
-    // auto opponent = ref<RigidBody>(
-    //         ref<MeshCollider>(car_collider),
-    //         ref<Mesh>(car, Material("Phong", { lightDirection, uniform("ambient", vec3(0, 0, 0.2)), uniform("diffuseAlbedo", vec3(0, 0, 0.7)) }))
-    //     );
-    //     opponent->setBox(colliderSize, 200.0f);
-    //     opponent->setPosition({ -4.0f, 2.0f, -3.0f });
-    //     m_world->add(opponent);
-    //     m_phys.add(opponent);
+    for (size_t i = 0; i < 2; i++) {
+        auto opponent = ref<Car>(m_phys);
+        opponent->m_body->setPosition({ 6.0f + 2.0f * i, 2.0f, -3.0f });
+        opponent->addTo(m_world);
 
-    // for (size_t i = 0; i < 2; i++) {
-    //     auto opponent = ref<Car>(m_phys);
-    //     opponent->m_body->setPosition({ 6.0f + 2.0f * i, 2.0f, -3.0f });
-    //     opponent->addTo(m_world);
-
-    //     m_opponents.push_back(opponent);
-    // }
+        m_opponents.push_back(opponent);
+    }
 
     // auto sphere = ref<RigidBody>(
     //         ref<Mesh>(SphereGeometry(1.0f, 3), colorMaterial)
     //     );
-    //     sphere->setPosition({ -4.0f, 2.0f, 0.0f });
+    //     sphere->setPosition({ -3.0f, 2.0f, 0.0f });
     //     sphere->setBox(vec3(1.0f), 1.0f);
     //     sphere->canSleep = false;
     //     sphere->restitution = 1.0f;
