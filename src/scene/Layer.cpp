@@ -29,13 +29,15 @@ void Layer::add(Ref<RigidBody> body) {
 
     this->add(body->mesh);
 
-    if (body->collider->m_type == ColliderType::CONVEX_MESH || body->collider->m_type == ColliderType::INEFFICIENT_MESH) {
-        const auto MC = std::static_pointer_cast<MeshCollider>(body->collider);
+    #ifdef DEBUG_MODE
+        if (body->collider->m_type == ColliderType::CONVEX_MESH || body->collider->m_type == ColliderType::INEFFICIENT_MESH) {
+            const auto MC = std::static_pointer_cast<MeshCollider>(body->collider);
 
-        this->add(MC->m_mesh);
+            this->add(MC->m_mesh);
 
-        MC->m_mesh->m_material->wireframe = true;
-    }
+            MC->m_mesh->m_material->wireframe = true;
+        }
+    #endif
 
 }
 
