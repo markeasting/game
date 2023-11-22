@@ -1,8 +1,8 @@
 #pragma once
 
 #include "physics/Collider.h"
-#include "physics/gjk-epa/Simplex.h"
-#include "physics/gjk-epa/Support.h"
+#include "physics/narrowphase/Simplex.h"
+#include "physics/narrowphase/Support.h"
 
 namespace GjkEpa {
 

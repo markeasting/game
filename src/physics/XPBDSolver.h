@@ -2,7 +2,7 @@
 
 #include "common.h"
 #include "physics/RigidBody.h"
-#include "physics/gjk-epa/GjkEpa.h"
+#include "physics/narrowphase/GjkEpa.h"
 // #include "physics/ContactSet.h"
 #include "physics/Constraint.h"
 

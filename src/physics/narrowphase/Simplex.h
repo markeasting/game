@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common.h"
-#include "physics/gjk-epa/Support.h"
+#include "physics/narrowphase/Support.h"
 
 struct Simplex
 {

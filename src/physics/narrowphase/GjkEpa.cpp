@@ -1,5 +1,5 @@
 
-#include "physics/gjk-epa/GjkEpa.h"
+#include "physics/narrowphase/GjkEpa.h"
 
 namespace GjkEpa {
 
