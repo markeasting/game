@@ -130,33 +130,25 @@ RaycastInfo PhysicsHandler::raycast(const vec3& ray_origin, const vec3& ray_dir)
 
                 if (rayTriangleIntersect(ray_origin, ray_dir, triangle, d)) {
                     if (d > 0.0f && d < minDistance) {
+                        minDistance = d;
                         result.exists = true;
                         result.dist = d;
                         result.point = ray_origin + d * ray_dir;
 
+                        // result.normal = triangle[3];
                         tempTriangle = triangle;
                     }
                 };
             }
         }
 
-        if (minDistance < FLT_MAX) {
+        if (result.exists) {
             /* Calculate normal */
             vec3 edge1 = tempTriangle[1] - tempTriangle[0];
             vec3 edge2 = tempTriangle[2] - tempTriangle[0];
             result.normal = glm::normalize(glm::cross(edge1, edge2));
-
             // result.normal = tempTriangle[3];
         }
-
-        // if (body->collider->m_type == ColliderType::PLANE) {
-        //     const auto& PC = static_cast<PlaneCollider*>(body->collider.get());
-        //     auto [exists, hit, dist, normal] = _raycastPlane(PC->m_plane, ray_origin, ray_dir);
-
-        //     if (exists && dist < minDistance) {
-        //         // ...
-        //     }
-        // }
     }
 
     return result;

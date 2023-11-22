@@ -1,6 +1,7 @@
 
 #include "physics/Collider.h"
 
+void Collider::expandAABB(float scalar) { }
 void Collider::updateGlobalPose(const Pose& pose) { }
 
 PlaneCollider::PlaneCollider(const glm::vec2 &size, const glm::vec3 &normal) {
@@ -30,9 +31,9 @@ SphereCollider::SphereCollider(const float diameter) {
     m_radius = diameter/2;
 }
 
-MeshCollider::MeshCollider(Ref<Geometry> convexGeometry) {
-    m_type = ColliderType::CONVEX_MESH;
-    setGeometry(convexGeometry);
+MeshCollider::MeshCollider(Ref<Geometry> geometry, bool isConvex) {
+    m_type = isConvex ? ColliderType::CONVEX_MESH : ColliderType::INEFFICIENT_MESH;
+    setGeometry(geometry);
 }
 
 MeshCollider::MeshCollider(Ref<Mesh> mesh) 
@@ -48,8 +49,6 @@ void MeshCollider::setGeometry(Ref<Geometry> geometry) {
         m_verticesWorldSpace.push_back(v.position);
     }
 
-    // @TODO this doesn't work if geometry has indices but vertices on the same locations. 
-    // So, we should check EPS with all vertices here instead...
     if (geometry->hasIndices()) {
         m_indices = geometry->m_indexBuffer->m_data;
 
@@ -62,16 +61,17 @@ void MeshCollider::setGeometry(Ref<Geometry> geometry) {
         /* @TODO combine with the loop above */
         /* Note: looks a lot like updateGlobalPose */
         for (size_t i = 0; i < m_indices.size(); i += 3) {
-            std::array<vec3, 3> tri;
+            std::array<vec3, 4> tri;
 
             for (int j = 0; j < 3; ++j) {
                 int index = m_indices[i + j];
                 tri[j] = m_vertices[index];
             }
 
-            // vec3 edge1 = tri[1] - tri[0];
-            // vec3 edge2 = tri[2] - tri[0];
-            // tri[3] = glm::normalize(glm::cross(edge1, edge2));
+            /* Precompute normal */
+            const vec3 edge1 = tri[1] - tri[0];
+            const vec3 edge2 = tri[2] - tri[0];
+            tri[3] = glm::normalize(glm::cross(edge1, edge2));
 
             m_triangles.push_back(tri);
         }
@@ -96,6 +96,11 @@ void MeshCollider::setRelativePos(const vec3& pos) {
     }
 }
 
+void MeshCollider::expandAABB(float scalar) {
+    m_expanded_aabb = AABB(m_aabb);
+    m_expanded_aabb.expandByScalar(scalar);
+}
+
 void MeshCollider::updateGlobalPose(const Pose& pose) {
 
     vec3 min = vec3(FLT_MAX);
@@ -103,22 +108,55 @@ void MeshCollider::updateGlobalPose(const Pose& pose) {
 
     m_relativePosW = (pose.q * m_relativePos) + pose.p;
 
-    for (int i = 0; i < m_vertices.size(); i++) {
-        auto v = m_vertices[i];
+    // for (int i = 0; i < m_vertices.size(); i++) {
+    //     auto v = m_vertices[i];
 
-        m_verticesWorldSpace[i] = (pose.q * v) + pose.p;
+    //     m_verticesWorldSpace[i] = (pose.q * v) + pose.p;
 
-        min = glm::min(min, m_verticesWorldSpace[i]);
-        max = glm::max(max, m_verticesWorldSpace[i]);
-    }
+    //     min = glm::min(min, m_verticesWorldSpace[i]);
+    //     max = glm::max(max, m_verticesWorldSpace[i]);
+    // }
 
-    /* @TODO could probably be a lot more efficient */
+    // /* @TODO could probably be a lot more efficient */
+    // int k = 0;
+    // for (size_t i = 0; i < m_indices.size(); i += 3) {
+    //     auto& tri = m_triangles[k];
+        
+    //     for (int j = 0; j < 3; ++j) {
+    //         int index = m_indices[i + j];
+    //         tri[j] = m_verticesWorldSpace[index];
+    //     }
+
+    //     /* Precompute normal */
+    //     const vec3 edge1 = tri[1] - tri[0];
+    //     const vec3 edge2 = tri[2] - tri[0];
+    //     tri[3] = glm::normalize(glm::cross(edge1, edge2));
+
+    //     k++;
+    // }
+
+    /* Combined loop */
     int k = 0;
     for (size_t i = 0; i < m_indices.size(); i += 3) {
+        auto& tri = m_triangles[k];
+        
         for (int j = 0; j < 3; ++j) {
             int index = m_indices[i + j];
-            m_triangles[k][j] = m_verticesWorldSpace[index];
+
+            const auto v = m_vertices[index];
+            m_verticesWorldSpace[index] = (pose.q * v) + pose.p;
+
+            min = glm::min(min, m_verticesWorldSpace[index]);
+            max = glm::max(max, m_verticesWorldSpace[index]);
+
+            tri[j] = m_verticesWorldSpace[index];
         }
+
+        /* Precompute normal */
+        // const vec3 edge1 = tri[1] - tri[0];
+        // const vec3 edge2 = tri[2] - tri[0];
+        // tri[3] = glm::normalize(glm::cross(edge1, edge2));
+
         k++;
     }
 

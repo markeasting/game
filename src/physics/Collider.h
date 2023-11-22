@@ -12,7 +12,7 @@ enum class ColliderType {
     BOX, 
     PLANE, 
     SPHERE, 
-    MESH,
+    INEFFICIENT_MESH,
     CONVEX_MESH
 };
 
@@ -34,6 +34,7 @@ public:
     Collider() = default;
     virtual ~Collider() = default;
 
+    virtual void expandAABB(float scalar = 0.0f);
     virtual void updateGlobalPose(const Pose& pose);
 
     virtual void setRelativePos(const vec3& pos) {
@@ -67,15 +68,16 @@ struct MeshCollider : public Collider {
     std::vector<unsigned int> m_indices;
     std::vector<unsigned int> m_uniqueIndices;
 
-    std::vector<std::array<vec3, 3>> m_triangles;
+    std::vector<std::array<vec3, 4>> m_triangles;
 
     // @TODO convexHull;
 
-    MeshCollider(Ref<Geometry> convexGeometry);
+    MeshCollider(Ref<Geometry> geometry, bool isConvex = true);
     MeshCollider(Ref<Mesh> mesh);
     
     void setGeometry(Ref<Geometry> geometry);
     void setRelativePos(const vec3& pos) override;
+    void expandAABB(float scalar = 0.0f) override;
     void updateGlobalPose(const Pose& pose) override;
 
     vec3 findFurthestPoint(const vec3& dir) const override;

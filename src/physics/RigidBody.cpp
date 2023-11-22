@@ -1,13 +1,13 @@
 #include "RigidBody.h"
 
-RigidBody::RigidBody(Ref<Mesh> mesh)
+RigidBody::RigidBody(Ref<Mesh> mesh, bool isConvex)
     : mesh(mesh) 
 {
 
     assert(mesh != nullptr);
 
     if (this->collider == nullptr) {
-        this->collider = ref<MeshCollider>(mesh->m_geometry);
+        this->collider = ref<MeshCollider>(mesh->m_geometry, isConvex);
     }
 
     this->mesh->m_managedByRigidBody = true;
@@ -306,6 +306,10 @@ void RigidBody::updateGeometry() {
 }
 
 void RigidBody::updateCollider() {
+    if (!this->isDynamic) {
+        this->collider->expandAABB();
+    }
+
     this->collider->updateGlobalPose(this->pose);
 }
 

@@ -1,5 +1,6 @@
 #include "physics/XPBDSolver.h"
 #include "util/QuatFromTwoVectors.h"
+#include <glm/gtx/intersect.hpp>
 
 void XPBDSolver::init() {
     Material colorMaterial = Material("Basic");
@@ -68,8 +69,7 @@ void XPBDSolver::update(const std::vector<Ref<RigidBody>>& bodies, const std::ve
             continue;
                 
         /* (3.5) k * dt * vbody */
-        body->collider->m_expanded_aabb = AABB(body->collider->m_aabb);
-        body->collider->m_expanded_aabb.expandByScalar(2.0f * dt * body->velocity);
+        body->collider->expandAABB(2.0f * dt * body->velocity);
 
         body->force = vec3(0.0f);
         body->torque = vec3(0.0f);
@@ -106,24 +106,39 @@ std::vector<CollisionPair> XPBDSolver::collectCollisionPairs(const std::vector<R
             auto const& aabb2 = B->collider->m_expanded_aabb;
 
             switch(A->collider->m_type) {
+
                 case ColliderType::CONVEX_MESH :
+
                     switch(B->collider->m_type) {
+                        
                         case ColliderType::CONVEX_MESH : {
 
-                            if (aabb1.intersects(aabb2))
+                            if (aabb1.intersects(aabb2)) {
                                 collisions.push_back(CollisionPair(A.get(), B.get()));
+                            }
 
                             break;
                         }
+
+                        // case ColliderType::INEFFICIENT_MESH : {
+
+                        //     // @TODO find a more efficient method, BVH tree etc.
+                        //     collisions.push_back(CollisionPair(A.get(), B.get()));
+
+                        //     break;
+                        // }
+
                         case ColliderType::PLANE : {
 
                             const auto& PC = std::static_pointer_cast<PlaneCollider>(B->collider);
 
-                            if (aabb1.intersectsPlane(PC->m_plane))
+                            if (aabb1.intersectsPlane(PC->m_plane)) {
                                 collisions.push_back(CollisionPair(A.get(), B.get()));
+                            }
 
                             break;
                         }
+                        
                         default: break;
                     }
                 break;
@@ -144,8 +159,11 @@ std::vector<Ref<ContactSet>> XPBDSolver::getContacts(const std::vector<Collision
         RigidBody* B = collision.B;
 
         switch(A->collider->m_type) {
+
             case ColliderType::CONVEX_MESH :
+
                 switch(B->collider->m_type) {
+
                     case ColliderType::CONVEX_MESH : {
 
                         Simplex simplex = GjkEpa::GJK(A->collider.get(), B->collider.get());
@@ -174,6 +192,47 @@ std::vector<Ref<ContactSet>> XPBDSolver::getContacts(const std::vector<Collision
 
                         break;
                     }
+
+                    // case ColliderType::INEFFICIENT_MESH : {
+
+                    //     const auto& MC1 = std::static_pointer_cast<MeshCollider>(A->collider); // Convex
+                    //     const auto& MC2 = std::static_pointer_cast<MeshCollider>(B->collider); // Non-convex
+
+                    //     for (const auto& triangle : MC2->m_triangles) {
+
+                    //         for(int i = 0; i < MC1->m_uniqueIndices.size(); i++) {
+
+                    //             /* (26) - p1 */
+                    //             const vec3 r1 = MC1->m_vertices[MC1->m_uniqueIndices[i]];
+                    //             const vec3 p1 = MC1->m_verticesWorldSpace[MC1->m_uniqueIndices[i]];
+
+                    //             vec3 ro = p1;
+                    //             vec3 N = triangle[3]; // need to compute, disabled in updateGlobalPose() 
+                    //             vec2 bary;
+                    //             float t;
+
+                    //             bool intersected = glm::intersectRayTriangle(ro, N, triangle[0], triangle[1], triangle[2], bary, t);
+
+                    //             if (intersected && t > 0.0f) {
+
+                    //                 /* (26) - p2 */
+                    //                 const vec3 p2 = ro + N * t; // ro + rd × t
+                    //                 const vec3 r2 = B->worldToLocal(p2);
+
+                    //                 /* (3.5) Penetration depth -- Note: sign was flipped! */
+                    //                 const float d = - glm::dot((p1 - p2), N);
+
+                    //                 /* (3.5) if d ≤ 0 we skip the contact */
+                    //                 if (d <= 0.0f)
+                    //                     continue;
+
+                    //                 auto contact = ref<ContactSet>(A, B, N, d, p1, p2, r1, r2);
+                    //                 contacts.push_back(contact);
+                    //                 XPBDSolver::debugContact(contact);
+                    //             }
+                    //         }
+                    //     }
+                    // }
 
                     case ColliderType::PLANE : {
 

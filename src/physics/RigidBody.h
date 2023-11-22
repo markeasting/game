@@ -40,7 +40,7 @@ public:
     float restitution = 0.4f;           /* https://en.m.wikipedia.org/wiki/Coefficient_of_restitution */
 
     RigidBody() = default;
-    RigidBody(Ref<Mesh> mesh);
+    RigidBody(Ref<Mesh> mesh, bool isConvex = true);
     RigidBody(Ref<Collider> collider, Ref<Mesh> mesh = nullptr);
     ~RigidBody() = default;
 
