@@ -274,6 +274,10 @@ void Car::update(float dt) {
 
         auto [exists, point, normal, dist] = m_phys.raycast(hardpointW, wheel.m_normal);
 
+        // if (i == 0) XPBDSolver::p1->setPosition(point);
+        // if (i == 1) XPBDSolver::p2->setPosition(point);
+        // if (i == 0) XPBDSolver::setDebugVector(wheel.m_normal, hardpointW);
+
         vec3 F = wheel.update(
             m_body, 
             dist,
@@ -284,7 +288,7 @@ void Car::update(float dt) {
             dt
         );
 
-        if (exists)
+        if (exists && dist > 0.0f)
             m_body->applyForce(F, hardpointW);
     }
     
