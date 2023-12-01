@@ -1,16 +1,16 @@
 
-#include "scenes/Test/MyScene.h"
+#include "scenes/playground/PlayGround.h"
 #include "physics/Collider.h"
 #include "scene/SceneManager.h"
 #include "util/Anim.h"
 #include "gfx/CubeMapTexture.h"
 
-MyScene::MyScene() {
+PlayGround::PlayGround() {
 
-    m_layers.add("world", m_world);
-    m_layers.add("overlay", m_overlay);
+    // m_layers.add("world", m_world);
+    // m_layers.add("overlay", m_overlay);
 
-    m_overlay->m_active = false;
+    // m_overlay->m_active = false;
 
     m_state.sequence({
         ref<State>("WaitState"),
@@ -18,13 +18,19 @@ MyScene::MyScene() {
         ref<State>(State("Countdown_2", 1.0f).setGroup("countdown")),
         ref<State>(State("Countdown_1", 1.0f).setGroup("countdown")),
         ref<State>("PLAYING"),
-        ref<State>("Finish"),
+        ref<State>("Finish"), // @TODO need a way to 'restart or continue'
     });
 
 }
 
-void MyScene::preload() {
+void PlayGround::load() {
 
+    /* Layers */
+    m_layers.add("world", m_world);
+    m_layers.add("overlay", m_overlay);
+    m_overlay->m_active = false;
+
+    /* Audio */
     vec3 audioPos = { 0.0f, 0.5f, 3.0f };
 
     // m_audio->stream("intro_music", "assets/music/MOM$ - Spacial (pop off).mp3");
@@ -42,7 +48,7 @@ void MyScene::preload() {
     // m_audio->play("MOI");
 }
 
-void MyScene::init() {
+void PlayGround::init() {
 
     // m_audio->play("intro_music");
 
@@ -186,39 +192,38 @@ void MyScene::init() {
 
 }
 
-/**
- * @TODO these listeners are currently bound for the entire lifetime of the game
- * Should encapsulate each scene to have their own event bus
- */
-void MyScene::bindEvents() {
+// void PlayGround::onKeyDown(const SDL_KeyboardEvent& event) {
+    
+//     const auto key = event.keysym.sym;
 
-    Events::on(Events::KEYDOWN, [&](SDL_KeyCode key) {
-        switch (key) {
-            case SDLK_i:
-                m_player->m_body->applyForce(vec3(0, 25000.0f, 0), m_player->m_body->localToWorld({ 0, 0, 0 }));
-                break;
-            case SDLK_l:
-                m_player->m_body->applyTorque(vec3(0, 0, 10000.0f));
-                break;
+//     if (key == SDLK_i)
+//         m_player->m_body->applyForce(vec3(0, 25000.0f, 0), m_player->m_body->localToWorld({ 0, 0, 0 }));
+//     if (key == SDLK_l)
+//         m_player->m_body->applyTorque(vec3(0, 0, 10000.0f));
+// }
+
+void PlayGround::onKey(const SDL_KeyboardEvent& event) {
+    
+    const auto key = event.keysym.sym;
+
+    if (event.type == SDL_KEYUP) {
+        if (key == SDLK_SPACE) {
+            m_state.next();
+            // m_phys.update(0.016f, [this](float h){});
         }
-    });
+    }
+}
 
-    Events::on(Events::KEYUP, [&](SDL_KeyCode key) {
-        switch (key) {
-            case SDLK_SPACE:
-                // m_state.next();
-                m_phys.update(0.016f, [this](float h){});
-            break;
-        }
-    });
+void PlayGround::onClick(const SDL_MouseButtonEvent& event) {
+    // m_camera->m_autoRotate = !m_camera->m_autoRotate;
+    m_camera->m_enableFreeCam = !m_camera->m_enableFreeCam;
+    SDL_SetRelativeMouseMode(m_camera->m_enableFreeCam ? SDL_TRUE : SDL_FALSE);
+}
 
-    Events::on(Events::MOUSEUP, [&]() {
-        // m_camera->m_autoRotate = !m_camera->m_autoRotate;
-        m_camera->m_enableFreeCam = !m_camera->m_enableFreeCam;
-        SDL_SetRelativeMouseMode(m_camera->m_enableFreeCam ? SDL_TRUE : SDL_FALSE);
-    });
+void PlayGround::bindEvents() {
 
-    Events::on(Events::STATE_CHANGE, [&](Ref<State> state) {
+    m_state.on(E::STATE_CHANGE, [&](Ref<State> state) {
+
         Log(state->getName());
 
         if (state->inGroup("countdown")) {
@@ -242,7 +247,12 @@ void MyScene::bindEvents() {
     });
 }
 
-void MyScene::update(float time, float dt) {
+void PlayGround::update(float time, float dt) {
+
+    if (Key::isPressed('i'))
+        m_player->m_body->applyForce(vec3(0, 25000.0f, 0), m_player->m_body->localToWorld({ 0, 0, 0 }));
+    if (Key::isPressed('l'))
+        m_player->m_body->applyTorque(vec3(0, 0, 10000.0f));
 
     if (time > 1.0f)
         SDL_SetRelativeMouseMode(SDL_TRUE);
@@ -279,7 +289,7 @@ void MyScene::update(float time, float dt) {
 
     // @TODO move to State::onUpdate() / State::onInit() as anonymous func?
     if (m_state.is("Finish")) {
-        // m_layers.get("overlay")->m_active = (int) time % 2 == 0;
+        m_layers.get("overlay")->m_active = (int) time % 2 == 0;
         m_camera->m_autoRotate = true;
     }
 
@@ -289,26 +299,32 @@ void MyScene::update(float time, float dt) {
         // m_camera->setPosition(m_player->m_body->localToWorld(m_player->m_camPos));
         m_camera->m_lookAtPos = m_player->m_camLookPos;
         m_camera->setPosition(m_player->m_camPos);
-    
-        if (Keyboard::w) {
-            Anim::lerp(m_player->m_throttle, 1.0f, 0.15f);
-            // m_player->applyThrottle(1.0f);
-        } else if (Keyboard::s) {
-            Anim::lerp(m_player->m_throttle, -1.0f, 0.15f);
-            // m_player->applyThrottle(-1.0f);
-        } else {
-            Anim::lerp(m_player->m_throttle, 0.0f, 0.15f);
+
+        /* @TODO add a check whether or not the gamepad is active */
+        if (Gamepad::m_active) {
+            m_player->applySteering(Gamepad::m_axes[0]);
+            m_player->applyThrottle(-Gamepad::m_axes[3]);
         }
 
-        if (Keyboard::a) {
-            Anim::lerp(m_player->m_steering, -1.0f, (clamp(glm::length(m_player->m_body->vel) / 50.0f, 0.09f, 0.15f)));
-        } else if (Keyboard::d) {
-            Anim::lerp(m_player->m_steering, 1.0f, (clamp(glm::length(m_player->m_body->vel) / 50.0f, 0.09f, 0.15f)));
-        } else {
-            Anim::lerp(m_player->m_steering, 0.0f, (clamp(glm::length(m_player->m_body->vel) / 50.0f, 0.09f, 0.15f)));
-        }
+        // if (Key::isPressed('w')) {
+        //     Anim::lerp(m_player->m_throttle, 1.0f, 0.15f);
+        //     // m_player->applyThrottle(1.0f);
+        // } else if (Key::isPressed('s')) {
+        //     Anim::lerp(m_player->m_throttle, -1.0f, 0.15f);
+        //     // m_player->applyThrottle(-1.0f);
+        // } else {
+        //     Anim::lerp(m_player->m_throttle, 0.0f, 0.15f);
+        // }
 
-        m_player->m_handbrake = Keyboard::b;
+        // if (Key::isPressed('a')) {
+        //     Anim::lerp(m_player->m_steering, -1.0f, (clamp(glm::length(m_player->m_body->vel) / 50.0f, 0.09f, 0.15f)));
+        // } else if (Key::isPressed('d')) {
+        //     Anim::lerp(m_player->m_steering, 1.0f, (clamp(glm::length(m_player->m_body->vel) / 50.0f, 0.09f, 0.15f)));
+        // } else {
+        //     Anim::lerp(m_player->m_steering, 0.0f, (clamp(glm::length(m_player->m_body->vel) / 50.0f, 0.09f, 0.15f)));
+        // }
+
+        m_player->m_handbrake = Key::isPressed('b');
 
         // if (Keyboard::a) 
         //     m_player->applySteering(-1.0f);
@@ -320,4 +336,4 @@ void MyScene::update(float time, float dt) {
     m_audio->updateListener(m_camera->getPosition(), m_camera->getForward(), m_camera->getUp());
 }
 
-void MyScene::destroy() {}
+void PlayGround::destroy() {}

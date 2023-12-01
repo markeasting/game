@@ -1,8 +1,8 @@
 
-#include "scenes/Test/layers/UI.h"
+#include "scenes/menu/layers/Interface.h"
 #include "geom/index.h"
 
-void UI::init() {
+void Interface::init() {
 
     Material textureMaterial = Material("Basic.vert", "BasicTextured.frag");
     textureMaterial.assignTexture("assets/texture/uv_test.jpg", "texture1");

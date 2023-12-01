@@ -1,5 +1,5 @@
 
-#include "scenes/Test/layers/World.h"
+#include "scenes/playground/layers/World.h"
 
 #include "geom/index.h"
 #include "gfx/Mesh.h"

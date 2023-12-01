@@ -2,27 +2,18 @@
 #include "common.h"
 
 #include "core/Game.h"
-#include "scenes/Test/MyScene.h"
-
-/**
- * What’s the "static initialization order 'fiasco' (problem)"?
- * 
- * https://isocpp.org/wiki/faq/ctors#static-init-order
- * 
- * Fix:
- * https://isocpp.org/wiki/faq/ctors#static-init-order-on-first-use-members
- * 
- */
-EventEmitter Events::_emitter;
+#include "scenes/playground/PlayGround.h"
+#include "scenes/menu/Menu.h"
 
 int main() {
 
     Game game;
 
-    Ref<MyScene> gameScene = ref<MyScene>();
+    /* @TODO should just have some generic 'race' scene where the map is loaded dynamically */
+    // game.m_sceneManager.add("menu", ref<Menu>());
+    game.m_sceneManager.add("playground", ref<PlayGround>());
+    game.m_sceneManager.switchTo("playground");
 
-    game.m_sceneManager.add("myScene", gameScene);
-    game.m_sceneManager.switchTo("myScene");
     game.initialize();
     
     while (game.isRunning()) {

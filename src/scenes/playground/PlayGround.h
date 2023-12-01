@@ -2,8 +2,8 @@
 
 #include "common.h"
 #include "scene/Scene.h"
-#include "scenes/Test/layers/UI.h"
-#include "scenes/Test/layers/World.h"
+#include "scenes/playground/layers/UI.h"
+#include "scenes/playground/layers/World.h"
 
 #include "geom/index.h"
 #include "gfx/Mesh.h"
@@ -13,16 +13,19 @@
 
 #include "entity/Car.h"
 
-class MyScene final : public Scene
+class PlayGround final : public Scene
 {
 public:
-    MyScene();
+    PlayGround();
 
-    void preload() override;
+    void load() override;
     void init() override;
     void destroy() override;
 
     void bindEvents() override;
+    void onKey(const SDL_KeyboardEvent& event) override;
+    void onClick(const SDL_MouseButtonEvent& event) override;
+    void onGamepadButton(const SDL_ControllerButtonEvent& event) {};
 
     void update(float time, float dt) override;
 
