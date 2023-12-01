@@ -1,6 +1,6 @@
 
 #include "camera/Camera.h"
-#include "input/KeyboardHandler.h"
+#include "input/Keyboard.h"
 
 Camera::Camera() {}
 
@@ -37,19 +37,19 @@ void Camera::update(float time) {
 
         float posDelta = m_speed; // * time.dt;
     
-        if (Keyboard::shift)
+        if (Key::isPressed(SDLK_LSHIFT))
             posDelta *= 5.0f;
 
-        if (Keyboard::ctrl)
+        if (Key::isPressed(SDLK_LCTRL))
             posDelta *= 0.1f;
 
-        if (Keyboard::w)
+        if (Key::isPressed('w'))
             m_position += front * posDelta;
-        if (Keyboard::s)
+        if (Key::isPressed('s'))
             m_position -= front * posDelta;
-        if (Keyboard::a)
+        if (Key::isPressed('a'))
             m_position -= right * posDelta;
-        if (Keyboard::d)
+        if (Key::isPressed('d'))
             m_position += right * posDelta;
 
         int x, y;
