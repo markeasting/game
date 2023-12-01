@@ -8,10 +8,11 @@ struct State {
 
     ~State() = default;
 
+    /**
+     * Reference to the next state in the list - can be NULL!
+     */
     Ref<State> next() {
         assert(m_next != nullptr);
-
-        this->complete();
 
         return m_next; 
     }

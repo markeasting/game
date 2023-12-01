@@ -1,6 +1,5 @@
 
 #include "state/StateManager.h"
-#include "event/Events.h"
 
 void StateManager::set(Ref<State> state) {
     assert(state != nullptr);
@@ -37,7 +36,8 @@ void StateManager::next() {
 
     Log(m_state->getName());
 
-    Events::emit(Events::STATE_CHANGE, m_state);
+    // Events::emit(Events::STATE_CHANGE, m_state);
+    this->emit(E::STATE_CHANGE, m_state);
 }
 
 Ref<State> StateManager::current() {

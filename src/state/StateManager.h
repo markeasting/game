@@ -2,10 +2,12 @@
 
 #include "common.h"
 #include "state/State.h"
+#include "event/EventEmitter.h"
+#include "event/E.h"
 
 #include <vector>
 
-class StateManager {
+class StateManager: public EventEmitter {
 public:
 
     StateManager() = default;
