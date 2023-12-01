@@ -5,46 +5,94 @@
 SceneManager::SceneManager() {}
 
 void SceneManager::update(float time, float dt) {
-    if(m_currentScene == nullptr)
+    if (m_currentScene == nullptr)
         return;
 
     m_audio->update();
     m_currentScene->update(time, dt);
 }
 
+void SceneManager::handleEvents(const SDL_Event& event) {
+
+    if (m_currentScene == nullptr)
+        return;
+
+    // m_input->handle(event);
+
+    switch (event.type) {
+
+        case SDL_KEYUP:
+        case SDL_KEYDOWN:
+            m_currentScene->onKey(event.key);
+            break;
+
+        case SDL_MOUSEBUTTONUP:
+        // case SDL_MOUSEBUTTONDOWN:
+            m_currentScene->onClick(event.button);
+            break;
+
+        case SDL_CONTROLLERBUTTONUP:
+            m_currentScene->onGamepadButton(event.cbutton);
+            break;
+    
+    default:
+        break;
+    }
+
+}
+
 void SceneManager::add(std::string key, Ref<Scene> scene) {
 
-    auto inserted = m_scenes.insert(std::make_pair(key, scene));
+    assert(scene != nullptr);
 
-    scene->m_audio = m_audio; /* Inject audio manager / could also do singleton? */
-    // scene->m_sceneManager = ref<SceneManager>(*this); /* Inject SceneManager / could also do singleton? */
+    Log("Adding scene: " + key);
+
+    m_scenes[key] = scene;
+
+    scene->m_audio = m_audio; /* Inject */
+    // scene->m_input = m_input; /* Inject */
+    scene->m_scene = this; /* Inject */
     
-    scene->preload();
-    scene->_init();
-    scene->init();
-    scene->bindEvents();
+    // scene->load();
+    // scene->_init();
+    // scene->init();
+    // scene->bindEvents();
 }
 
 void SceneManager::remove(std::string id) {
+    
+    /* @TODO could use at() here if we are sure the key exists */
     auto it = m_scenes.find(id);
 
     if(it != m_scenes.end()) {
-        it->second->destroy();
+        auto scene = it->second;
+        scene->destroy();
         m_scenes.erase(it);
     }
 }
 
 void SceneManager::switchTo(std::string id) {
+
+    /* @TODO could use at() here if we are sure the key exists */
     auto it = m_scenes.find(id);
 
-    if(it != m_scenes.end()) {
+    if (it != m_scenes.end()) {
+        auto scene = it->second;
+
         if(m_currentScene) {
-            m_currentScene->unBindEvents();
             m_currentScene->onDeactivate();
         }
 
-        m_currentScene = it->second;
+        m_currentScene = scene;
+
+        m_currentScene->load();
+        m_currentScene->_init();
+        m_currentScene->init();
+        m_currentScene->bindEvents();
+        
         m_currentScene->onActivate();
+    } else {
+        Log("Scene not found: " + id);
     }
 }
 

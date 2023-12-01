@@ -1,8 +1,10 @@
 #include "core/Game.h"
-#include "scenes/Test/MyScene.h"
 
-#include "input/KeyboardHandler.h"
-#include "event/Events.h"
+#include "input/Mouse.h"
+#include "input/Keyboard.h"
+#include "input/Gamepad.h"
+
+static SDL_Event _event; /* See update() / SDL_PollEvent() */
 
 Game::Game() {}
 
@@ -20,6 +22,8 @@ void Game::setSize(int width, int height) {
 
 void Game::initialize() {
 
+    Gamepad::init();
+
     Game::setSize(m_window.m_frameBufferWidth, m_window.m_frameBufferHeight);
 
 }
@@ -27,26 +31,43 @@ void Game::initialize() {
 void Game::update()
 {
 
-    while (SDL_PollEvent(&m_event)) {
+    while (SDL_PollEvent(&_event)) {
 
-        const auto e = m_event.type;
+        const auto e = _event.type;
 
-        if (e == SDL_QUIT)
+        if (e == SDL_QUIT) {
             m_isRunning = false;
+            break;
+        }
 
-        /** @todo change Keyboard class to be non-static / singleton / injected */
-        if (e == SDL_KEYDOWN || e == SDL_KEYUP) 
-            Keyboard::handle(m_event);
+        m_sceneManager.handleEvents(_event);
 
-        /** @todo change Events class to be non-static / singleton / injected */
-        if (e == SDL_MOUSEBUTTONDOWN)
-            Events::emit(Events::MOUSEDOWN);
+        switch (_event.type) {
+            case SDL_KEYDOWN:
+            case SDL_KEYUP:
+                Keyboard::handle(_event.key);
+                break;
 
-        if (e == SDL_MOUSEBUTTONUP)
-            Events::emit(Events::MOUSEUP);
+            // case SDL_MOUSEMOTION:
+            // case SDL_MOUSEWHEEL:
+            case SDL_MOUSEBUTTONDOWN:
+            case SDL_MOUSEBUTTONUP:
+                Mouse::handleButtonPress(_event.button);
+                break;
+
+            case SDL_CONTROLLERAXISMOTION:
+                Gamepad::handleAxisMotion(_event.caxis);
+                break;
+            case SDL_CONTROLLERBUTTONUP:
+            case SDL_CONTROLLERBUTTONDOWN:
+                Gamepad::handleButtonPress(_event.cbutton);
+                break;
+        }
+
+        // Log(Gamepad::m_axes[2]);
 
         if (e == SDL_KEYUP) {
-            if (m_event.key.keysym.sym == SDLK_F1) {
+            if (_event.key.keysym.sym == SDLK_F1) {
                 m_renderer.m_config.wireframe = !m_renderer.m_config.wireframe;
             }
         }
@@ -70,8 +91,9 @@ bool Game::isRunning() const {
 }
 
 void Game::quit() {
+    m_sceneManager.destroy(); // This destroys Audio as well, seems kinda weird
 
-    m_sceneManager.destroy();
+    // @TODO more cleanup
 
     SDL_Quit();
 }
