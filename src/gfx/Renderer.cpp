@@ -55,6 +55,9 @@ void Renderer::setSize(int width, int height) {
 
 void Renderer::draw(Ref<Scene> scene, Ref<Camera> camera) {
 
+    assert(scene != nullptr);
+    assert(camera != nullptr);
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     if (m_config.useRenderpass) {
