@@ -5,8 +5,10 @@
 #include <stdexcept>
 #include <functional>
 #include <typeinfo>
-#include <string>
 #include <map>
+
+// #include <string>
+#include "event/E.h"
 
 /**
  * cxx-eventemitter
@@ -15,20 +17,20 @@
  *
  * int main() {
  *
- *   EventEmitter ee;
+ *   EventEmitter e;
  *
- *   ee.on("event", [&](string name, int num) {
+ *   e.on(Event::MY_EVENT, [&](string name, int num) {
  *      // Your code
  *   });
  *
- *   ee.emit("event", "beautiful", 100);
+ *   e.emit(Event::MY_EVENT, "beautiful", 100);
  * }
  *
  */
 class EventEmitter
 {
-    std::map<std::string, void *> events;
-    std::map<std::string, bool> events_once;
+    std::map<E, void *> events;
+    std::map<E, bool> events_once;
 
     template <typename Callback>
     struct traits : public traits<decltype(&Callback::operator())>
@@ -38,7 +40,6 @@ class EventEmitter
     template <typename ClassType, typename R, typename... Args>
     struct traits<R (ClassType::*)(Args...) const>
     {
-
         typedef std::function<R(Args...)> fn;
     };
 
@@ -60,7 +61,7 @@ public:
     }
 
     template <typename Callback>
-    void on(const std::string &name, Callback cb)
+    void on(E name, Callback cb)
     {
 
         auto it = events.find(name);
@@ -84,7 +85,7 @@ public:
     }
 
     template <typename Callback>
-    void once(const std::string &name, Callback cb)
+    void once(E name, Callback cb)
     {
         this->on(name, cb);
         events_once[name] = true;
@@ -97,7 +98,7 @@ public:
         this->_listeners = 0;
     }
 
-    void off(const std::string &name)
+    void off(E name)
     {
 
         auto it = events.find(name);
@@ -116,7 +117,7 @@ public:
     }
 
     template <typename... Args>
-    void emit(std::string name, Args... args)
+    void emit(E name, Args... args)
     {
 
         auto it = events.find(name);
@@ -142,7 +143,5 @@ public:
         events.clear();
     }
 };
-
-// extern EventEmitter _EventEmitter;
 
 #endif
