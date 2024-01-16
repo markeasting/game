@@ -21,11 +21,11 @@ vec3 Wheel::getSteeringForce(Ref<RigidBody> body, float dt) {
 
     float vx = glm::dot(m_worldVelocity, m_forward);
     float vy = glm::dot(m_worldVelocity, m_right);
-    m_slipAngle = abs(vx) > 0.05f ? -atan(vy / abs(vx)) : 0.0f;
+    m_slipAngle = abs(vx) > 0.01f ? -atan(vy / abs(vx)) : 0.0f;
 
     /* Loosly based on Pacejka's Magic Formula */
-    const float D = 0.025f;
-    const float E = 2.1f; /* [0.5-2.5] */
+    const float D = 0.050f;
+    const float E = 0.5f; /* [0.5-2.5] */
     float lateralForce = D * m_springForce * sin(E * atan(E * atan(m_slipAngle)));
 
     vec3 F = abs(vx) > 2.0f
