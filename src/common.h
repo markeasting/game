@@ -7,16 +7,15 @@
 #define _USE_MATH_DEFINES
 #include <cstdlib>
 #include <cmath>
-#include <limits>
 #include <algorithm>
-#include <vector>
 #include <array>
-#include <unordered_map>
-#include <string>
+#include <functional>
 #include <iostream>
+#include <limits>
 #include <memory>
-#include <cmath>
-#include <algorithm>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 #include <SDL.h>
 #include <glad/glad.h>

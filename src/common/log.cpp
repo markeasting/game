@@ -1,7 +1,7 @@
 
 #include "common/log.h"
 
-void Log(const std::string& msg, LogLevel&& logLevel, const std::string& origin) {
+void Log(const std::string& msg, LogLevel logLevel, const std::string& origin) {
 
     std::string logLevelString;
 

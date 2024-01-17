@@ -25,7 +25,7 @@ public:
     void bindEvents() override;
     void onKey(const SDL_KeyboardEvent& event) override;
     void onClick(const SDL_MouseButtonEvent& event) override;
-    void onGamepadButton(const SDL_ControllerButtonEvent& event) {};
+    void onGamepadButton(const SDL_ControllerButtonEvent& event) override {};
 
     void update(float time, float dt) override;
 
