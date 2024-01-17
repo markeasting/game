@@ -6,6 +6,9 @@ void Log(const std::string& msg, LogLevel&& logLevel, const std::string& origin)
     std::string logLevelString;
 
     switch(logLevel) {
+        case LogLevel::NONE:
+            return;
+            break;
         case LogLevel::DEBUG:
             logLevelString = "NOTICE";
             break;

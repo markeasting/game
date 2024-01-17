@@ -5,7 +5,7 @@ TARGET := game
 
 # Compiler and linker settings
 # The -MMD flag ensures dependency files (.d) are created
-CXX := g++
+CXX := clang++ # g++
 CXXFLAGS := -std=c++20 -MMD
 INCLUDES := -I${SRCDIR} \
 	-Ilib/SDL2/include \
@@ -39,12 +39,12 @@ DEBUG_TARGET := $(DBGDIR)/$(TARGET)
 DEBUG := -O0 -g
 DEBUG_OBJECTS := $(patsubst $(SRCDIR)/%, $(DBGOBJ)/%, $(SOURCES:.$(SRCEXT)=.o))
 
-# Release build settings -- DNDEBUG will strip out all assert() calls
+# Release build settings
 RELDIR := $(BUILDDIR)/release
 RELOBJ := $(RELDIR)/obj
 # RELEASE_PCH = $(RELOBJ)/$(PCH_OUT)
 RELEASE_TARGET := $(RELDIR)/$(TARGET)
-RELEASE := -O2 -ffast-math -DNDEBUG
+RELEASE := -O2 -ffast-math -DNDEBUG # DNDEBUG will strip out all assert() calls
 RELEASE_OBJECTS := $(patsubst $(SRCDIR)/%, $(RELOBJ)/%, $(SOURCES:.$(SRCEXT)=.o))
 
 # Targets
