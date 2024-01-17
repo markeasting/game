@@ -2,7 +2,6 @@
 
 #include <SDL.h>
 #include <unordered_map>
-#include "common/log.h"
 
 struct Mouse {
 

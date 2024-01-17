@@ -1,9 +1,6 @@
 
-#include "common.h"
-
 #include "core/Game.h"
 #include "scenes/playground/PlayGround.h"
-#include "scenes/menu/Menu.h"
 
 int main() {
 

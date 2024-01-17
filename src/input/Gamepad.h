@@ -1,9 +1,9 @@
 #pragma once
 
 #include <SDL.h>
-// #include <unordered_map>
 #include <array>
-#include "common/log.h"
+#include <cassert>
+#include <unordered_map>
 
 /**
  * @todo deadzone
