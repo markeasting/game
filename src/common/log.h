@@ -1,11 +1,8 @@
 #pragma once
 
 // /* Note: this is part of the precompiled header file! */
-// #include <string>
-// #include <iostream>
-// #include "glm/glm.hpp"
-
-#include "common.h"
+#include <string>
+#include "glm/glm.hpp"
 
 #ifdef NDEBUG
     #define LOG_LEVEL 0

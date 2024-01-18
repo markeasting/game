@@ -1,6 +1,8 @@
 
 #include "state/StateManager.h"
 
+#include <iostream>
+
 void StateManager::set(Ref<State> state) {
     assert(state != nullptr);
 
@@ -34,7 +36,7 @@ void StateManager::next() {
     m_state->complete();
     m_state = m_state->next();
 
-    Log(m_state->getName());
+    std::cout << m_state->getName() << std::endl;
 
     // Events::emit(Events::STATE_CHANGE, m_state);
     this->emit(E::STATE_CHANGE, m_state);

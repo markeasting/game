@@ -2,8 +2,6 @@
 
 #include "common.h"
 
-#include "gfx/Shader.h"
-#include "gfx/Uniforms.h"
 #include "gfx/Mesh.h"
 
 #include "scene/Scene.h"
@@ -19,14 +17,12 @@ public:
 
  	RendererConfig m_config;
 
-	Renderer();
+	Renderer(RendererConfig config = {});
+
 	Renderer(const Renderer&) = delete;
 	~Renderer();
-	
+
 	void setSize(int width, int height);
-		
-	// @TODO should be a weak ptr?
-	// void add(Ref<Mesh> mesh);
 
 	void draw(Ref<Scene> scene, Ref<Camera> camera);
 	void drawMesh(Ref<Mesh> mesh, Ref<Camera> camera);

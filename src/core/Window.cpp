@@ -1,7 +1,7 @@
 
 #include "core/Window.h"
 
-Window::Window() {
+Window::Window(WindowConfig config): m_config(config) {
 
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) < 0) {
         printf(
@@ -12,7 +12,7 @@ Window::Window() {
     }
 
     m_window = SDL_CreateWindow(
-        "MOI",
+        m_config.windowTitle,
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
         m_config.windowWidth,
@@ -57,14 +57,14 @@ Window::Window() {
     SDL_GL_GetDrawableSize(m_window, &m_frameBufferWidth, &m_frameBufferHeight);
 
     if(gl_context == NULL) {
-        Log("Failed to create OpenGL context");
+        printf("Failed to create OpenGL context");
         std::exit(EXIT_FAILURE);
     }
 
     SDL_GL_MakeCurrent(m_window, gl_context);
 
     if (!gladLoadGLLoader((GLADloadproc) SDL_GL_GetProcAddress)) {
-        Log("Failed to initialize OpenGL context.", LogLevel::ERROR);
+        printf("Failed to initialize OpenGL context.");
         std::exit(EXIT_FAILURE);
     }
     

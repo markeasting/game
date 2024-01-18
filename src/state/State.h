@@ -1,5 +1,8 @@
 #pragma once
 
+#include "common/ref.h"
+#include <cassert>
+
 struct State {
 
     State(const char* name, float duration = 0, const char* group = "")

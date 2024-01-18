@@ -9,6 +9,7 @@
 
 class SceneManager {
 public:
+
     SceneManager();
 
     void update(float time, float dt);
@@ -31,7 +32,7 @@ public:
 private:
     std::unordered_map<std::string, Ref<Scene>> m_scenes = {};
 
-    Ref<Scene>  m_currentScene = nullptr;
+    Ref<Scene> m_currentScene = nullptr;
 
     Ref<Audio> m_audio = ref<Audio>();
 

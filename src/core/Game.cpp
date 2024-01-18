@@ -4,16 +4,15 @@
 #include "input/Keyboard.h"
 #include "input/Gamepad.h"
 
-static SDL_Event _event; /* See update() / SDL_PollEvent() */
-
-Game::Game() {}
+/** Used in update() / SDL_PollEvent() */
+static SDL_Event _event; 
 
 Game::~Game() {}
 
 void Game::setSize(int width, int height) {
-    m_renderer.setSize(width, height);
+    m_renderer->setSize(width, height);
 
-    auto currentScene = m_sceneManager.getCurrentScene();
+    auto currentScene = m_sceneManager->getCurrentScene();
 
     if (currentScene) {
         currentScene->getCamera()->setSize(width, height);
@@ -22,14 +21,14 @@ void Game::setSize(int width, int height) {
 
 void Game::initialize() {
 
-    Gamepad::init();
+    Gamepad::init(); // @TODO inject input class
 
-    Game::setSize(m_window.m_frameBufferWidth, m_window.m_frameBufferHeight);
-
+    setSize(m_window->m_frameBufferWidth, m_window->m_frameBufferHeight);
 }
 
 void Game::update()
 {
+    const auto [time, dt] = m_time->update();
 
     while (SDL_PollEvent(&_event)) {
 
@@ -40,7 +39,7 @@ void Game::update()
             break;
         }
 
-        m_sceneManager.handleEvents(_event);
+        m_sceneManager->handleEvents(_event);
 
         switch (_event.type) {
             case SDL_KEYDOWN:
@@ -64,26 +63,20 @@ void Game::update()
                 break;
         }
 
-        // Log(Gamepad::m_axes[2]);
-
         if (e == SDL_KEYUP) {
             if (_event.key.keysym.sym == SDLK_F1) {
-                m_renderer.m_config.wireframe = !m_renderer.m_config.wireframe;
+                m_renderer->m_config.wireframe = !m_renderer->m_config.wireframe;
             }
         }
     }
-
-    m_prevTime = m_time;
-    m_time = SDL_GetTicks() / 1000.0f;
-    m_deltaTime = m_time - m_prevTime;
     
-    m_sceneManager.update(m_time, m_deltaTime);
+    m_sceneManager->update(time, dt);
 
-    auto scene = m_sceneManager.getCurrentScene();
+    auto scene = m_sceneManager->getCurrentScene();
     auto cam = scene->getCamera();
 
-    m_renderer.draw(scene, cam);
-    m_window.swapBuffers();
+    m_renderer->draw(scene, cam);
+    m_window->swapBuffers();
 }
 
 bool Game::isRunning() const {
@@ -91,7 +84,10 @@ bool Game::isRunning() const {
 }
 
 void Game::quit() {
-    m_sceneManager.destroy(); // This destroys Audio as well, seems kinda weird
+    
+    // This destroys Audio as well
+    // @TODO seems kinda weird
+    m_sceneManager->destroy(); 
 
     // @TODO more cleanup
 

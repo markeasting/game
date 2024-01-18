@@ -1,8 +1,9 @@
 #pragma once
 
 #include "core/Window.h"
+#include "core/Timer.h"
 #include "scene/SceneManager.h"
-#include "gfx/Renderer.h"
+#include "core/Renderer.h"
 
 struct GameConfig {
     
@@ -13,13 +14,23 @@ public:
     
     GameConfig m_config;
 
-	Window m_window;
-
-    Renderer m_renderer;
-
-    SceneManager m_sceneManager;
+	Ref<Timer> m_time = nullptr;
+	Ref<Window> m_window = nullptr;
+    Ref<Renderer> m_renderer = nullptr;
+    Ref<SceneManager> m_sceneManager = nullptr;
     
-    Game();
+    Game(
+        Ref<Timer> timer, 
+        Ref<Window> window, 
+        Ref<Renderer> renderer, 
+        Ref<SceneManager> sceneManager
+    ) : 
+        m_time(timer), 
+        m_window(window), 
+        m_renderer(renderer), 
+        m_sceneManager(sceneManager) 
+    {}
+
     ~Game();
 
     void initialize();
@@ -27,16 +38,10 @@ public:
     bool isRunning() const;
     void quit();
 
-    float getTime() const { return m_time; }
-
 private:
 
     void setSize(int width, int height);
     
     bool m_isRunning = true;
-    
-    float m_time = 0;
-    float m_prevTime = 0;
-    float m_deltaTime = 0;
 
 };

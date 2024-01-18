@@ -1,5 +1,7 @@
-#include "common.h"
+
 #include "util/Filesystem.h"
+
+#include <fstream>
 
 #ifdef __linux__
 #include <unistd.h>

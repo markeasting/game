@@ -1,10 +1,8 @@
 
-#include "gfx/Renderer.h"
+#include "core/Renderer.h"
 
-#include "camera/Camera.h"
-
-Renderer::Renderer() {
-
+Renderer::Renderer(RendererConfig config): m_config(config) {
+    
     if (GLVersion.major > 4 && GLVersion.minor >= 3) {
         glDebugMessageCallback(GlDebugMsg, nullptr);
         glEnable(GL_DEBUG_OUTPUT);
@@ -79,7 +77,9 @@ void Renderer::draw(Ref<Scene> scene, Ref<Camera> camera) {
 
             this->drawMesh(mesh, camera);
 
-            // mesh->unbind(); // @TODO check if unbinding VAO / shader / texture is required
+            // @TODO check if unbinding VAO / shader / texture is required
+            // Or if it has any impact on performance
+            // mesh->unbind(); 
         }
 
         /* Draw transparent meshes */
@@ -90,7 +90,9 @@ void Renderer::draw(Ref<Scene> scene, Ref<Camera> camera) {
 
             this->drawMesh(mesh, camera);
 
-            // mesh->unbind(); // @TODO check if unbinding VAO / shader / texture is required
+            // @TODO check if unbinding VAO / shader / texture is required
+            // Or if it has any impact on performance
+            // mesh->unbind(); 
         }
     }
 
@@ -124,7 +126,8 @@ void Renderer::drawMesh(Ref<Mesh> mesh, Ref<Camera> camera) {
         glm::mat4(glm::mat3(camera->m_viewMatrix))
     );
 
-    // @TODO clean this up - maybe go back to separate m * v * p
+    // @TODO premature optimization is <...>
+    // Maybe just go back to separate m * v * p
     mesh->m_material->setUniform(
         "u_projectionMatrix", 
         camera->m_projectionMatrix

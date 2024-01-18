@@ -16,14 +16,14 @@ public:
     WindowConfig m_config;
 
     SDL_Window* m_window;
-    Window* self = this;
 
     int m_windowWidth = 0;
     int m_windowHeight = 0;
     int m_frameBufferWidth = 0;
     int m_frameBufferHeight = 0;
 
-    Window();
+    Window(WindowConfig config = {});
+
     ~Window();
 
     void swapBuffers();     // @TODO inline these
