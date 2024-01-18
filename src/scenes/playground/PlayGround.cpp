@@ -4,6 +4,7 @@
 #include "scene/SceneManager.h"
 #include "util/Anim.h"
 #include "gfx/CubeMapTexture.h"
+#include "util/QuatFromTwoVectors.h"
 
 PlayGround::PlayGround() {
 
