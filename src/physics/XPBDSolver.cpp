@@ -69,7 +69,7 @@ void XPBDSolver::update(const std::vector<Ref<RigidBody>>& bodies, const std::ve
             continue;
                 
         /* (3.5) k * dt * vbody */
-        body->collider->expandAABB(2.0f * dt * body->velocity);
+        body->collider->expandAABB(2.0f * dt * body->velocity());
 
         body->force = vec3(0.0f);
         body->torque = vec3(0.0f);
