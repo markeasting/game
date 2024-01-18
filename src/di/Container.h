@@ -26,10 +26,19 @@ public:
     void operator=(const Container &) = delete;
     
     /** 
-     * Get a container instance. 
+     * Get a container instance (thread safe).
+     * 
      * https://refactoring.guru/design-patterns/singleton/cpp/example#example-1
      */
-    static Container* instance();
+    static Container* instance() {
+        std::lock_guard<std::mutex> lock(m_mutex);
+
+        if (m_instance == nullptr) {
+            m_instance = new Container();
+        }
+
+        return m_instance;
+    };
 
     /**
      * Registers a class as a singleton / shared service.
@@ -111,8 +120,8 @@ protected:
 
 private:
 
-    inline static Container* _instance = nullptr;
-    inline static std::mutex _mutex;
+    inline static Container* m_instance = nullptr;
+    inline static std::mutex m_mutex;
 
     Container() {}
     ~Container() {}
