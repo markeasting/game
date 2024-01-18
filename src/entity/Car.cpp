@@ -2,7 +2,7 @@
 #include "entity/Car.h"
 
 #include "gfx/Material.h"
-#include "physics/XPBDSolver.h"
+#include "util/QuatFromTwoVectors.h"
 
 vec3 Wheel::NORMAL = vec3(0, -1.0f, 0);
 vec3 Wheel::FORWARD = vec3(0, 0, 1.0f);
@@ -23,10 +23,15 @@ vec3 Wheel::getSteeringForce(Ref<RigidBody> body, float dt) {
     float vy = glm::dot(m_worldVelocity, m_right);
     m_slipAngle = abs(vx) > 0.01f ? -atan(vy / abs(vx)) : 0.0f;
 
-    /* Loosly based on Pacejka's Magic Formula */
-    const float D = 0.050f;
-    const float E = 0.5f; /* [0.5-2.5] */
-    float lateralForce = D * m_springForce * sin(E * atan(E * atan(m_slipAngle)));
+    /* Pacejka's Magic Formula - https://en.m.wikipedia.org/wiki/Hans_B._Pacejka */
+    const float D = 0.050f;     /* Overall grip multiplier */
+    const float B = 0.8f;       /* [0 - 2.0] Initial grip slope - (should be related to normal force) */
+    const float C = 1.5f;       /* [0 - 2.0] Grip falloff / related to B. (< 1.0 means no falloff but never fully reaches max grip) */
+    const float E = 0.5f;       /* [0 - 1.0] Falloff sharpness (lower is sharper) */
+    const float Bx = B * m_slipAngle;
+    float pacejka = D * sin(C * atan(Bx - E * (Bx - atan(Bx))));
+
+    float lateralForce = m_springForce * pacejka;
 
     vec3 F = abs(vx) > 2.0f
         ? -lateralForce / dt * m_right /* F = ma */

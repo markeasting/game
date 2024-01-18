@@ -4,8 +4,6 @@
 #include "physics/PhysicsHandler.h"
 #include "physics/RigidBody.h"
 
-#include "util/QuatFromTwoVectors.h"
-
 class Wheel {
 public:
 
@@ -27,9 +25,9 @@ public:
     float m_radius = 0.313f;
     float m_springLength = 0.08f;
 
-    float m_caster = 0.03f;
-    float m_camber = 0.05f;
     float m_steerAngle = 0.0f;
+    float m_caster = 0.03f; // @TODO
+    float m_camber = 0.05f; // @TODO
 
     float m_stiffness = 12500.0f;
     float m_damping = 750.0f;
@@ -40,6 +38,7 @@ public:
 
     float m_grip = 1100.0f;
 
+protected:
     float m_pos; /* Readonly */
     float m_prevPos; /* Readonly */
     float m_slipAngle; /* Readonly */
@@ -48,6 +47,7 @@ public:
     float m_omega;
     float m_theta;
 
+public:
     Ref<Mesh> m_mesh;
     Ref<Mesh> m_origin;
     Ref<Mesh> m_line;
