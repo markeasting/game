@@ -169,8 +169,6 @@ void RigidBody::update(const float dt) {
     if (dq.w < 0.0f)
         this->omega = vec3(-this->omega.x, -this->omega.y, -this->omega.z); // @TODO just omega = -omega?
 
-    this->velocity = glm::length(this->vel);
-
     this->updateCollider();
 }
 

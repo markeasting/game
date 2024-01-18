@@ -26,7 +26,9 @@ public:
     vec3 vel = vec3(0);                 /* https://en.m.wikipedia.org/wiki/Velocity */
     vec3 omega = vec3(0);               /* https://en.m.wikipedia.org/wiki/Angular_velocity */
 
-    float velocity = 0.0f;
+    float velocity() {
+        return glm::length(this->vel);
+    };
 
     float invMass = 1.0f;               /* https://en.m.wikipedia.org/wiki/Mass */
     vec3 invInertia = vec3(1.0f);       /* https://en.m.wikipedia.org/wiki/Moment_of_inertia */
