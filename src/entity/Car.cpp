@@ -1,8 +1,9 @@
 
 #include "entity/Car.h"
 
-#include "gfx/Material.h"
-#include "util/QuatFromTwoVectors.h"
+#include "engine/geom/index.h"
+#include "engine/gfx/Material.h"
+#include "engine/util/QuatFromTwoVectors.h"
 
 vec3 Wheel::NORMAL = vec3(0, -1.0f, 0);
 vec3 Wheel::FORWARD = vec3(0, 0, 1.0f);

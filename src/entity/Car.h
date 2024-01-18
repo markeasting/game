@@ -1,8 +1,8 @@
 #pragma once
 
-#include "scene/Layer.h"
-#include "physics/PhysicsHandler.h"
-#include "physics/RigidBody.h"
+#include "engine/scene/Layer.h"
+#include "engine/physics/PhysicsHandler.h"
+#include "engine/physics/RigidBody.h"
 
 class Wheel {
 public:

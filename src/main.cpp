@@ -1,20 +1,18 @@
 
-#include "core/Renderer.h"
-#include "core/_bundle.h"
-#include "di/Container.h"
+#include "engine/common/Container.h"
 
-#include "core/Window.h"
-#include "scene/SceneManager.h"
+#include "engine/core/_bundle.h"
+#include "engine/scene/_bundle.h"
 
-#include "core/Game.h"
-#include "scene/_bundle.h"
+#include "engine/core/Game.h"
+
 #include "scenes/playground/PlayGround.h"
 
 int main() {
 
     auto container = Container::instance();
     
-    CoreBundle::configure({
+    Engine::CoreBundle::configure({
         .window {
             .windowTitle = "MOI",
             .windowWidth = 2560,
@@ -27,7 +25,7 @@ int main() {
         },
     });
 
-    SceneManagerBundle::configure();
+    Engine::SceneManagerBundle::configure();
 
     /* Game class */
     container->singleton<Game, Timer, Window, Renderer, SceneManager>();

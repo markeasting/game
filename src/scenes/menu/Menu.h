@@ -1,11 +1,10 @@
 #pragma once
 
-#include "common.h"
-#include "scene/Scene.h"
+#include "engine/common.h"
+#include "engine/scene/Scene.h"
 #include "scenes/menu/layers/Interface.h"
 
-class Menu final : public Scene
-{
+class Menu final : public Scene {
 public:
 
     Menu() {

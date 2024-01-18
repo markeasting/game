@@ -1,8 +1,8 @@
 
 #include "scenes/playground/layers/World.h"
 
-#include "geom/index.h"
-#include "gfx/Mesh.h"
+#include "engine/geom/index.h"
+#include "engine/gfx/Mesh.h"
 
 void World::init() {
 

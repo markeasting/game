@@ -1,21 +1,17 @@
 #pragma once
 
-#include "common.h"
-#include "scene/Scene.h"
+#include "engine/common.h"
+#include "engine/scene/Scene.h"
+#include "engine/gfx/Mesh.h"
+#include "engine/physics/PhysicsHandler.h"
+
 #include "scenes/playground/layers/UI.h"
 #include "scenes/playground/layers/World.h"
-
-#include "geom/index.h"
-#include "gfx/Mesh.h"
-
-#include "physics/PhysicsHandler.h"
-#include "physics/RigidBody.h"
-
 #include "entity/Car.h"
 
-class PlayGround final : public Scene
-{
+class PlayGround final : public Scene {
 public:
+
     PlayGround();
 
     void load() override;
@@ -30,7 +26,7 @@ public:
     void update(float time, float dt) override;
 
 private:
-    PhysicsHandler m_phys;
+    PhysicsHandler m_phys; // @TODO inject
 
     Ref<World> m_world = ref<World>();
     Ref<UI> m_overlay = ref<UI>();

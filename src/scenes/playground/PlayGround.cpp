@@ -1,10 +1,13 @@
 
 #include "scenes/playground/PlayGround.h"
-#include "physics/Collider.h"
-#include "scene/SceneManager.h"
-#include "util/Anim.h"
-#include "gfx/CubeMapTexture.h"
-#include "util/QuatFromTwoVectors.h"
+#include "engine/util/Anim.h"
+#include "engine/gfx/CubeMapTexture.h"
+#include "engine/util/QuatFromTwoVectors.h"
+#include "engine/input/Keyboard.h"
+#include "engine/input/Gamepad.h"
+
+#include "engine/physics/Collider.h"
+#include "engine/physics/RigidBody.h"
 
 PlayGround::PlayGround() {
 
@@ -223,7 +226,7 @@ void PlayGround::onClick(const SDL_MouseButtonEvent& event) {
 
 void PlayGround::bindEvents() {
 
-    m_state.on(E::STATE_CHANGE, [&](Ref<State> state) {
+    m_state.on("change", [&](Ref<State> state) {
 
         Log(state->getName());
 
