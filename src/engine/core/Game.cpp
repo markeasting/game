@@ -1,6 +1,6 @@
 #include "engine/core/Game.h"
 
-#include <SDL.h>
+#include <SDL2/SDL.h> 
 
 #include "engine/input/Mouse.h"
 #include "engine/input/Keyboard.h"

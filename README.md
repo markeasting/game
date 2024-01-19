@@ -1,9 +1,8 @@
+# OpenGL game engine / racing game
+
 # Libraries
-The libraries below are also present in the `lib` directory.
-
-See `lib/alure/README.md` how to build and install Alure (OpenAL). 
-
-Be sure to run `sudo ldconfig` after building libs!
+See `lib/alure/README.md` how to build and install Alure (OpenAL). Don't forget
+to run `sudo ldconfig` after building.
 
 ## MacOS
 
@@ -17,8 +16,10 @@ Be sure to run `sudo ldconfig` after building libs!
 
 `sudo apt install libglm-dev`
 
-# Build (Linux / MacOS)
+# Building 
 
 `make -j $(nproc)` 
 
 Available targets: `debug` and `release`
+
+Build and run: `make -j $(nproc) && ./bin/debug/game`

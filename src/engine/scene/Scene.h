@@ -1,6 +1,6 @@
 #pragma once
 
-#include <SDL.h>
+#include <SDL2/SDL.h> 
 
 #include "engine/event/EventEmitter.h"
 #include "engine/core/Camera.h"

@@ -8,16 +8,16 @@ TARGET := game
 CXX := clang++ # g++
 CXXFLAGS := -std=c++20 -MMD
 INCLUDES := -I${SRCDIR} \
-	-Ilib/SDL2/include \
 	-Ilib/glad/include \
-	-Ilib/glm-0.9.9.8 \
 	-Ilib/stb_image \
 	-Ilib/alure/include \
 	-Ilib/objload 
-LDFLAGS := -lSDL2 -lalure2
+LDFLAGS := -lSDL2 -lalure2 # -lSDL2main not required?
 
 # Platform specific settings
 UNAME_S := $(shell uname -s)
+
+# MacOS
 ifeq ($(UNAME_S), Darwin)
 	LDFLAGS += -framework OpenGL
 endif

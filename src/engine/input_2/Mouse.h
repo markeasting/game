@@ -1,8 +1,9 @@
 #pragma once
 
-#include <SDL.h>
+#include <SDL2/SDL.h> 
 #include <unordered_map>
-#include "common/log.h"
+
+#include "engine/common/log.h"
 
 struct Mouse {
 
