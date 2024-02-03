@@ -1,4 +1,5 @@
 #include "RigidBody.h"
+#include "engine/common/log.h"
 
 RigidBody::RigidBody(Ref<Mesh> mesh, bool isConvex)
     : mesh(mesh) 
