@@ -1,25 +1,21 @@
-# Directory settings
-SRCDIR := src
-BUILDDIR := bin
-TARGET := game
+APP_NAME := game
+SOURCE_DIR := src
+BUILD_DIR := bin
 
-# Compiler and linker settings
-# The -MMD flag ensures dependency files (.d) are created
+# Compiler flags
 CXX := clang++ # g++
-CXXFLAGS := -std=c++20 -MMD
-INCLUDES := -I${SRCDIR} \
+CXXFLAGS := -std=c++20 -MMD # The -MMD flag ensures dependency files (.d) are created
+DEFINES := -D_USE_MATH_DEFINES # -DGLM_FORCE_INTRINSICS
+
+# Dependencies / libraries
+INCLUDES := -I${SOURCE_DIR} \
 	-Ilib/glad/include \
 	-Ilib/stb_image \
 	-Ilib/alure/include \
 	-Ilib/objload 
 LDFLAGS := -lSDL2 -lalure2 # -lSDL2main not required?
 
-DEFINES := -D_USE_MATH_DEFINES # -DGLM_FORCE_INTRINSICS
-
-# Platform specific settings
-UNAME_S := $(shell uname -s)
-
-# MacOS
+# MacOS specific
 ifeq ($(UNAME_S), Darwin)
 	LDFLAGS += -framework OpenGL
 endif
@@ -30,30 +26,24 @@ endif
 
 # Source and object file settings
 SRCEXT := cpp
-SOURCES := $(shell find $(SRCDIR) -name '*.$(SRCEXT)')
-OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.o))
+SOURCES := $(shell find $(SOURCE_DIR) -name '*.$(SRCEXT)')
+OBJECTS := $(patsubst $(SOURCE_DIR)/%,$(BUILD_DIR)/%,$(SOURCES:.$(SRCEXT)=.o))
 
 # Debug build settings
-DBGDIR := $(BUILDDIR)/debug
+DBGDIR := $(BUILD_DIR)/debug
 DBGOBJ := $(DBGDIR)/obj
 # DEBUG_PCH = $(DBGOBJ)/$(PCH_OUT)
-DEBUG_TARGET := $(DBGDIR)/$(TARGET)
+DEBUG_TARGET := $(DBGDIR)/$(APP_NAME)
 DEBUG := $(DEFINES) -O0 -g -DDEBUG_BUILD
-DEBUG_OBJECTS := $(patsubst $(SRCDIR)/%, $(DBGOBJ)/%, $(SOURCES:.$(SRCEXT)=.o))
+DEBUG_OBJECTS := $(patsubst $(SOURCE_DIR)/%, $(DBGOBJ)/%, $(SOURCES:.$(SRCEXT)=.o))
 
 # Release build settings
-RELDIR := $(BUILDDIR)/release
+RELDIR := $(BUILD_DIR)/release
 RELOBJ := $(RELDIR)/obj
 # RELEASE_PCH = $(RELOBJ)/$(PCH_OUT)
-RELEASE_TARGET := $(RELDIR)/$(TARGET)
+RELEASE_TARGET := $(RELDIR)/$(APP_NAME)
 RELEASE := $(DEFINES) -O2 -DNDEBUG # NDEBUG will strip out all assert() calls
-RELEASE_OBJECTS := $(patsubst $(SRCDIR)/%, $(RELOBJ)/%, $(SOURCES:.$(SRCEXT)=.o))
-
-# Targets
-all: debug
-# pch: mkdir $(DEBUG_PCH) $(RELEASE_PCH)
-debug: mkdir $(DEBUG_TARGET) copy_assets_debug
-release: mkdir $(RELEASE_TARGET) copy_assets_release
+RELEASE_OBJECTS := $(patsubst $(SOURCE_DIR)/%, $(RELOBJ)/%, $(SOURCES:.$(SRCEXT)=.o))
 
 # Checks whether dependency files have changed, see -MMD flag
 -include $(RELEASE_OBJECTS:%.o=%.d)
@@ -70,11 +60,11 @@ $(DEBUG_TARGET): $(DEBUG_OBJECTS)
 $(RELEASE_TARGET): $(RELEASE_OBJECTS)
 	$(CXX) $(RELEASE) $^ $(LDFLAGS) -o $@
 
-$(DBGOBJ)/%.o: $(SRCDIR)/%.$(SRCEXT)
-	mkdir -p $(dir $(subst $(SRCDIR),$(DBGOBJ),$@))
+$(DBGOBJ)/%.o: $(SOURCE_DIR)/%.$(SRCEXT)
+	mkdir -p $(dir $(subst $(SOURCE_DIR),$(DBGOBJ),$@))
 	$(CXX) $(CXXFLAGS) $(DEBUG) $(INCLUDES) -c -o $@ $<
-$(RELOBJ)/%.o: $(SRCDIR)/%.$(SRCEXT)
-	mkdir -p $(dir $(subst $(SRCDIR),$(RELOBJ),$@))
+$(RELOBJ)/%.o: $(SOURCE_DIR)/%.$(SRCEXT)
+	mkdir -p $(dir $(subst $(SOURCE_DIR),$(RELOBJ),$@))
 	$(CXX) $(CXXFLAGS) $(RELEASE) $(INCLUDES) -c -o $@ $<
 
 clean:
@@ -89,5 +79,11 @@ copy_assets_debug:
 	rsync -ru --exclude='*.blend' assets $(DBGDIR)
 copy_assets_release:
 	rsync -ru --exclude='*.blend' assets $(RELDIR)
+
+# Targets
+all: debug
+# pch: mkdir $(DEBUG_PCH) $(RELEASE_PCH)
+debug: mkdir $(DEBUG_TARGET) copy_assets_debug
+release: mkdir $(RELEASE_TARGET) copy_assets_release
 
 .PHONY: all debug release mkdir clean copy_assets_debug copy_assets_release
