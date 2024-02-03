@@ -3,6 +3,8 @@
 
 #include "engine/common/log.h"
 #include "engine/common/gl.h"
+#include <stdexcept>
+#include <string>
 
 Texture::Texture() {}
 
@@ -18,12 +20,13 @@ void Texture::load(const char* source) {
     if (!data) {
         // @TODO set default texture using glBindTexture(GL_TEXTURE_2D, 0) ?
         data = stbi_load(Texture::defaultTexture, &width, &height, &nrChannels, 0); 
-        Log("Failed to load texture, using default texture");
+        Log(std::string("[Texture] failed to load texture: ") + source + ", using default texture");
     }
 
     if (!data) {
-        Log("Failed to load texture");
-        std::exit(EXIT_FAILURE);
+        throw std::runtime_error(
+            std::string("[Texture] failed to load texture: ") + source
+        );
     }
 
     /* Upload data and generate mips */

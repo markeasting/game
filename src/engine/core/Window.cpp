@@ -3,14 +3,14 @@
 #include "engine/common/gl.h"
 
 #include <cstdio>
+#include <stdexcept>
+#include <string>
 
 Window::Window(WindowConfig config): m_config(config) {
 
-    if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) < 0) {
-        printf(
-            "SDL could not be initialized!\n"
-            "SDL_Error: %s\n", 
-            SDL_GetError()
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) < 0) {
+        throw std::runtime_error(
+            std::string("SDL could not be initialized: ") + SDL_GetError()
         );
     }
 
@@ -23,13 +23,10 @@ Window::Window(WindowConfig config): m_config(config) {
         SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI // | SDL_WINDOW_BORDERLESS
     );
 
-    if(!m_window) {
-        printf(
-            "Window could not be created!\n"
-            "SDL_Error: %s\n", 
-            SDL_GetError()
+    if (!m_window) {
+        throw std::runtime_error(
+            std::string("Window could not be created: ") + SDL_GetError()
         );
-        std::exit(EXIT_FAILURE);
     }
 
     if (m_config.fullscreen) 
@@ -59,16 +56,14 @@ Window::Window(WindowConfig config): m_config(config) {
     // SDL_GetWindowSize
     SDL_GL_GetDrawableSize(m_window, &m_frameBufferWidth, &m_frameBufferHeight);
 
-    if(gl_context == NULL) {
-        printf("Failed to create OpenGL context");
-        std::exit(EXIT_FAILURE);
+    if (gl_context == NULL) {
+        throw std::runtime_error("Failed to create OpenGL context");
     }
 
     SDL_GL_MakeCurrent(m_window, gl_context);
 
     if (!gladLoadGLLoader((GLADloadproc) SDL_GL_GetProcAddress)) {
-        printf("Failed to initialize OpenGL context.");
-        std::exit(EXIT_FAILURE);
+        throw std::runtime_error("Failed to initialize OpenGL context");
     }
     
     SDL_GL_SetSwapInterval(m_config.vsync);

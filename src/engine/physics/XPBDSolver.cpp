@@ -1,4 +1,5 @@
 
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/intersect.hpp>
 
 #include "engine/physics/XPBDSolver.h"

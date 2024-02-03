@@ -2,6 +2,8 @@
 #include "./Filesystem.h"
 
 #include <fstream>
+#include <stdexcept>
+#include <string>
 
 #ifdef __linux__
 #include <unistd.h>
@@ -91,11 +93,9 @@ std::string Filesystem::getFileContents(const std::string& relativePath) {
     std::string contents((std::istreambuf_iterator<char>(stream)), std::istreambuf_iterator<char>());
     
     if (!stream.is_open()) {
-        printf("[FS ERROR] File '%s' could not be opened.\n", relativePath.c_str());
-
-        std::exit(EXIT_FAILURE);
-        
-        return 0;
+        throw std::runtime_error(
+            std::string("[Filesystem]: file could not be opened: ") + relativePath
+        );
     }
 
     return contents;

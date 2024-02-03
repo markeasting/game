@@ -1,5 +1,6 @@
 #include "RigidBody.h"
 #include "engine/common/log.h"
+#include <stdexcept>
 
 RigidBody::RigidBody(Ref<Mesh> mesh, bool isConvex)
     : mesh(mesh) 
@@ -122,8 +123,7 @@ void RigidBody::integrate(const float dt) {
 
     // Safety feature, can be removed later
     if (glm::all(glm::isnan(this->pose.p)) || glm::all(glm::isnan(this->pose.q)) || glm::all(glm::isnan(this->omega)) || glm::all(glm::isnan(this->vel))) {
-        Log("ERR: RigidBody pose contains nan values");
-        std::exit(EXIT_FAILURE);
+        throw std::runtime_error("[RigidBody] pose contains nan values");
     }
 
     if (!this->isDynamic) 

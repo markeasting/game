@@ -15,8 +15,8 @@ int main() {
     Engine::CoreBundle::configure({
         .window {
             .windowTitle = "MOI",
-            .windowWidth = 2560,
-            .windowHeight = 1440,
+            .windowWidth = 640,
+            .windowHeight = 480,
             .fullscreen = false,
             .vsync = false,
         },
@@ -30,7 +30,7 @@ int main() {
     /* Game class */
     container->singleton<Game, Timer, Window, Renderer, SceneManager>();
 
-    const auto game = container->get<Game>();
+    const auto game = container->resolve<Game>();
 
     /* @TODO should just have some generic 'race' scene where the map is loaded dynamically */
     // game->m_sceneManager.add("menu", ref<Menu>());
