@@ -71,7 +71,7 @@ void Object3D::rotate(float angle, const vec3& direction) {
 }
 
 mat4 Object3D::getWorldPositionMatrix() {
-    if(m_worldPosMatrixNeedsUpdate) {
+    if (m_worldPosMatrixNeedsUpdate) {
 
         m_worldPositionMatrix = glm::scale(
             glm::translate(

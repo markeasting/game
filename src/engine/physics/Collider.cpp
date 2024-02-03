@@ -56,7 +56,7 @@ void MeshCollider::setGeometry(Ref<Geometry> geometry) {
     if (geometry->hasIndices()) {
         m_indices = geometry->m_indexBuffer->m_data;
 
-        for(int i = 0; i < m_indices.size(); i++) {
+        for (int i = 0; i < m_indices.size(); i++) {
             if (std::find(m_uniqueIndices.begin(), m_uniqueIndices.end(), m_indices[i]) == m_uniqueIndices.end()) {
                 m_uniqueIndices.push_back(m_indices[i]);
             }

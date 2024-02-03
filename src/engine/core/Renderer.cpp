@@ -147,7 +147,7 @@ void Renderer::drawMesh(Ref<Mesh> mesh, Ref<Camera> camera) {
             : matrix
     );
 
-    if(m_config.wireframe || mesh->m_material && mesh->m_material->wireframe) {
+    if (m_config.wireframe || mesh->m_material && mesh->m_material->wireframe) {
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         glDisable(GL_CULL_FACE);
     } else {
@@ -156,7 +156,7 @@ void Renderer::drawMesh(Ref<Mesh> mesh, Ref<Camera> camera) {
     }
 
     // @TODO add support for instanced meshes using glDrawArraysInstanced and glDrawElementsInstanced
-    if(mesh->m_geometry->hasIndices()) {
+    if (mesh->m_geometry->hasIndices()) {
         glDrawElements(GL_TRIANGLES, mesh->m_geometry->m_indexBuffer->getCount(), GL_UNSIGNED_INT, 0);
     } else {
         glDrawArrays(GL_TRIANGLES, 0, mesh->m_geometry->m_vertexBuffer->getCount());
@@ -177,7 +177,7 @@ Renderer::~Renderer() {
 }
 
 static void GlDebugMsg(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam) {
-    switch(severity) {
+    switch (severity) {
         case GL_DEBUG_SEVERITY_HIGH:
             Log(message, LogLevel::ERROR);
             break;

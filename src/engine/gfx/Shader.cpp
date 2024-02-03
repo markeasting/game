@@ -7,7 +7,7 @@ Shader::Shader() {}
 Shader::Shader(const std::string& vertexShader, const std::string& fragmentShader, bool autoCompile) 
     : m_vertexShaderPath(vertexShader), m_fragmentShaderPath(fragmentShader)
 {
-    if(autoCompile)
+    if (autoCompile)
         m_program = createProgram();
 }
 
@@ -15,7 +15,7 @@ Shader::Shader(const std::string& shaderName, bool autoCompile) {
     m_vertexShaderPath = shaderName + ".vert";
     m_fragmentShaderPath = shaderName + ".frag";
 
-    if(autoCompile)
+    if (autoCompile)
         m_program = createProgram();
 }
 
@@ -28,7 +28,7 @@ GLuint Shader::createProgram() {
     GLuint vert = compile(Shader::shaderBasePath + m_vertexShaderPath, GL_VERTEX_SHADER);
     GLuint frag = compile(Shader::shaderBasePath + m_fragmentShaderPath, GL_FRAGMENT_SHADER);
 
-    if(vert == 0 || frag == 0) {
+    if (vert == 0 || frag == 0) {
         return 0;
     }
 
@@ -80,7 +80,7 @@ GLuint Shader::compile(const std::string& shaderSource, unsigned int type) {
     int compilation_result;
     glGetShaderiv(shaderId, GL_COMPILE_STATUS, &compilation_result);
 
-    if(compilation_result == GL_FALSE) {
+    if (compilation_result == GL_FALSE) {
         int length;
         glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &length);
         
@@ -100,7 +100,7 @@ GLuint Shader::compile(const std::string& shaderSource, unsigned int type) {
 
 int Shader::getUniformLocation(const std::string& name) {
 
-    if(uniformLocationCache.find(name) == uniformLocationCache.end()) {
+    if (uniformLocationCache.find(name) == uniformLocationCache.end()) {
         glUseProgram(m_program);
         int location = glGetUniformLocation(m_program, name.c_str());
         // std::cout << name << std::endl;

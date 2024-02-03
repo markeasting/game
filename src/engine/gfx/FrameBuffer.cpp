@@ -35,7 +35,7 @@ void FrameBuffer::create(float width, float height) {
     /* Attach the renderbuffer object to the depth and stencil attachment of the framebuffer */
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_rbo);
 
-    if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         Log("Framebuffer is not complete!", LogLevel::ERROR);
 
     /* Unbind the created framebuffer (rebind default 0) to make sure we're not using the wrong framebuffer */

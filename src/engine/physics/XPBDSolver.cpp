@@ -35,7 +35,7 @@ void XPBDSolver::update(const std::vector<Ref<RigidBody>>& bodies, const std::ve
     // const float h = dt / XPBDSolver::numSubSteps;
     const float h = (1.0f / 60.0f) / XPBDSolver::numSubSteps;
 
-    for(int i = 0; i < XPBDSolver::numSubSteps; i++) {
+    for (int i = 0; i < XPBDSolver::numSubSteps; i++) {
 
         /* (3.5)
          * At each substep we iterate through the pairs
@@ -111,11 +111,11 @@ std::vector<CollisionPair> XPBDSolver::collectCollisionPairs(const std::vector<R
             auto const& aabb1 = A->collider->m_expanded_aabb;
             auto const& aabb2 = B->collider->m_expanded_aabb;
 
-            switch(A->collider->m_type) {
+            switch (A->collider->m_type) {
 
                 case ColliderType::CONVEX_MESH :
 
-                    switch(B->collider->m_type) {
+                    switch (B->collider->m_type) {
                         
                         case ColliderType::CONVEX_MESH : {
 
@@ -164,11 +164,11 @@ std::vector<Ref<ContactSet>> XPBDSolver::getContacts(const std::vector<Collision
         RigidBody* A = collision.A;
         RigidBody* B = collision.B;
 
-        switch(A->collider->m_type) {
+        switch (A->collider->m_type) {
 
             case ColliderType::CONVEX_MESH :
 
-                switch(B->collider->m_type) {
+                switch (B->collider->m_type) {
 
                     case ColliderType::CONVEX_MESH : {
 
@@ -206,7 +206,7 @@ std::vector<Ref<ContactSet>> XPBDSolver::getContacts(const std::vector<Collision
 
                     //     for (const auto& triangle : MC2->m_triangles) {
 
-                    //         for(int i = 0; i < MC1->m_uniqueIndices.size(); i++) {
+                    //         for (int i = 0; i < MC1->m_uniqueIndices.size(); i++) {
 
                     //             /* (26) - p1 */
                     //             const vec3 r1 = MC1->m_vertices[MC1->m_uniqueIndices[i]];
@@ -247,7 +247,7 @@ std::vector<Ref<ContactSet>> XPBDSolver::getContacts(const std::vector<Collision
 
                         const vec3 N = PC->m_plane.normal;
 
-                        for(int i = 0; i < MC->m_uniqueIndices.size(); i++) {
+                        for (int i = 0; i < MC->m_uniqueIndices.size(); i++) {
 
                             /* (26) - p1 */
                             const vec3 r1 = MC->m_vertices[MC->m_uniqueIndices[i]];
@@ -306,7 +306,7 @@ void XPBDSolver::_solvePenetration(Ref<ContactSet> contact, const float h) {
     contact->update();
 
     /* (3.5) if d ≤ 0 we skip the contact */
-    if(contact->d <= 0.0f)
+    if (contact->d <= 0.0f)
         return;
 
     /* (3.5) Resolve penetration (Δx = dn using a = 0 and λn) */

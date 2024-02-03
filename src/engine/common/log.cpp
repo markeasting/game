@@ -7,7 +7,7 @@ void Log(const std::string& msg, LogLevel logLevel, const std::string& origin) {
 
     std::string logLevelString;
 
-    switch(logLevel) {
+    switch (logLevel) {
         case LogLevel::NONE:
             return;
             break;
@@ -19,7 +19,7 @@ void Log(const std::string& msg, LogLevel logLevel, const std::string& origin) {
             break;
     }
 
-    if(logLevel > 0 && logLevel >= LOG_LEVEL) {
+    if (logLevel > 0 && logLevel >= LOG_LEVEL) {
         std::printf("%s %s\n", msg.c_str(), origin.c_str());
     }
 }

@@ -25,7 +25,7 @@ void Camera::bind() const {
 
 void Camera::update(float time) {
 
-    if(m_autoRotate) {
+    if (m_autoRotate) {
 
         // m_camRadius = glm::distance(m_position, m_lookAtPos);
 

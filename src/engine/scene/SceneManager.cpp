@@ -64,7 +64,7 @@ void SceneManager::remove(std::string id) {
     /* @TODO could use at() here if we are sure the key exists */
     auto it = m_scenes.find(id);
 
-    if(it != m_scenes.end()) {
+    if (it != m_scenes.end()) {
         auto scene = it->second;
         scene->destroy();
         m_scenes.erase(it);
@@ -79,7 +79,7 @@ void SceneManager::switchTo(std::string id) {
     if (it != m_scenes.end()) {
         auto scene = it->second;
 
-        if(m_currentScene) {
+        if (m_currentScene) {
             m_currentScene->onDeactivate();
         }
 

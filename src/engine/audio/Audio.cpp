@@ -9,7 +9,9 @@
 Audio::Audio() {
     m_devMgr = alure::DeviceManager::getInstance();
 
-    if(!m_device) m_device = m_devMgr.openPlayback();
+    if (!m_device) {
+        m_device = m_devMgr.openPlayback();
+    }
     
     m_ctx = m_device.createContext();
     alure::Context::MakeCurrent(m_ctx);

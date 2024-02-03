@@ -41,11 +41,11 @@ void main() {
 
     vec3 specular = vec3(0.0);
 
-    if(specularOn == 1) {
+    if (specularOn == 1) {
         specular = pow(max(dot(R, V), 0.0), shininess) * specularAlbedo;
     }
 
-    if(rimLightOn == 1) {
+    if (rimLightOn == 1) {
         out_color = vec4(ambient + diffuse + specular + rimLight(N, V), 1.0);
     } else {
         out_color = vec4(ambient + diffuse + specular, 1.0);

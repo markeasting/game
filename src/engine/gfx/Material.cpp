@@ -23,7 +23,7 @@ Material::Material(const std::string& vert, const std::string& frag, std::vector
 }
 
 void Material::assignUniform(Ref<IUniform> uniform) {
-    if(uniforms.find(uniform->m_name) == uniforms.end()) {
+    if (uniforms.find(uniform->m_name) == uniforms.end()) {
         uniform->m_location = m_shader->getUniformLocation(uniform->m_name);
         uniforms[uniform->m_name] = uniform;
     }
