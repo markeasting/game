@@ -1,6 +1,7 @@
 #pragma once
 
-#include "engine/common.h"
+#include "engine/common/ref.h"
+#include <string>
 
 class IUniform {
 public:
@@ -30,12 +31,12 @@ public:
     Uniform(const std::string& name, T value = {}) 
         : IUniform(name), m_value(value) {}
 
-    virtual void set(T value) { 
+    void set(T value) { 
         m_needsUpdate = true; 
         m_value = value;
     }
     
-    virtual void bind() {};
+    void bind() override {};
 
 };
 
