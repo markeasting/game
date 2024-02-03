@@ -1,5 +1,7 @@
 #pragma once
 
+#include "engine/util/Singleton.h"
+
 #include <unordered_map>
 #include <memory>
 #include <typeindex>
@@ -16,29 +18,14 @@
  * container->singleton<Foo, Bar>();
  * container->singleton<MyClass, Foo>();
  */
-class Container {
+class Container : public Singleton<Container> {
 public:
 
-    /** Singletons should not be cloneable */
-    Container(Container &other) = delete;
+    // /** Singletons should not be cloneable */
+    // Container(Container &other) = delete;
     
-    /** Singletons should not be assignable */
-    void operator=(const Container &) = delete;
-    
-    /** 
-     * Get a container instance (thread safe).
-     * 
-     * https://refactoring.guru/design-patterns/singleton/cpp/example#example-1
-     */
-    static Container* instance() {
-        std::lock_guard<std::mutex> lock(m_mutex);
-
-        if (m_instance == nullptr) {
-            m_instance = new Container();
-        }
-
-        return m_instance;
-    };
+    // /** Singletons should not be assignable */
+    // void operator=(const Container &) = delete;
 
     /**
      * Registers a class as a singleton / shared service.
@@ -47,10 +34,10 @@ public:
     void singleton(Args&&... args) {
 
         /* Create a constructor/factory function */
-        m_factories[typeid(T)] = [this, args...] {
+        m_factories[typeid(T)] = [this, &args...] {
             const auto instance = std::make_shared<T>(
-                this->get<Dependencies>()..., 
-                args...
+                this->resolve<Dependencies>()..., 
+                std::forward<Args>(args)...
             );
 
             m_services[typeid(T)] = instance; // Store shared instance
@@ -66,10 +53,10 @@ public:
     void transient(Args&&... args) {
 
         /* Create a constructor/factory function */
-        m_factories[typeid(T)] = [this, args...] {
+        m_factories[typeid(T)] = [this, &args...] {
             return std::make_shared<T>(
-                this->get<Dependencies>()..., 
-                args...
+                this->resolve<Dependencies>()..., 
+                std::forward<Args>(args)...
             );
         };
     }
@@ -81,7 +68,7 @@ public:
      * @return std::shared_ptr<T> shared instance
      */
     template <typename T>
-    std::shared_ptr<T> get() {
+    std::shared_ptr<T> resolve() {
 
         /* Check if the service has already been constructed */
         auto instanceIt = m_services.find(typeid(T));
@@ -89,8 +76,7 @@ public:
             return std::static_pointer_cast<T>(instanceIt->second);
         }
 
-        /* No instance found, construct the service and store it */
-        /* @TODO for transients, skip storing the instance */
+        /* No instance found, construct the service */
         auto serviceIt = m_factories.find(typeid(T));
         if (serviceIt != m_factories.end()) {
 
@@ -118,11 +104,7 @@ protected:
         std::shared_ptr<void>
     > m_services;
 
-private:
-
-    inline static Container* m_instance = nullptr;
-    inline static std::mutex m_mutex;
-
-    Container() {}
-    ~Container() {}
+// private:
+//     Container() {}
+//     ~Container() {}
 };
