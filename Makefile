@@ -14,6 +14,8 @@ INCLUDES := -I${SRCDIR} \
 	-Ilib/objload 
 LDFLAGS := -lSDL2 -lalure2 # -lSDL2main not required?
 
+DEFINES := -D_USE_MATH_DEFINES # -DGLM_FORCE_INTRINSICS
+
 # Platform specific settings
 UNAME_S := $(shell uname -s)
 
@@ -36,7 +38,7 @@ DBGDIR := $(BUILDDIR)/debug
 DBGOBJ := $(DBGDIR)/obj
 # DEBUG_PCH = $(DBGOBJ)/$(PCH_OUT)
 DEBUG_TARGET := $(DBGDIR)/$(TARGET)
-DEBUG := -O0 -g
+DEBUG := $(DEFINES) -O0 -g -DDEBUG_BUILD
 DEBUG_OBJECTS := $(patsubst $(SRCDIR)/%, $(DBGOBJ)/%, $(SOURCES:.$(SRCEXT)=.o))
 
 # Release build settings
@@ -44,7 +46,7 @@ RELDIR := $(BUILDDIR)/release
 RELOBJ := $(RELDIR)/obj
 # RELEASE_PCH = $(RELOBJ)/$(PCH_OUT)
 RELEASE_TARGET := $(RELDIR)/$(TARGET)
-RELEASE := -O2 -ffast-math -DNDEBUG # DNDEBUG will strip out all assert() calls
+RELEASE := $(DEFINES) -O2 -DNDEBUG # NDEBUG will strip out all assert() calls
 RELEASE_OBJECTS := $(patsubst $(SRCDIR)/%, $(RELOBJ)/%, $(SOURCES:.$(SRCEXT)=.o))
 
 # Targets

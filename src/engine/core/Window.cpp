@@ -35,7 +35,7 @@ Window::Window(WindowConfig config): m_config(config) {
     /* OpenGL context */
     int context_flags = SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG;
     
-    #ifdef DEBUG_MODE
+    #ifdef DEBUG_BUILD
         context_flags |= SDL_GL_CONTEXT_DEBUG_FLAG;
     #endif
 

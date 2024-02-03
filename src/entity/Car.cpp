@@ -161,7 +161,7 @@ vec3 Wheel::update(
 
     this->updateGeometry(body, dt);
 
-    #ifdef DEBUG_MODE
+    #ifdef DEBUG_BUILD
         this->debug(body);
     #endif
 

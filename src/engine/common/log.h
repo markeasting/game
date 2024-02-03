@@ -3,10 +3,10 @@
 #include <string>
 #include "glm/glm.hpp"
 
-#ifdef NDEBUG
-    #define LOG_LEVEL 0
-#else
+#ifdef DEBUG_BUILD
     #define LOG_LEVEL 2
+#else
+    #define LOG_LEVEL 0
 #endif
 
 /* @TODO use printf */
