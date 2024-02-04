@@ -1,6 +1,7 @@
 APP_NAME := game
 SOURCE_DIR := src
 BUILD_DIR := bin
+ASSET_DIR := assets
 
 # Compiler flags
 CXX := clang++ # g++
@@ -54,6 +55,12 @@ RELEASE_OBJECTS := $(patsubst $(SOURCE_DIR)/%, $(RELOBJ)/%, $(SOURCES:.$(SRCEXT)
 # $(RELEASE_PCH): $(PCH_SRC)
 # 	$(CXX) -std=c++20 $(RELEASE) $(INCLUDES) -o $@ $<
 
+# Targets
+all: debug # Default to the debug build if no target is specified
+debug: $(DEBUG_TARGET) copy_assets_debug
+release: $(RELEASE_TARGET) copy_assets_release
+# pch: mkdir $(DEBUG_PCH) $(RELEASE_PCH)
+
 $(DEBUG_TARGET): $(DEBUG_OBJECTS)
 	$(CXX) $(DEBUG) $^ $(LDFLAGS) -o $@
 
@@ -67,23 +74,14 @@ $(RELOBJ)/%.o: $(SOURCE_DIR)/%.$(SRCEXT)
 	mkdir -p $(dir $(subst $(SOURCE_DIR),$(RELOBJ),$@))
 	$(CXX) $(CXXFLAGS) $(RELEASE) $(INCLUDES) -c -o $@ $<
 
-clean:
+clean: 
 	rm -rf $(RELDIR)
 	rm -rf $(DBGDIR)
 
-mkdir:
-	mkdir -p $(DBGOBJ)
-	mkdir -p $(RELOBJ)
+copy_assets_debug: 
+	ln -s $(CURDIR)/$(ASSET_DIR) $(CURDIR)/$(DBGDIR)/$(ASSET_DIR)
 
-copy_assets_debug:
-	rsync -ru --exclude='*.blend' assets $(DBGDIR)
-copy_assets_release:
-	rsync -ru --exclude='*.blend' assets $(RELDIR)
+copy_assets_release: 
+	ln -s $(CURDIR)/$(ASSET_DIR) $(CURDIR)/$(RELDIR)/$(ASSET_DIR)
 
-# Targets
-all: debug
-# pch: mkdir $(DEBUG_PCH) $(RELEASE_PCH)
-debug: mkdir $(DEBUG_TARGET) copy_assets_debug
-release: mkdir $(RELEASE_TARGET) copy_assets_release
-
-.PHONY: all debug release mkdir clean copy_assets_debug copy_assets_release
+.PHONY: debug release clean copy_assets_debug copy_assets_release
