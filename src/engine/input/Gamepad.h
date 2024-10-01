@@ -1,5 +1,7 @@
 #pragma once
 
+#include "engine/common/log.h"
+
 #include <SDL2/SDL.h> 
 #include <array>
 #include <cassert>
@@ -18,7 +20,7 @@ public:
     inline static SDL_GameController* m_controller;
     // inline static SDL_Joystick *joystick;
 
-    inline static bool m_active = true;
+    inline static bool m_active = false;
 
     /**
      * 0 - Left x-axis
@@ -37,14 +39,27 @@ public:
     /* Store axis values mapped to [-1.0, 1.0]*/
     static void handleAxisMotion(const SDL_ControllerAxisEvent& event) {
 
+        m_active = true;
+
         assert(event.axis <= 3 && "Axis ID out of array bounds");
 
         float normalized = static_cast<float>(event.value) / INT16_MAX;
+        
+        /* Deadzones */
+        if (normalized > -0.1 && normalized < 0.1) {
+            normalized = 0;
+        }
+        
+        Log(normalized);
 
         m_axes[event.axis] = normalized;
     }
 
     static void handleButtonPress(const SDL_ControllerButtonEvent& event) {
+        m_active = true;
+
+        Log((SDL_GameControllerButton) event.button);
+
         m_buttons[(SDL_GameControllerButton) event.button] = (event.state == SDL_PRESSED);
     }
 
