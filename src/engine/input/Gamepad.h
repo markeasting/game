@@ -50,15 +50,11 @@ public:
             normalized = 0;
         }
         
-        Log(normalized);
-
         m_axes[event.axis] = normalized;
     }
 
     static void handleButtonPress(const SDL_ControllerButtonEvent& event) {
         m_active = true;
-
-        Log((SDL_GameControllerButton) event.button);
 
         m_buttons[(SDL_GameControllerButton) event.button] = (event.state == SDL_PRESSED);
     }
