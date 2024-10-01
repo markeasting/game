@@ -6,8 +6,9 @@
 #include "engine/input/Keyboard.h"
 #include "engine/input/Gamepad.h"
 
-#include "engine/physics/Collider.h"
+// #include "engine/physics/Collider.h"
 #include "engine/physics/RigidBody.h"
+#include <SDL2/SDL_gamecontroller.h>
 
 PlayGround::PlayGround() {
 
@@ -179,16 +180,16 @@ void PlayGround::init() {
     //     m_world->add(floor2);
     //     m_phys.add(floor2);
 
-    auto track = ref<Geometry>(obj::loadModelFromFile("assets/track/track.obj"));
-    auto trackMesh = ref<Mesh>(track, floorMaterial);
+    // auto track = ref<Geometry>(obj::loadModelFromFile("assets/track/track.obj"));
+    // auto trackMesh = ref<Mesh>(track, floorMaterial);
 
-    auto trackBody = ref<RigidBody>(trackMesh, false);
-        trackBody->name = "TrackBody";
-        trackBody->setPosition({ -10.0f, 0, 0 });
-        trackBody->makeStatic();
-        trackBody->canCollide = false;
-        m_world->add(trackBody);
-        m_phys.add(trackBody);
+    // auto trackBody = ref<RigidBody>(trackMesh, false);
+    //     trackBody->name = "TrackBody";
+    //     trackBody->setPosition({ -10.0f, 0, 0 });
+    //     trackBody->makeStatic();
+    //     trackBody->canCollide = false;
+    //     m_world->add(trackBody);
+    //     m_phys.add(trackBody);
 
     m_phys.init();
     for (auto const& mesh : m_phys.m_debugMeshes) 
@@ -310,25 +311,25 @@ void PlayGround::update(float time, float dt) {
             m_player->applyThrottle(-Gamepad::m_axes[3]);
         }
 
-        // if (Key::isPressed('w')) {
-        //     Anim::lerp(m_player->m_throttle, 1.0f, 0.15f);
-        //     // m_player->applyThrottle(1.0f);
-        // } else if (Key::isPressed('s')) {
-        //     Anim::lerp(m_player->m_throttle, -1.0f, 0.15f);
-        //     // m_player->applyThrottle(-1.0f);
-        // } else {
-        //     Anim::lerp(m_player->m_throttle, 0.0f, 0.15f);
-        // }
+        if (Key::isPressed('w')) {
+            Anim::lerp(m_player->m_throttle, 1.0f, 0.15f);
+            // m_player->applyThrottle(1.0f);
+        } else if (Key::isPressed('s')) {
+            Anim::lerp(m_player->m_throttle, -1.0f, 0.15f);
+            // m_player->applyThrottle(-1.0f);
+        } else {
+            Anim::lerp(m_player->m_throttle, 0.0f, 0.15f);
+        }
 
-        // if (Key::isPressed('a')) {
-        //     Anim::lerp(m_player->m_steering, -1.0f, (clamp(glm::length(m_player->m_body->vel) / 50.0f, 0.09f, 0.15f)));
-        // } else if (Key::isPressed('d')) {
-        //     Anim::lerp(m_player->m_steering, 1.0f, (clamp(glm::length(m_player->m_body->vel) / 50.0f, 0.09f, 0.15f)));
-        // } else {
-        //     Anim::lerp(m_player->m_steering, 0.0f, (clamp(glm::length(m_player->m_body->vel) / 50.0f, 0.09f, 0.15f)));
-        // }
+        if (Key::isPressed('a')) {
+            Anim::lerp(m_player->m_steering, -1.0f, (clamp(glm::length(m_player->m_body->vel) / 50.0f, 0.09f, 0.15f)));
+        } else if (Key::isPressed('d')) {
+            Anim::lerp(m_player->m_steering, 1.0f, (clamp(glm::length(m_player->m_body->vel) / 50.0f, 0.09f, 0.15f)));
+        } else {
+            Anim::lerp(m_player->m_steering, 0.0f, (clamp(glm::length(m_player->m_body->vel) / 50.0f, 0.09f, 0.15f)));
+        }
 
-        m_player->m_handbrake = Key::isPressed('b');
+        m_player->m_handbrake = Key::isPressed('b') || Gamepad::isButtonPressed(SDL_CONTROLLER_BUTTON_B);
 
         // if (Keyboard::a) 
         //     m_player->applySteering(-1.0f);
